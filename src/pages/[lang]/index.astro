@@ -1,0 +1,66 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import HeroSection from '@/components/astro/HeroSection.astro';
+import MenuSection from '@/components/astro/MenuSection.astro';
+import Footer from '@/components/astro/Footer.astro';
+import SEOHead from '@/components/astro/SEOHead.astro';
+import StructuredData from '@/components/astro/StructuredData.astro';
+import { fetchAllProducts } from '@/lib/fetch-all';
+
+const { merchant, lang, sdk } = Astro.locals;
+const baseUrl = import.meta.env.API_BASE_URL;
+
+const [categoriesResult, products] = await Promise.all([
+  sdk.GET('/api/v1/categories/'),
+  fetchAllProducts(sdk, {
+    vendorId: merchant.merchantId,
+    language: lang,
+    baseUrl,
+  }),
+]);
+
+const categories = (categoriesResult.data as { results: Array<{ id: string; name: string; slug?: string }> } | null)?.results ?? [];
+
+// Group products by category, preserving category order
+const sections = categories.map((cat) => ({
+  category: cat,
+  products: products.filter((p) => (p as Record<string, unknown>).category_id === cat.id),
+}));
+---
+
+<BaseLayout title={merchant.name} description={merchant.seo.defaultDescription}>
+  <SEOHead
+    slot="head"
+    page="menu"
+    merchant={merchant}
+    lang={lang}
+    canonicalUrl={`${Astro.url.origin}/${lang}/`}
+  />
+  <StructuredData slot="head" type="restaurant" merchant={merchant} />
+
+  <Header merchant={merchant} lang={lang} />
+  <HeroSection merchant={merchant} />
+
+  <main>
+    {sections.map((s) => (
+      <MenuSection
+        category={s.category}
+        products={s.products}
+        lang={lang}
+        currency={merchant.currency}
+        layout={merchant.layout}
+      />
+    ))}
+  </main>
+
+  {/* Interactive Preact islands will be added in Phase 11:
+      <CategoryTabs client:load />
+      <CartBar client:load />
+      <CartDrawer client:load />
+      <ProductDetail client:load />
+      <FreshnessProvider client:idle />
+  */}
+
+  <Footer merchant={merchant} lang={lang} />
+</BaseLayout>

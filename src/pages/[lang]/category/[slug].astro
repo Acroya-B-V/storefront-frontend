@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import MenuSection from '@/components/astro/MenuSection.astro';
+import Footer from '@/components/astro/Footer.astro';
+import SEOHead from '@/components/astro/SEOHead.astro';
+import StructuredData from '@/components/astro/StructuredData.astro';
+import { fetchAllProducts } from '@/lib/fetch-all';
+
+const { merchant, lang, sdk } = Astro.locals;
+const { slug } = Astro.params;
+const baseUrl = import.meta.env.API_BASE_URL;
+
+// Fetch categories and products in parallel
+const [categoriesResult, allProducts] = await Promise.all([
+  sdk.GET('/api/v1/categories/'),
+  fetchAllProducts(sdk, {
+    vendorId: merchant.merchantId,
+    language: lang,
+    baseUrl,
+  }),
+]);
+
+const categories = (categoriesResult.data as { results: Array<{ id: string; name: string; slug?: string }> } | null)?.results ?? [];
+const category = categories.find((c) => c.slug === slug);
+
+if (!category) {
+  return Astro.redirect(`/${lang}/`);
+}
+
+const products = allProducts.filter((p) => (p as Record<string, unknown>).category_id === category.id);
+
+const breadcrumbs = [
+  { name: merchant.name, url: `/${lang}/` },
+  { name: category.name, url: `/${lang}/category/${slug}` },
+];
+---
+
+<BaseLayout title={category.name} description={`${category.name} - ${merchant.name}`}>
+  <SEOHead
+    slot="head"
+    page="category"
+    merchant={merchant}
+    lang={lang}
+    title={category.name}
+    canonicalUrl={`${Astro.url.origin}/${lang}/category/${slug}`}
+  />
+  <StructuredData slot="head" type="breadcrumb" merchant={merchant} breadcrumbs={breadcrumbs} />
+
+  <Header merchant={merchant} lang={lang} />
+
+  <main class="py-6">
+    <MenuSection
+      category={category}
+      products={products}
+      lang={lang}
+      currency={merchant.currency}
+      layout={merchant.layout}
+    />
+  </main>
+
+  <Footer merchant={merchant} lang={lang} />
+</BaseLayout>
