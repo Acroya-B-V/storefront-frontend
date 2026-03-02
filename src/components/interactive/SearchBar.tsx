@@ -113,14 +113,14 @@ export default function SearchBar({ lang }: Props) {
               aria-label={t('search', lang)}
             />
             {loading && (
-              <div class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+              <div class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent motion-reduce:animate-none" role="status" aria-label={t('loading', lang)} />
             )}
           </div>
 
           {results.length > 0 && (
-            <ul class="max-h-64 overflow-y-auto py-1">
+            <ul class="max-h-64 overflow-y-auto py-1" role="listbox" aria-label={t('search', lang)}>
               {results.map((result) => (
-                <li key={result.id}>
+                <li key={result.id} role="option" aria-selected="false">
                   <button
                     type="button"
                     onClick={() => handleSelect(result)}

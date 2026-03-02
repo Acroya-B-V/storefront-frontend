@@ -1,0 +1,18 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:4321/nl/"],
+      "settings": {
+        "preset": "perf",
+        "throttling": { "cpuSlowdownMultiplier": 4 }
+      }
+    },
+    "assert": {
+      "assertions": {
+        "resource-summary:script:size": ["error", { "maxNumericValue": 65000 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 300 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }]
+      }
+    }
+  }
+}
