@@ -1,0 +1,68 @@
+src/i18n/messages/de.json
+  8e43396926610d37 37-39
+src/components/interactive/AddToCartButton.tsx
+  8e43396926610d37 46,50-61,66,123-134
+src/lib/currency.ts
+  8e43396926610d37 1-6
+src/components/interactive/ProductDetail.tsx
+  8e43396926610d37 6-7,55-59,206,217,286-288,296,305-313,319-320,325-326,330,333-335,338-339,341-342
+src/components/interactive/CartBar.tsx
+  8e43396926610d37 6,21
+src/hooks/use-focus-trap.ts
+  8e43396926610d37 1-52
+src/pages/[lang]/index.astro
+  8e43396926610d37 55-62
+src/components/interactive/ConfirmRemoveDialog.tsx
+  8e43396926610d37 2,15-16,19
+src/components/interactive/CategoryTabs.tsx
+  8e43396926610d37 109,140
+src/pages/[lang]/product/[slug].astro
+  8e43396926610d37 7,16
+src/i18n/messages/nl.json
+  8e43396926610d37 37-39
+src/components/interactive/CartDrawer.tsx
+  8e43396926610d37 6-7,24,26,28,67,85,100
+src/components/interactive/SearchBar.tsx
+  8e43396926610d37 5,31-37,67,74,100
+src/components/astro/ProductCard.astro
+  8e43396926610d37 2,5,27,96-103
+src/components/interactive/AnimatedNumber.tsx
+  8e43396926610d37 33-36,43
+src/components/astro/MenuSection.astro
+  8e43396926610d37 2,19-22
+src/i18n/messages/en.json
+  8e43396926610d37 37-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "1ba0f7fae82a4cab92a77cbf7296cbf849f64bf0",
+  "prompts": {
+    "15c884cfc8fc454a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "71898716-7950-4a56-9eed-9cc629fc645f",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1167,
+      "overriden_lines": 0
+    },
+    "8e43396926610d37": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a97c42e-9363-4055-8008-9329089d0b99",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 235,
+      "total_deletions": 280,
+      "accepted_lines": 188,
+      "overriden_lines": 0
+    }
+  }
+}
