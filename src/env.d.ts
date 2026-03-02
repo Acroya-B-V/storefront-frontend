@@ -1,6 +1,17 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
+import type { MerchantConfig } from './types/merchant';
+import type { StorefrontClient } from './lib/sdk-stub';
+
+declare namespace App {
+  interface Locals {
+    merchant: MerchantConfig;
+    lang: string;
+    sdk: StorefrontClient;
+  }
+}
+
 interface ImportMetaEnv {
   readonly API_BASE_URL: string;
   readonly PUBLIC_API_BASE_URL: string;
