@@ -1,0 +1,32 @@
+---
+import { themeToCSS } from '@/lib/theme';
+import type { MerchantConfig } from '@/types/merchant';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const merchant = Astro.locals.merchant as MerchantConfig | undefined;
+const lang = Astro.locals.lang as string | undefined;
+const themeCSS = merchant ? themeToCSS(merchant.theme) : '';
+---
+
+<!doctype html>
+<html lang={lang ?? 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {merchant?.favicon && <link rel="icon" href={merchant.favicon} />}
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="preconnect" href={import.meta.env.PUBLIC_API_BASE_URL} />
+    {themeCSS && <style set:html={`:root { ${themeCSS} }`} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
