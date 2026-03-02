@@ -22,10 +22,16 @@ function getSessionId(): string {
   // a simple random hex string for local HTTP dev environments.
   try {
     sessionId = crypto.randomUUID();
-  } catch {
-    sessionId = Array.from(crypto.getRandomValues(new Uint8Array(16)))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+  } catch (err) {
+    console.warn('[analytics] crypto.randomUUID() unavailable, using fallback:', err);
+    try {
+      sessionId = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (fallbackErr) {
+      console.error('[analytics] crypto fallback also failed:', fallbackErr);
+      sessionId = `fallback-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
   }
 
   if (typeof sessionStorage !== 'undefined') {
@@ -56,7 +62,12 @@ export function getUTMProperties(): UTMProperties {
 
   const stored = sessionStorage.getItem('analytics_utm');
   if (stored) {
-    try { return JSON.parse(stored); } catch { /* ignore */ }
+    try {
+      return JSON.parse(stored);
+    } catch (err) {
+      console.warn('[analytics] corrupt UTM data in sessionStorage, re-reading from URL:', err);
+      sessionStorage.removeItem('analytics_utm');
+    }
   }
 
   const params = new URLSearchParams(window.location.search);

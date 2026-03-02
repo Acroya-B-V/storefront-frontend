@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/astro/Header.astro';
 import Footer from '@/components/astro/Footer.astro';
 import SEOHead from '@/components/astro/SEOHead.astro';
+import { sanitizeHtml } from '@/lib/sanitize';
 import type { MerchantConfig } from '@/types/merchant';
 
 const merchant = Astro.locals.merchant as MerchantConfig;
@@ -21,19 +22,6 @@ if (!page) {
     return new Response('Service unavailable', { status: 502 });
   }
   return Astro.redirect(`/${lang}/`);
-}
-
-// Sanitize CMS HTML — strip dangerous tags/attributes to prevent XSS
-// even though content comes from a trusted CMS backend (defense-in-depth)
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
-    .replace(/<object[\s\S]*?<\/object>/gi, '')
-    .replace(/<embed[\s\S]*?>/gi, '')
-    .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
-    .replace(/\son\w+\s*=\s*\S+/gi, '')
-    .replace(/javascript\s*:/gi, 'blocked:');
 }
 
 const safeContent = sanitizeHtml((page as any).content ?? '');

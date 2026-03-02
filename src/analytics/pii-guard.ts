@@ -43,6 +43,16 @@ export function stripPII(
       continue;
     }
 
+    // Recurse into arrays — strip PII from objects inside arrays
+    if (Array.isArray(value) && depth < MAX_DEPTH) {
+      cleaned[key] = value.map((item) =>
+        item !== null && typeof item === 'object' && !Array.isArray(item)
+          ? stripPII(item as Record<string, unknown>, depth + 1)
+          : item,
+      );
+      continue;
+    }
+
     cleaned[key] = value;
   }
 

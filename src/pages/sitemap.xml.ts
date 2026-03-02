@@ -48,6 +48,15 @@ export const GET: APIRoute = async ({ locals, url }) => {
     console.error('sitemap: unexpected error fetching data', err);
   }
 
+  // If both fetches failed, return 503 so crawlers retain the previous sitemap
+  // rather than treating a near-empty sitemap as authoritative
+  if (products.length === 0 && categories.length === 0) {
+    return new Response('Service temporarily unavailable', {
+      status: 503,
+      headers: { 'Retry-After': '300' },
+    });
+  }
+
   const urls: Array<{ loc: string; lastmod?: string; langs: string[] }> = [];
 
   // Menu page (highest priority)

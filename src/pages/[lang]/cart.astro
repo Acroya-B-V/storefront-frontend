@@ -23,12 +23,3 @@ const lang = Astro.locals.lang as string;
   <Footer merchant={merchant} lang={lang} />
 </BaseLayout>
 
-<script>
-  import { $isCartOpen } from '@/stores/ui';
-  // Cart page always shows cart content — subscribe to prevent user
-  // from closing the drawer and seeing a blank page
-  $isCartOpen.set(true);
-  $isCartOpen.subscribe((open) => {
-    if (!open) $isCartOpen.set(true);
-  });
-</script>

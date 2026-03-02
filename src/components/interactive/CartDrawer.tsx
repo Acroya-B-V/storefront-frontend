@@ -11,9 +11,11 @@ import { getClient } from '@/lib/api';
 
 interface Props {
   lang: string;
+  /** When true, renders inline (no overlay/close button) — used on the cart page */
+  inline?: boolean;
 }
 
-export default function CartDrawer({ lang }: Props) {
+export default function CartDrawer({ lang, inline = false }: Props) {
   const cart = useStore($cart);
   const cartTotal = useStore($cartTotal);
   const isOpen = useStore($isCartOpen);
@@ -25,7 +27,8 @@ export default function CartDrawer({ lang }: Props) {
 
   const close = () => $isCartOpen.set(false);
 
-  useFocusTrap(drawerRef, isOpen, close);
+  // Skip focus trap when inline — the page itself handles focus
+  useFocusTrap(drawerRef, !inline && isOpen, close);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     $cartLoading.set(true);
@@ -36,6 +39,8 @@ export default function CartDrawer({ lang }: Props) {
         body: { quantity: newQuantity },
       });
       if (data) $cart.set(data as typeof cart);
+    } catch (err) {
+      console.error('[cart] failed to update quantity:', err);
     } finally {
       $cartLoading.set(false);
     }
@@ -49,15 +54,98 @@ export default function CartDrawer({ lang }: Props) {
         params: { path: { id: itemId } },
       });
       if (data) $cart.set(data as typeof cart);
+    } catch (err) {
+      console.error('[cart] failed to remove item:', err);
     } finally {
       $cartLoading.set(false);
     }
   };
 
-  if (!isOpen) return null;
+  // Inline mode always renders; drawer mode only renders when open
+  if (!inline && !isOpen) return null;
 
   const lineItems = cart?.line_items ?? [];
   const savings = cart?.cart_savings && parseFloat(cart.cart_savings) > 0 ? cart.cart_savings : null;
+
+  // Inline mode: render directly without overlay/modal chrome
+  if (inline) {
+    return (
+      <div ref={drawerRef}>
+        <div class="px-4 py-3">
+          {lineItems.length === 0 ? (
+            <div class="py-8 text-center">
+              <p class="text-sm text-muted-foreground">{t('emptyCart', lang)}</p>
+              <a
+                href={`/${lang}/`}
+                class="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+              >
+                {t('continueShopping', lang)}
+              </a>
+            </div>
+          ) : (
+            <ul class="divide-y divide-border">
+              {lineItems.map((item) => (
+                <li key={item.id} class="flex gap-3 py-3">
+                  {item.product_image && (
+                    <div class="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-card-image">
+                      <img src={item.product_image} alt="" class="h-full w-full object-cover" width="64" height="64" loading="lazy" />
+                    </div>
+                  )}
+                  <div class="flex flex-1 flex-col justify-between">
+                    <div>
+                      <h3 class="text-sm font-medium text-card-foreground">{item.product_name}</h3>
+                      {item.modifiers.length > 0 && (
+                        <p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                          {item.modifiers.map((m) => m.name).join(', ')}
+                        </p>
+                      )}
+                    </div>
+                    <div class="mt-1 flex items-center justify-between">
+                      <QuantitySelector
+                        quantity={item.quantity}
+                        onIncrement={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                        onDecrement={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                        onRemove={() => handleRemove(item.id)}
+                        lang={lang}
+                      />
+                      <div class="text-right">
+                        <span class="text-sm font-semibold text-card-foreground">
+                          {formatPrice(item.line_total, currency, locale)}
+                        </span>
+                        {item.discount && (
+                          <span class="block text-xs text-destructive">{item.discount.label}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {lineItems.length > 0 && (
+          <div class="border-t border-border px-4 py-3">
+            {savings && (
+              <div class="mb-2 flex items-center justify-between text-sm">
+                <span class="text-muted-foreground">{t('youSave', lang)}</span>
+                <span class="font-medium text-destructive">{formatPrice(savings, currency, locale)}</span>
+              </div>
+            )}
+            <div class="mb-3 flex items-center justify-between">
+              <span class="text-sm font-medium text-card-foreground">{t('orderTotal', lang)}</span>
+              <span class="text-lg font-bold text-card-foreground">{formatPrice(cartTotal, currency, locale)}</span>
+            </div>
+            <a
+              href={`/${lang}/checkout`}
+              class="flex h-12 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              {t('nextCheckout', lang)}
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div class="fixed inset-0 z-50">

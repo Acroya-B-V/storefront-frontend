@@ -37,6 +37,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // 2a. SEO endpoints — inject merchant context but skip language routing
   if (LANG_EXEMPT_PATHS.has(url.pathname)) {
     locals.merchant = merchant;
+    locals.lang = merchant.defaultLanguage;
     locals.sdk = createStorefrontClient({
       baseUrl: import.meta.env.API_BASE_URL,
       vendorId: merchant.merchantId,

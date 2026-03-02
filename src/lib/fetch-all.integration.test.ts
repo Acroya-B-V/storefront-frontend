@@ -70,7 +70,8 @@ describe('fetchAllProducts', () => {
 
     expect(products).toEqual([{ id: '1' }]);
     expect(consoleSpy).toHaveBeenCalledWith(
-      'fetchAllProducts: next URL origin mismatch, stopping',
+      expect.stringContaining('next URL origin mismatch'),
+      // Message now includes the actual and expected origins
     );
   });
 
@@ -100,6 +101,33 @@ describe('fetchAllProducts', () => {
     expect(products).toEqual([{ id: '1' }, { id: '2' }]);
     expect(consoleSpy).toHaveBeenCalledWith(
       'fetchAllProducts: circular next URL detected, stopping',
+    );
+  });
+
+  it('returns partial results when JSON parse fails', async () => {
+    const sdk = makeSdk({
+      results: [{ id: '1' }],
+      next: `${BASE_URL}/api/v1/products/?page=2`,
+    });
+
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response('not json', {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const products = await fetchAllProducts(sdk, {
+      vendorId: 'v1',
+      language: 'nl',
+      baseUrl: BASE_URL,
+    });
+
+    expect(products).toEqual([{ id: '1' }]);
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining('failed to parse JSON'),
+      expect.anything(),
     );
   });
 

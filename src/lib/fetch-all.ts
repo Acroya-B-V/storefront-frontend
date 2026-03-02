@@ -40,9 +40,10 @@ export async function fetchAllProducts(
   while (nextUrl) {
     const resolvedUrl = new URL(nextUrl, opts.baseUrl).href;
 
-    // SSRF guard: only follow next URLs pointing to the same API origin
-    if (!resolvedUrl.startsWith(allowedOrigin)) {
-      console.error('fetchAllProducts: next URL origin mismatch, stopping');
+    // SSRF guard: strict origin equality (not prefix match — startsWith
+    // would allow api.example.com.evil.tld to bypass the check)
+    if (new URL(resolvedUrl).origin !== allowedOrigin) {
+      console.error(`fetchAllProducts: next URL origin mismatch (got ${new URL(resolvedUrl).origin}, expected ${allowedOrigin}), stopping`);
       break;
     }
 
@@ -69,7 +70,13 @@ export async function fetchAllProducts(
       break;
     }
 
-    const nextPage = (await res.json()) as PaginatedResponse<Record<string, unknown>>;
+    let nextPage: PaginatedResponse<Record<string, unknown>>;
+    try {
+      nextPage = (await res.json()) as PaginatedResponse<Record<string, unknown>>;
+    } catch (parseErr) {
+      console.error(`fetchAllProducts: failed to parse JSON on page ${pageCount}`, parseErr);
+      break;
+    }
     all.push(...(nextPage.results ?? []));
     nextUrl = nextPage.next ?? null;
   }
