@@ -64,4 +64,46 @@ describe('stripPII', () => {
   it('handles empty object', () => {
     expect(stripPII({})).toEqual({});
   });
+
+  it('strips PII from nested objects', () => {
+    const result = stripPII({
+      merchant_id: 'x',
+      customer: { email: 'test@test.com', name: 'John', id: '123' },
+    });
+    expect(result.merchant_id).toBe('x');
+    const customer = result.customer as Record<string, unknown>;
+    expect(customer.email).toBeUndefined();
+    expect(customer.name).toBeUndefined();
+    expect(customer.id).toBe('123');
+  });
+
+  it('truncates postal_code inside nested objects', () => {
+    const result = stripPII({
+      delivery: { postal_code: '1015CJ', country: 'NL' },
+    });
+    const delivery = result.delivery as Record<string, unknown>;
+    expect(delivery.postal_code).toBe('1015');
+    expect(delivery.country).toBe('NL');
+  });
+
+  it('caps recursion depth to prevent stack overflow', () => {
+    // Build deeply nested object (6 levels, cap is 4)
+    const deep: any = { level: 0 };
+    let current = deep;
+    for (let i = 1; i <= 6; i++) {
+      current.nested = { level: i, email: 'leak@test.com' };
+      current = current.nested;
+    }
+    // Should not throw
+    const result = stripPII(deep);
+    expect(result).toBeDefined();
+  });
+
+  it('passes arrays through without recursing into them', () => {
+    const result = stripPII({
+      items: [{ email: 'test@test.com' }],
+    });
+    // Arrays are passed through as-is (not recursed)
+    expect(Array.isArray(result.items)).toBe(true);
+  });
 });

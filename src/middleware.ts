@@ -10,6 +10,9 @@ const CACHEABLE_PATTERNS = [
   /^\/[a-z]{2}\/pages\//,     // CMS pages
 ];
 
+// Paths that need merchant context but skip language prefix routing
+const LANG_EXEMPT_PATHS = new Set(['/sitemap.xml', '/robots.txt']);
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const { request, locals, redirect } = context;
   const url = new URL(request.url);
@@ -29,6 +32,17 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   if (!merchant) {
     return context.rewrite('/404');
+  }
+
+  // 2a. SEO endpoints — inject merchant context but skip language routing
+  if (LANG_EXEMPT_PATHS.has(url.pathname)) {
+    locals.merchant = merchant;
+    locals.sdk = createStorefrontClient({
+      baseUrl: import.meta.env.API_BASE_URL,
+      vendorId: merchant.merchantId,
+      language: merchant.defaultLanguage,
+    });
+    return next();
   }
 
   // 2. Extract and validate language from path

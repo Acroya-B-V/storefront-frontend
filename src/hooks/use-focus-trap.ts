@@ -4,10 +4,27 @@ import type { RefObject } from 'preact';
 const FOCUSABLE_SELECTOR =
   'button, a, input, textarea, select, [tabindex]:not([tabindex="-1"])';
 
+// Ref-counted scroll lock — multiple nested dialogs can each request a lock
+// without the inner one accidentally restoring scroll while the outer is open.
+let scrollLockCount = 0;
+
+function lockScroll(): void {
+  if (scrollLockCount++ === 0) {
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function unlockScroll(): void {
+  if (--scrollLockCount <= 0) {
+    scrollLockCount = 0;
+    document.body.style.overflow = '';
+  }
+}
+
 /**
  * Traps Tab focus within `ref` while `isActive` is true.
  * Calls `onEscape` when the Escape key is pressed.
- * Also prevents body scroll while active.
+ * Uses ref-counted scroll lock so nested traps don't conflict.
  */
 export function useFocusTrap(
   ref: RefObject<HTMLElement>,
@@ -41,11 +58,11 @@ export function useFocusTrap(
       }
     };
 
-    document.body.style.overflow = 'hidden';
+    lockScroll();
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = '';
+      unlockScroll();
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isActive, onEscape]);

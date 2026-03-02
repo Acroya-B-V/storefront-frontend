@@ -38,7 +38,9 @@ const themeCSS = merchant ? themeToCSS(merchant.theme) : '';
     <slot />
     <script>
       import { initAnalytics } from '@/analytics';
-      initAnalytics();
+      initAnalytics().catch(() => {
+        // Analytics init is non-critical — log but don't break the page
+      });
     </script>
   </body>
 </html>

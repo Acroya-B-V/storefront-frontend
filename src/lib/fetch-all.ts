@@ -35,8 +35,16 @@ export async function fetchAllProducts(
   const seen = new Set<string>();
   let pageCount = 1;
 
+  const allowedOrigin = new URL(opts.baseUrl).origin;
+
   while (nextUrl) {
     const resolvedUrl = new URL(nextUrl, opts.baseUrl).href;
+
+    // SSRF guard: only follow next URLs pointing to the same API origin
+    if (!resolvedUrl.startsWith(allowedOrigin)) {
+      console.error('fetchAllProducts: next URL origin mismatch, stopping');
+      break;
+    }
 
     if (seen.has(resolvedUrl)) {
       console.error('fetchAllProducts: circular next URL detected, stopping');

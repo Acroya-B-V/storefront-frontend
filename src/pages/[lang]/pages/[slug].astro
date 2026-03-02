@@ -11,13 +11,32 @@ const sdk = Astro.locals.sdk as any;
 const { slug } = Astro.params;
 
 // Fetch CMS page content
-const { data: page } = await sdk.GET(`/api/v1/pages/{slug}/`, {
+const { data: page, error } = await sdk.GET(`/api/v1/pages/{slug}/`, {
   params: { path: { slug } },
 });
 
 if (!page) {
+  // Distinguish 404 (missing page) from server errors
+  if (error?.status && error.status >= 500) {
+    return new Response('Service unavailable', { status: 502 });
+  }
   return Astro.redirect(`/${lang}/`);
 }
+
+// Sanitize CMS HTML — strip dangerous tags/attributes to prevent XSS
+// even though content comes from a trusted CMS backend (defense-in-depth)
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+    .replace(/<object[\s\S]*?<\/object>/gi, '')
+    .replace(/<embed[\s\S]*?>/gi, '')
+    .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/\son\w+\s*=\s*\S+/gi, '')
+    .replace(/javascript\s*:/gi, 'blocked:');
+}
+
+const safeContent = sanitizeHtml((page as any).content ?? '');
 
 // CMS pages are heavily cached — content changes infrequently
 Astro.response.headers.set(
@@ -33,7 +52,7 @@ Astro.response.headers.set(
   <main class="mx-auto max-w-screen-md px-4 py-8">
     <article class="prose prose-sm max-w-none text-foreground prose-headings:font-heading prose-headings:text-foreground prose-a:text-primary">
       <h1 class="font-heading text-2xl font-bold">{(page as any).title}</h1>
-      <div set:html={(page as any).content} />
+      <div set:html={safeContent} />
     </article>
   </main>
 

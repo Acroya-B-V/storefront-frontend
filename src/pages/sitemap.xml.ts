@@ -2,6 +2,10 @@ import type { APIRoute } from 'astro';
 import type { MerchantConfig } from '@/types/merchant';
 import { fetchAllProducts } from '@/lib/fetch-all';
 
+function escapeXml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
 export const GET: APIRoute = async ({ locals, url }) => {
   const merchant = locals.merchant as MerchantConfig | undefined;
   const sdk = locals.sdk as any;
@@ -14,17 +18,35 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const languages = merchant.languages;
   const defaultLang = merchant.defaultLanguage;
 
-  // Fetch products and categories for URL generation
-  const [products, categoriesRes] = await Promise.all([
-    fetchAllProducts(sdk, {
-      vendorId: merchant.merchantId,
-      language: defaultLang,
-      baseUrl: import.meta.env.API_BASE_URL,
-    }),
-    sdk.GET('/api/v1/categories/'),
-  ]);
+  // Fetch products and categories — use allSettled so one failure
+  // doesn't prevent the other resource from appearing in the sitemap
+  let products: Record<string, unknown>[] = [];
+  let categories: Record<string, unknown>[] = [];
 
-  const categories = categoriesRes?.data?.results ?? [];
+  try {
+    const [productsResult, categoriesResult] = await Promise.allSettled([
+      fetchAllProducts(sdk, {
+        vendorId: merchant.merchantId,
+        language: defaultLang,
+        baseUrl: import.meta.env.API_BASE_URL,
+      }),
+      sdk.GET('/api/v1/categories/'),
+    ]);
+
+    if (productsResult.status === 'fulfilled') {
+      products = productsResult.value;
+    } else {
+      console.error('sitemap: failed to fetch products', productsResult.reason);
+    }
+
+    if (categoriesResult.status === 'fulfilled') {
+      categories = categoriesResult.value?.data?.results ?? [];
+    } else {
+      console.error('sitemap: failed to fetch categories', categoriesResult.reason);
+    }
+  } catch (err) {
+    console.error('sitemap: unexpected error fetching data', err);
+  }
 
   const urls: Array<{ loc: string; lastmod?: string; langs: string[] }> = [];
 
@@ -34,7 +56,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   // Category pages
   for (const cat of categories) {
     urls.push({
-      loc: `/category/${cat.slug ?? cat.id}`,
+      loc: `/category/${escapeXml(String((cat as any).slug ?? (cat as any).id))}`,
       langs: languages,
     });
   }
@@ -42,7 +64,7 @@ export const GET: APIRoute = async ({ locals, url }) => {
   // Product pages
   for (const product of products) {
     urls.push({
-      loc: `/product/${(product as any).slug ?? (product as any).id}`,
+      loc: `/product/${escapeXml(String((product as any).slug ?? (product as any).id))}`,
       langs: languages,
       lastmod: (product as any).updated_at,
     });

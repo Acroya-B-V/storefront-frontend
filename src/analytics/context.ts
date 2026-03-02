@@ -18,7 +18,15 @@ function getSessionId(): string {
     if (sessionId) return sessionId;
   }
 
-  sessionId = crypto.randomUUID();
+  // crypto.randomUUID() requires a secure context (HTTPS). Fall back to
+  // a simple random hex string for local HTTP dev environments.
+  try {
+    sessionId = crypto.randomUUID();
+  } catch {
+    sessionId = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
 
   if (typeof sessionStorage !== 'undefined') {
     sessionStorage.setItem('analytics_session_id', sessionId);
