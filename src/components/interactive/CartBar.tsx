@@ -3,7 +3,7 @@ import { $cart, $itemCount, $cartTotal } from '@/stores/cart';
 import { $isCartOpen, $isCategoryDrawerOpen } from '@/stores/ui';
 import { $merchant } from '@/stores/merchant';
 import { t } from '@/i18n';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, langToLocale } from '@/lib/currency';
 
 interface Props {
   lang: string;
@@ -18,7 +18,7 @@ export default function CartBar({ lang }: Props) {
   const merchant = useStore($merchant);
 
   const currency = merchant?.currency ?? 'EUR';
-  const locale = lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : 'en-GB';
+  const locale = langToLocale(lang);
 
   // Hide when: no items, cart drawer open, or category drawer open
   if (!cart || itemCount === 0 || isCartOpen || isCategoryDrawerOpen) {

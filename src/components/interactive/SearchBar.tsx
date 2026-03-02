@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
 import { $merchant } from '@/stores/merchant';
 import { $selectedProduct } from '@/stores/ui';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, langToLocale } from '@/lib/currency';
 import { t } from '@/i18n';
 import { getClient } from '@/lib/api';
 
@@ -28,7 +28,13 @@ export default function SearchBar({ lang }: Props) {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const currency = merchant?.currency ?? 'EUR';
-  const locale = lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : 'en-GB';
+  const locale = langToLocale(lang);
+
+  const closeSearch = () => {
+    setIsOpen(false);
+    setQuery('');
+    setResults([]);
+  };
 
   const search = useCallback(async (q: string) => {
     if (q.length < 2) {
@@ -58,20 +64,14 @@ export default function SearchBar({ lang }: Props) {
 
   const handleSelect = (result: SearchResult) => {
     $selectedProduct.set({ id: result.id, name: result.name });
-    setIsOpen(false);
-    setQuery('');
-    setResults([]);
+    closeSearch();
   };
 
   // Close on escape
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-        setQuery('');
-        setResults([]);
-      }
+      if (e.key === 'Escape') closeSearch();
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
@@ -97,7 +97,7 @@ export default function SearchBar({ lang }: Props) {
 
   return (
     <div class="fixed inset-0 z-50">
-      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => { setIsOpen(false); setQuery(''); setResults([]); }} />
+      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={closeSearch} />
 
       <div class="mx-auto mt-16 w-full max-w-lg px-4">
         <div class="overflow-hidden rounded-lg bg-card shadow-xl">

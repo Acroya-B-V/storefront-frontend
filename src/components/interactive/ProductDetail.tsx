@@ -1,9 +1,10 @@
 import { useStore } from '@nanostores/preact';
-import { useEffect, useRef, useState, useCallback } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { $selectedProduct } from '@/stores/ui';
 import { $cart, $cartLoading } from '@/stores/cart';
 import { $merchant } from '@/stores/merchant';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, langToLocale } from '@/lib/currency';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
 import { getClient } from '@/lib/api';
 import QuantitySelector from './QuantitySelector';
@@ -51,7 +52,11 @@ export default function ProductDetail({ lang }: Props) {
   const [loadingProduct, setLoadingProduct] = useState(false);
 
   const currency = merchant?.currency ?? 'EUR';
-  const locale = lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : 'en-GB';
+  const locale = langToLocale(lang);
+
+  const close = () => $selectedProduct.set(null);
+
+  useFocusTrap(dialogRef, !!selectedProduct, close);
 
   // Fetch product detail when selected
   useEffect(() => {
@@ -80,44 +85,6 @@ export default function ProductDetail({ lang }: Props) {
     fetchProduct();
   }, [selectedProduct]);
 
-  // Focus trap and escape
-  useEffect(() => {
-    if (!selectedProduct) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        close();
-        return;
-      }
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, a, input, textarea, select, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [selectedProduct]);
-
-  const close = useCallback(() => {
-    $selectedProduct.set(null);
-  }, []);
 
   const handleRadioSelect = (groupId: string, optionId: string) => {
     setSelections((prev) => ({ ...prev, [groupId]: [optionId] }));
@@ -236,7 +203,7 @@ export default function ProductDetail({ lang }: Props) {
   return (
     <div class="fixed inset-0 z-50">
       {/* Backdrop */}
-      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={close} />
+      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={close} aria-hidden="true" />
 
       {/* Dialog — bottom sheet on mobile, centered on desktop */}
       <div
@@ -247,7 +214,7 @@ export default function ProductDetail({ lang }: Props) {
         class="absolute bottom-0 left-0 right-0 max-h-[90vh] overflow-hidden rounded-t-xl bg-card shadow-xl md:bottom-auto md:left-1/2 md:top-1/2 md:w-full md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-lg"
       >
         {loadingProduct || !product ? (
-          <div class="flex h-64 items-center justify-center">
+          <div class="flex h-64 items-center justify-center" role="status" aria-label={t('loading', lang)}>
             <div class="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
           </div>
         ) : (
@@ -316,53 +283,63 @@ export default function ProductDetail({ lang }: Props) {
 
                       return (
                         <div key={opt.id} class="flex items-center justify-between">
-                          <div class="flex items-center gap-2">
-                            {group.type === 'radio' && (
-                              <input
-                                type="radio"
-                                name={group.id}
-                                checked={isSelected}
-                                onChange={() => handleRadioSelect(group.id, opt.id)}
-                                class="h-4 w-4 accent-primary"
-                              />
-                            )}
-                            {group.type === 'checkbox' && (
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => handleCheckboxToggle(group.id, opt.id, group.max_selections)}
-                                class="h-4 w-4 accent-primary"
-                              />
-                            )}
-                            <span class="text-sm text-card-foreground">{opt.name}</span>
-                          </div>
-                          <div class="flex items-center gap-2">
-                            {optPrice > 0 && (
-                              <span class="text-xs text-muted-foreground">
-                                +{formatPrice(opt.price, currency, locale)}
-                              </span>
-                            )}
-                            {group.type === 'quantity' && (
-                              <div class="inline-flex items-center gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => handleQuantityChange(group.id, opt.id, -1)}
-                                  disabled={optQty === 0}
-                                  class="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-sm disabled:opacity-30"
-                                >
-                                  −
-                                </button>
-                                <span class="w-6 text-center text-sm">{optQty}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleQuantityChange(group.id, opt.id, 1)}
-                                  class="inline-flex h-7 w-7 items-center justify-center rounded border border-border text-sm"
-                                >
-                                  +
-                                </button>
+                          {group.type === 'radio' || group.type === 'checkbox' ? (
+                            <label class="flex flex-1 cursor-pointer items-center gap-2">
+                              {group.type === 'radio' ? (
+                                <input
+                                  type="radio"
+                                  name={group.id}
+                                  checked={isSelected}
+                                  onChange={() => handleRadioSelect(group.id, opt.id)}
+                                  class="h-4 w-4 accent-primary"
+                                />
+                              ) : (
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => handleCheckboxToggle(group.id, opt.id, group.max_selections)}
+                                  class="h-4 w-4 accent-primary"
+                                />
+                              )}
+                              <span class="text-sm text-card-foreground">{opt.name}</span>
+                              {optPrice > 0 && (
+                                <span class="ml-auto text-xs text-muted-foreground">
+                                  +{formatPrice(opt.price, currency, locale)}
+                                </span>
+                              )}
+                            </label>
+                          ) : (
+                            <>
+                              <span class="text-sm text-card-foreground">{opt.name}</span>
+                              <div class="flex items-center gap-2">
+                                {optPrice > 0 && (
+                                  <span class="text-xs text-muted-foreground">
+                                    +{formatPrice(opt.price, currency, locale)}
+                                  </span>
+                                )}
+                                <div class="inline-flex items-center gap-1" role="group" aria-label={opt.name}>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuantityChange(group.id, opt.id, -1)}
+                                    disabled={optQty === 0}
+                                    aria-label={`${t('remove', lang)} ${opt.name}`}
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded border border-border text-sm disabled:opacity-30"
+                                  >
+                                    −
+                                  </button>
+                                  <span class="w-6 text-center text-sm" aria-live="polite">{optQty}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuantityChange(group.id, opt.id, 1)}
+                                    aria-label={`${t('addToCart', lang)} ${opt.name}`}
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded border border-border text-sm"
+                                  >
+                                    +
+                                  </button>
+                                </div>
                               </div>
-                            )}
-                          </div>
+                            </>
+                          )}
                         </div>
                       );
                     })}

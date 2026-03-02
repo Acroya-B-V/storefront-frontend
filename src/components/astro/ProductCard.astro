@@ -1,7 +1,8 @@
 ---
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, langToLocale } from '@/lib/currency';
 import { getEffectivePrice, getOriginalPrice, hasUnitDiscount, type PricedItem } from '@/lib/pricing';
 import PromoBadge from './PromoBadge.astro';
+import AddToCartButton from '@/components/interactive/AddToCartButton';
 import { t } from '@/i18n';
 
 interface Props {
@@ -23,7 +24,7 @@ interface Props {
 }
 
 const { product, lang, currency, variant = 'grid' } = Astro.props;
-const locale = lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : 'en-GB';
+const locale = langToLocale(lang);
 const pricedItem: PricedItem = { price: product.price, discount: product.discount ?? null };
 const effectivePrice = getEffectivePrice(pricedItem);
 const originalPrice = getOriginalPrice(pricedItem);
@@ -92,17 +93,14 @@ const isGrid = variant === 'grid';
         )}
       </div>
 
-      {/* AddToCartButton island will be mounted here in Phase 11 */}
-      <button
-        type="button"
-        class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
-        data-add-to-cart={product.id}
-        data-has-modifiers={hasModifiers ? 'true' : undefined}
-        disabled={product.sold_out}
-        aria-disabled={product.sold_out ? 'true' : undefined}
-      >
-        {product.sold_out ? t('soldOut', lang) : t('addToCart', lang)}
-      </button>
+      <AddToCartButton
+        client:visible
+        productId={product.id}
+        productName={product.name}
+        hasModifiers={hasModifiers}
+        soldOut={product.sold_out ?? false}
+        lang={lang}
+      />
     </div>
   </div>
 </article>

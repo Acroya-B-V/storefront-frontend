@@ -30,21 +30,17 @@ export default function AnimatedNumber({ value, class: className = '' }: Props) 
     return () => clearTimeout(timeout);
   }, [value]);
 
+  let slideClass = '';
+  if (direction === 'up') slideClass = '-translate-y-full';
+  else if (direction === 'down') slideClass = 'translate-y-full';
+
   return (
     <span
       class={`inline-flex overflow-hidden ${className}`}
       aria-live="polite"
       aria-atomic="true"
     >
-      <span
-        class={`inline-block transition-transform duration-150 ${
-          direction === 'up'
-            ? '-translate-y-full'
-            : direction === 'down'
-              ? 'translate-y-full'
-              : ''
-        }`}
-      >
+      <span class={`inline-block transition-transform duration-150 ${slideClass}`}>
         {displayValue}
       </span>
     </span>

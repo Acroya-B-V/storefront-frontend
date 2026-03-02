@@ -52,6 +52,14 @@ const productIds = products.map((p) => String((p as Record<string, unknown>).id)
   <Header merchant={merchant} lang={lang} />
   <HeroSection merchant={merchant} />
 
+  {/* Wire header cart trigger to open CartDrawer */}
+  <script>
+    import { $isCartOpen } from '@/stores/ui';
+    document.querySelectorAll('[data-cart-trigger]').forEach((el) => {
+      el.addEventListener('click', () => $isCartOpen.set(true));
+    });
+  </script>
+
   <CategoryTabs client:load categories={categories} />
 
   <main>

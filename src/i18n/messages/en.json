@@ -34,5 +34,7 @@
   "addNotes": "Add a note",
   "chooseRequired": "Choose an option",
   "frequentlyCombined": "Frequently combined with",
-  "addToOrder": "Add to order"
+  "addToOrder": "Add to order",
+  "loading": "Loading",
+  "noResults": "No results found"
 }

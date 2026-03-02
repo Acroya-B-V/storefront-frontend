@@ -1,9 +1,10 @@
 import { useStore } from '@nanostores/preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 import { $cart, $cartTotal, $cartLoading } from '@/stores/cart';
 import { $isCartOpen } from '@/stores/ui';
 import { $merchant } from '@/stores/merchant';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, langToLocale } from '@/lib/currency';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
 import QuantitySelector from './QuantitySelector';
 import { getClient } from '@/lib/api';
@@ -20,43 +21,11 @@ export default function CartDrawer({ lang }: Props) {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const currency = merchant?.currency ?? 'EUR';
-  const locale = lang === 'nl' ? 'nl-NL' : lang === 'de' ? 'de-DE' : 'en-GB';
+  const locale = langToLocale(lang);
 
-  // Focus trap and escape key
-  useEffect(() => {
-    if (!isOpen) return;
+  const close = () => $isCartOpen.set(false);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        $isCartOpen.set(false);
-        return;
-      }
-      if (e.key === 'Tab' && drawerRef.current) {
-        const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
-          'button, a, input, [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
+  useFocusTrap(drawerRef, isOpen, close);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     $cartLoading.set(true);
@@ -95,7 +64,7 @@ export default function CartDrawer({ lang }: Props) {
       {/* Backdrop */}
       <div
         class="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
-        onClick={() => $isCartOpen.set(false)}
+        onClick={close}
       />
 
       {/* Drawer */}
@@ -113,7 +82,7 @@ export default function CartDrawer({ lang }: Props) {
           </h2>
           <button
             type="button"
-            onClick={() => $isCartOpen.set(false)}
+            onClick={close}
             class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
             aria-label={t('close', lang)}
           >
@@ -128,7 +97,7 @@ export default function CartDrawer({ lang }: Props) {
               <p class="text-sm text-muted-foreground">{t('emptyCart', lang)}</p>
               <button
                 type="button"
-                onClick={() => $isCartOpen.set(false)}
+                onClick={close}
                 class="mt-3 text-sm font-medium text-primary hover:underline"
               >
                 {t('continueShopping', lang)}

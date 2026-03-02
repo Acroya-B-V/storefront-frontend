@@ -26,7 +26,6 @@ export default function AddToCartButton({
   const [collapsed, setCollapsed] = useState(true);
   const collapseTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  // Find this product's quantity in the cart
   const cartItem = cart?.line_items.find((item) => item.product_id === productId);
   const quantity = cartItem?.quantity ?? 0;
 
@@ -44,19 +43,37 @@ export default function AddToCartButton({
     collapseTimer.current = setTimeout(() => setCollapsed(true), 3000);
   };
 
+  const updateCartItem = async (itemId: string, newQuantity: number) => {
+    $cartLoading.set(true);
+    try {
+      const client = getClient();
+      if (newQuantity === 0) {
+        const { data } = await client.DELETE(`/api/v1/cart/items/{id}/`, {
+          params: { path: { id: itemId } },
+        });
+        if (data) $cart.set(data as typeof cart);
+      } else {
+        const { data } = await client.PATCH(`/api/v1/cart/items/{id}/`, {
+          params: { path: { id: itemId } },
+          body: { quantity: newQuantity },
+        });
+        if (data) $cart.set(data as typeof cart);
+      }
+    } finally {
+      $cartLoading.set(false);
+    }
+  };
+
   const handleAdd = async () => {
     if (soldOut) return;
 
-    // Complex items open the ProductDetail modal
     if (hasModifiers) {
       $selectedProduct.set({ id: productId, name: productName });
       return;
     }
 
-    // Simple items: optimistic add
     $cartLoading.set(true);
     const prevCart = cart;
-
     try {
       const client = getClient();
       const { data, error } = await client.POST('/api/v1/cart/items/', {
@@ -64,7 +81,6 @@ export default function AddToCartButton({
       });
 
       if (error) {
-        // Revert on error
         $cart.set(prevCart);
         console.error('Failed to add to cart:', error);
       } else if (data) {
@@ -72,52 +88,6 @@ export default function AddToCartButton({
       }
     } catch {
       $cart.set(prevCart);
-    } finally {
-      $cartLoading.set(false);
-    }
-  };
-
-  const handleIncrement = async () => {
-    resetCollapseTimer();
-    if (!cartItem) return;
-
-    $cartLoading.set(true);
-    try {
-      const client = getClient();
-      await client.PATCH(`/api/v1/cart/items/{id}/`, {
-        params: { path: { id: cartItem.id } },
-        body: { quantity: cartItem.quantity + 1 },
-      });
-    } finally {
-      $cartLoading.set(false);
-    }
-  };
-
-  const handleDecrement = async () => {
-    resetCollapseTimer();
-    if (!cartItem || cartItem.quantity <= 1) return;
-
-    $cartLoading.set(true);
-    try {
-      const client = getClient();
-      await client.PATCH(`/api/v1/cart/items/{id}/`, {
-        params: { path: { id: cartItem.id } },
-        body: { quantity: cartItem.quantity - 1 },
-      });
-    } finally {
-      $cartLoading.set(false);
-    }
-  };
-
-  const handleRemove = async () => {
-    if (!cartItem) return;
-
-    $cartLoading.set(true);
-    try {
-      const client = getClient();
-      await client.DELETE(`/api/v1/cart/items/{id}/`, {
-        params: { path: { id: cartItem.id } },
-      });
     } finally {
       $cartLoading.set(false);
     }
@@ -136,14 +106,11 @@ export default function AddToCartButton({
     );
   }
 
-  // Show quantity badge (collapsed stepper) when item is in cart
   if (quantity > 0 && collapsed) {
     return (
       <button
         type="button"
-        onClick={() => {
-          resetCollapseTimer();
-        }}
+        onClick={resetCollapseTimer}
         class="inline-flex h-9 min-w-9 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground"
         aria-label={`${quantity} in cart, tap to adjust`}
       >
@@ -152,8 +119,19 @@ export default function AddToCartButton({
     );
   }
 
-  // Show full stepper when expanded
   if (quantity > 0 && !collapsed) {
+    const handleIncrement = () => {
+      resetCollapseTimer();
+      if (cartItem) updateCartItem(cartItem.id, cartItem.quantity + 1);
+    };
+    const handleDecrement = () => {
+      resetCollapseTimer();
+      if (cartItem) updateCartItem(cartItem.id, cartItem.quantity - 1);
+    };
+    const handleRemove = () => {
+      if (cartItem) updateCartItem(cartItem.id, 0);
+    };
+
     return (
       <QuantitySelector
         quantity={quantity}
@@ -165,7 +143,6 @@ export default function AddToCartButton({
     );
   }
 
-  // Initial "Add" button
   return (
     <button
       type="button"

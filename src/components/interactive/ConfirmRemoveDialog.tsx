@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'preact/hooks';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
 
 interface Props {
@@ -11,36 +12,11 @@ export default function ConfirmRemoveDialog({ lang, onConfirm, onCancel }: Props
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  // Focus trap and escape handler
+  useFocusTrap(dialogRef, true, onCancel);
+
   useEffect(() => {
     cancelRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-        return;
-      }
-      if (e.key === 'Tab') {
-        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button, [tabindex]:not([tabindex="-1"])',
-        );
-        if (!focusable || focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onCancel]);
+  }, []);
 
   return (
     <div

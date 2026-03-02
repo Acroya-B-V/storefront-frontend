@@ -34,5 +34,7 @@
   "addNotes": "Notitie toevoegen",
   "chooseRequired": "Kies een optie",
   "frequentlyCombined": "Vaak gecombineerd met",
-  "addToOrder": "Toevoegen aan bestelling"
+  "addToOrder": "Toevoegen aan bestelling",
+  "loading": "Laden",
+  "noResults": "Geen resultaten gevonden"
 }

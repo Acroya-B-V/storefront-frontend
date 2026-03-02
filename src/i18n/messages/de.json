@@ -34,5 +34,7 @@
   "addNotes": "Notiz hinzufügen",
   "chooseRequired": "Option wählen",
   "frequentlyCombined": "Häufig kombiniert mit",
-  "addToOrder": "Zur Bestellung hinzufügen"
+  "addToOrder": "Zur Bestellung hinzufügen",
+  "loading": "Wird geladen",
+  "noResults": "Keine Ergebnisse gefunden"
 }

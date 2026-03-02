@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/preact';
 import { useEffect, useRef, useCallback } from 'preact/hooks';
-import { $activeCategory, $isCategoryDrawerOpen } from '@/stores/ui';
+import { $activeCategory } from '@/stores/ui';
 
 interface Category {
   id: string;
@@ -106,6 +106,7 @@ export default function CategoryTabs({ categories }: Props) {
         <div
           ref={scrollRef}
           role="tablist"
+          aria-label="Menu"
           class="relative flex flex-1 gap-1 overflow-x-auto scrollbar-none py-2"
         >
           {/* Sliding indicator */}
@@ -136,15 +137,7 @@ export default function CategoryTabs({ categories }: Props) {
           ))}
         </div>
 
-        {/* Category drawer trigger for overflow */}
-        <button
-          type="button"
-          onClick={() => $isCategoryDrawerOpen.set(true)}
-          class="ml-2 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground lg:hidden"
-          aria-label="All categories"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-        </button>
+        {/* Category drawer trigger — TODO: implement CategoryDrawer component */}
       </div>
     </div>
   );
