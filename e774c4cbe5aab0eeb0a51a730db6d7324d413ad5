@@ -1,0 +1,75 @@
+src/layouts/BaseLayout.astro
+  8e43396926610d37 41-42
+src/hooks/scroll-lock.test.ts
+  8e43396926610d37 1-80
+src/lib/fetch-all.ts
+  8e43396926610d37 43-46,73-79
+src/middleware.ts
+  8e43396926610d37 40
+src/lib/sanitize.ts
+  8e43396926610d37 1-54
+src/analytics/pii-guard.ts
+  8e43396926610d37 46-55
+src/lib/sanitize.test.ts
+  8e43396926610d37 1-110
+src/analytics/context.test.ts
+  8e43396926610d37 1-67
+src/lib/fetch-all.integration.test.ts
+  8e43396926610d37 73-74,107-133
+src/pages/sitemap.xml.ts
+  8e43396926610d37 51-59
+src/components/interactive/CartDrawer.tsx
+  8e43396926610d37 14-15,18,30-31,42-43,57-58,64-65,70-149
+src/analytics/context.ts
+  8e43396926610d37 25-27,30-34,67-69
+src/analytics/pii-guard.test.ts
+  8e43396926610d37 89-92,100-124,127,129,131
+src/pages/[lang]/pages/[slug].astro
+  8e43396926610d37 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "e774c4cbe5aab0eeb0a51a730db6d7324d413ad5",
+  "prompts": {
+    "15c884cfc8fc454a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "71898716-7950-4a56-9eed-9cc629fc645f",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1167,
+      "overriden_lines": 0
+    },
+    "76bba328c63518d9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019cafe3-719d-7272-8bd1-ea48cb2c0fee",
+        "model": "gpt-5.3-codex"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "8e43396926610d37": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0a97c42e-9363-4055-8008-9329089d0b99",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 520,
+      "total_deletions": 52,
+      "accepted_lines": 508,
+      "overriden_lines": 0
+    }
+  }
+}
