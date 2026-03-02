@@ -8,6 +8,14 @@ import SEOHead from '@/components/astro/SEOHead.astro';
 import StructuredData from '@/components/astro/StructuredData.astro';
 import { fetchAllProducts } from '@/lib/fetch-all';
 
+// Interactive Preact islands
+import CategoryTabs from '@/components/interactive/CategoryTabs';
+import CartBar from '@/components/interactive/CartBar';
+import CartDrawer from '@/components/interactive/CartDrawer';
+import ProductDetail from '@/components/interactive/ProductDetail';
+import SearchBar from '@/components/interactive/SearchBar';
+import FreshnessProvider from '@/components/interactive/FreshnessProvider';
+
 const { merchant, lang, sdk } = Astro.locals;
 const baseUrl = import.meta.env.API_BASE_URL;
 
@@ -27,6 +35,8 @@ const sections = categories.map((cat) => ({
   category: cat,
   products: products.filter((p) => (p as Record<string, unknown>).category_id === cat.id),
 }));
+
+const productIds = products.map((p) => String((p as Record<string, unknown>).id));
 ---
 
 <BaseLayout title={merchant.name} description={merchant.seo.defaultDescription}>
@@ -42,6 +52,8 @@ const sections = categories.map((cat) => ({
   <Header merchant={merchant} lang={lang} />
   <HeroSection merchant={merchant} />
 
+  <CategoryTabs client:load categories={categories} />
+
   <main>
     {sections.map((s) => (
       <MenuSection
@@ -54,13 +66,17 @@ const sections = categories.map((cat) => ({
     ))}
   </main>
 
-  {/* Interactive Preact islands will be added in Phase 11:
-      <CategoryTabs client:load />
-      <CartBar client:load />
-      <CartDrawer client:load />
-      <ProductDetail client:load />
-      <FreshnessProvider client:idle />
-  */}
+  <CartBar client:load lang={lang} />
+  <CartDrawer client:load lang={lang} />
+  <ProductDetail client:load lang={lang} />
+  <SearchBar client:idle lang={lang} />
+  <FreshnessProvider client:idle productIds={productIds} />
+
+  {/* Hydrate merchant store for Preact islands */}
+  <script define:vars={{ merchantJSON: JSON.stringify(merchant), langValue: lang }}>
+    window.__MERCHANT__ = JSON.parse(merchantJSON);
+    window.__LANG__ = langValue;
+  </script>
 
   <Footer merchant={merchant} lang={lang} />
 </BaseLayout>
