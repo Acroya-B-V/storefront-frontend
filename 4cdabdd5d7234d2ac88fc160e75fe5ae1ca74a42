@@ -1,0 +1,76 @@
+e2e/fixtures/cart.ts
+  2da7d3d8f15a1707 1-116
+e2e/helpers/mock-api.ts
+  2da7d3d8f15a1707 1-250
+e2e/mobile.spec.ts
+  2da7d3d8f15a1707 1-118
+package.json
+  2da7d3d8f15a1707 14-17
+e2e/accessibility.spec.ts
+  2da7d3d8f15a1707 1-105
+.gitignore
+  2da7d3d8f15a1707 29-32
+e2e/helpers/test-utils.ts
+  2da7d3d8f15a1707 1-169
+e2e/fixtures/cms.ts
+  2da7d3d8f15a1707 1-27
+src/lib/sdk-stub.ts
+  2da7d3d8f15a1707 52-55,61-63,67
+e2e/cart.spec.ts
+  2da7d3d8f15a1707 1-201
+e2e/global-teardown.ts
+  2da7d3d8f15a1707 1-23
+playwright.config.ts
+  2da7d3d8f15a1707 1-43
+e2e/seo.spec.ts
+  2da7d3d8f15a1707 1-135
+e2e/navigation.spec.ts
+  2da7d3d8f15a1707 1-49
+e2e/smoke.spec.ts
+  2da7d3d8f15a1707 1-81
+e2e/product-detail.spec.ts
+  2da7d3d8f15a1707 1-241
+e2e/fixtures/products.ts
+  2da7d3d8f15a1707 1-95
+e2e/menu.spec.ts
+  2da7d3d8f15a1707 1-73
+.github/workflows/e2e.yml
+  2da7d3d8f15a1707 1-28
+e2e/search.spec.ts
+  2da7d3d8f15a1707 1-113
+e2e/global-setup.ts
+  2da7d3d8f15a1707 1-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "4cdabdd5d7234d2ac88fc160e75fe5ae1ca74a42",
+  "prompts": {
+    "15c884cfc8fc454a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "71898716-7950-4a56-9eed-9cc629fc645f",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1167,
+      "overriden_lines": 0
+    },
+    "2da7d3d8f15a1707": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ec2a871b-a4bc-485b-a359-8eac44ac0d39",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 2403,
+      "total_deletions": 490,
+      "accepted_lines": 1921,
+      "overriden_lines": 0
+    }
+  }
+}
