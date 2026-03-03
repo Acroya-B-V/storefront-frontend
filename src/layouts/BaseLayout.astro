@@ -1,0 +1,79 @@
+---
+import { themeToCSS } from '@/lib/theme';
+import type { MerchantConfig } from '@/types/merchant';
+import '@/styles/global.css';
+
+// Shared interactive islands — available on every page
+import CartBar from '@/components/interactive/CartBar';
+import CartDrawer from '@/components/interactive/CartDrawer';
+import ProductDetail from '@/components/interactive/ProductDetail';
+import SearchBar from '@/components/interactive/SearchBar';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const merchant = Astro.locals.merchant as MerchantConfig | undefined;
+const lang = Astro.locals.lang as string | undefined;
+const themeCSS = merchant ? themeToCSS(merchant.theme) : '';
+const merchantJSON = merchant ? JSON.stringify(merchant) : '';
+const langValue = lang ?? 'en';
+---
+
+<!doctype html>
+<html lang={lang ?? 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {merchant?.favicon && <link rel="icon" href={merchant.favicon} />}
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="preconnect" href={import.meta.env.PUBLIC_API_BASE_URL} />
+    {themeCSS && <style set:html={`:root { ${themeCSS} }`} />}
+    {/* PostHog queue stub — events pushed before SDK loads are replayed on init */}
+    <script is:inline>
+      /* eslint-disable @typescript-eslint/no-unused-expressions, prefer-rest-params */
+      !(function () {
+        const p = (window.posthog = window.posthog || []);
+        if (!p.__loaded) {
+          p._i = [];
+          p.init = function (k, o) {
+            p._i.push([k, o]);
+          };
+          p.capture = function () {
+            p.push(Array.prototype.slice.call(arguments));
+          };
+          p.identify = function () {
+            p.push(['$identify'].concat(Array.prototype.slice.call(arguments)));
+          };
+        }
+      })();
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    {
+      merchantJSON && (
+        <script define:vars={{ merchantJSON, langValue }}>
+          window.__MERCHANT__ = JSON.parse(merchantJSON); window.__LANG__ = langValue;
+        </script>
+      )
+    }
+    <slot />
+
+    {/* Shared islands: cart, product detail modal, search */}
+    <CartBar client:load lang={langValue} />
+    <CartDrawer client:load lang={langValue} />
+    <ProductDetail client:load lang={langValue} />
+    <SearchBar client:idle lang={langValue} />
+
+    <script>
+      import { initAnalytics } from '@/analytics';
+      initAnalytics().catch((err) => {
+        console.error('[analytics] initialization failed:', err);
+      });
+    </script>
+  </body>
+</html>

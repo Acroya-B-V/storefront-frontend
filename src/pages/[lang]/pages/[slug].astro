@@ -1,0 +1,122 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import Footer from '@/components/astro/Footer.astro';
+import SEOHead from '@/components/astro/SEOHead.astro';
+import { sanitizeHtml } from '@/lib/sanitize';
+import type { MerchantConfig } from '@/types/merchant';
+
+const merchant = Astro.locals.merchant as MerchantConfig;
+const lang = Astro.locals.lang as string;
+const sdk = Astro.locals.sdk;
+const { slug } = Astro.params;
+
+// Fetch CMS page content
+const { data: page, error } = await sdk.GET(`/api/v1/pages/{slug}/`, {
+  params: { path: { slug: slug! } },
+});
+
+if (!page) {
+  // Distinguish 404 (missing page) from server errors
+  const status = (error as Record<string, unknown> | null)?.status;
+  if (typeof status === 'number' && status >= 500) {
+    return new Response('Service unavailable', { status: 502 });
+  }
+  return Astro.redirect(`/${lang}/`);
+}
+
+const raw = page as Record<string, unknown>;
+
+/**
+ * Extract text from a block's content field.
+ * The API nests text inside `content: { text: "..." }`.
+ */
+function blockText(block: Record<string, unknown>): string {
+  const c = block.content;
+  if (typeof c === 'string') return c;
+  if (c && typeof c === 'object') {
+    const r = c as Record<string, unknown>;
+    return String(r.text ?? r.html ?? r.body ?? '');
+  }
+  return String(block.body ?? block.text ?? block.html ?? '');
+}
+
+/**
+ * Render CMS content blocks to HTML.
+ * Handles the API shape: `{ block_type, block_data, content: { text } }`.
+ */
+function renderContentBlocks(blocks: Array<Record<string, unknown>>): string {
+  return blocks
+    .filter((block) => block.is_visible !== false)
+    .map((block) => {
+      const type = block.block_type ?? block.type;
+      const text = blockText(block);
+
+      switch (type) {
+        case 'text':
+        case 'rich_text':
+          return `<p>${text}</p>`;
+        case 'heading': {
+          const bd = block.block_data as Record<string, unknown> | undefined;
+          const level = bd?.level ?? block.level ?? 2;
+          return `<h${level}>${text}</h${level}>`;
+        }
+        case 'image': {
+          const ct = block.content as Record<string, unknown> | undefined;
+          const src = ct?.url ?? ct?.image_url ?? block.url ?? '';
+          const alt = ct?.alt_text ?? ct?.alt ?? '';
+          const caption = ct?.caption ?? '';
+          return `<figure><img src="${src}" alt="${alt}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
+        }
+        case 'divider':
+          return '<hr />';
+        case 'quote':
+        case 'blockquote':
+          return `<blockquote>${text}</blockquote>`;
+        case 'html':
+        case 'raw':
+          return text;
+        default:
+          return text ? `<p>${text}</p>` : '';
+      }
+    })
+    .join('\n');
+}
+
+let htmlContent = '';
+if (raw.content_blocks && Array.isArray(raw.content_blocks)) {
+  htmlContent = renderContentBlocks(raw.content_blocks);
+} else if (raw.blocks && Array.isArray(raw.blocks)) {
+  htmlContent = renderContentBlocks(raw.blocks);
+} else if (raw.body && typeof raw.body === 'string') {
+  htmlContent = raw.body;
+} else if (raw.content && typeof raw.content === 'string') {
+  htmlContent = raw.content;
+} else if (raw.content && Array.isArray(raw.content)) {
+  htmlContent = renderContentBlocks(raw.content);
+}
+
+const safeContent = sanitizeHtml(htmlContent);
+
+// CMS pages are heavily cached — content changes infrequently
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+---
+
+<BaseLayout
+  title={`${String(raw.title ?? '')} — ${merchant.name}`}
+  description={raw.meta_description as string | undefined}
+>
+  <SEOHead slot="head" page="cms" merchant={merchant} lang={lang} title={String(raw.title ?? '')} />
+  <Header merchant={merchant} lang={lang} />
+
+  <main class="mx-auto max-w-screen-md px-4 py-8">
+    <article
+      class="prose prose-sm max-w-none text-foreground prose-headings:font-heading prose-headings:text-foreground prose-a:text-primary"
+    >
+      <h1 class="font-heading text-2xl font-bold">{raw.title}</h1>
+      <div set:html={safeContent} />
+    </article>
+  </main>
+
+  <Footer merchant={merchant} lang={lang} />
+</BaseLayout>

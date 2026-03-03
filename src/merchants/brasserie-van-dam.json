@@ -1,0 +1,53 @@
+{
+  "slug": "brasserie-van-dam",
+  "merchantId": "BRASSERIE_VD_01",
+  "name": "Brasserie Van Dam",
+  "description": "Classic Dutch brasserie in the heart of Amsterdam.",
+  "logo": "/merchants/brasserie-van-dam/logo.svg",
+  "heroImage": "https://placehold.co/1200x400/1a1a1a/fff?text=Brasserie+Van+Dam",
+  "favicon": "/merchants/brasserie-van-dam/favicon.ico",
+  "languages": ["nl", "en"],
+  "defaultLanguage": "nl",
+  "currency": "EUR",
+  "theme": {
+    "background": "0 0% 100%",
+    "foreground": "0 0% 3.9%",
+    "card": "0 0% 100%",
+    "cardForeground": "0 0% 3.9%",
+    "cardImage": "40 10% 91%",
+    "primary": "24 70% 45%",
+    "primaryForeground": "0 0% 98%",
+    "secondary": "30 20% 96%",
+    "secondaryForeground": "0 0% 9%",
+    "muted": "0 0% 96.1%",
+    "mutedForeground": "0 0% 45.1%",
+    "accent": "30 20% 96%",
+    "accentForeground": "0 0% 9%",
+    "destructive": "0 84.2% 60.2%",
+    "destructiveForeground": "0 0% 98%",
+    "border": "0 0% 89.8%",
+    "input": "0 0% 89.8%",
+    "ring": "24 70% 45%",
+    "radius": "0.5rem",
+    "fontHeading": "DM Sans",
+    "fontBody": "Inter"
+  },
+  "layout": "grid",
+  "contact": {
+    "phone": "+31 20 555 1234",
+    "email": "info@brasserievandam.nl",
+    "address": "Dam 1, 1012 Amsterdam"
+  },
+  "hours": [
+    { "days": "Mon-Fri", "open": "11:00", "close": "22:00" },
+    { "days": "Sat-Sun", "open": "10:00", "close": "23:00" }
+  ],
+  "website": "https://brasserievandam.nl",
+  "social": {
+    "instagram": "https://instagram.com/brasserievandam"
+  },
+  "seo": {
+    "titleTemplate": "%s | Brasserie Van Dam",
+    "defaultDescription": "Bestel online bij Brasserie Van Dam"
+  }
+}

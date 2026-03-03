@@ -1,0 +1,78 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/astro/Header.astro';
+import HeroSection from '@/components/astro/HeroSection.astro';
+import MenuSection from '@/components/astro/MenuSection.astro';
+import Footer from '@/components/astro/Footer.astro';
+import SEOHead from '@/components/astro/SEOHead.astro';
+import StructuredData from '@/components/astro/StructuredData.astro';
+import { normalizeProduct } from '@/lib/normalize';
+import { fetchCollectionsOrCategories } from '@/lib/collections';
+
+// Interactive Preact islands
+import CategoryTabs from '@/components/interactive/CategoryTabs';
+import FreshnessProvider from '@/components/interactive/FreshnessProvider';
+
+const { merchant, lang, sdk } = Astro.locals;
+
+// Fetch collections (or categories as fallback), then products per section
+const { sections: menuSections, source } = await fetchCollectionsOrCategories(sdk);
+
+const sectionProducts = await Promise.all(
+  menuSections.map(async (section) => {
+    const result =
+      source === 'collections'
+        ? await sdk.GET(`/api/v1/collections/{slug}/products/`, {
+            params: { path: { slug: section.slug } },
+          })
+        : await sdk.GET('/api/v1/products/', {
+            params: { query: { category: String(section.id) } },
+          });
+
+    if (result.error) {
+      console.error(`[index] failed to fetch products for "${section.name}"`, result.error);
+    }
+    const raw = (result.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+    return { category: section, products: raw.map(normalizeProduct) };
+  }),
+);
+
+const sections = sectionProducts.filter((s) => s.products.length > 0);
+const categories = sections.map((s) => s.category);
+const allProducts = sections.flatMap((s) => s.products);
+const productIds = allProducts.map((p) => String(p.id));
+---
+
+<BaseLayout title={merchant.name} description={merchant.seo.defaultDescription}>
+  <SEOHead
+    slot="head"
+    page="menu"
+    merchant={merchant}
+    lang={lang}
+    canonicalUrl={`${Astro.url.origin}/${lang}/`}
+  />
+  <StructuredData slot="head" type="restaurant" merchant={merchant} />
+
+  <Header merchant={merchant} lang={lang} />
+  <HeroSection merchant={merchant} />
+
+  <CategoryTabs client:load categories={categories} />
+
+  <main>
+    {
+      sections.map((s) => (
+        <MenuSection
+          category={s.category}
+          products={s.products}
+          lang={lang}
+          currency={merchant.currency}
+          layout={merchant.layout}
+        />
+      ))
+    }
+  </main>
+
+  <FreshnessProvider client:idle productIds={productIds} />
+
+  <Footer merchant={merchant} lang={lang} />
+</BaseLayout>
