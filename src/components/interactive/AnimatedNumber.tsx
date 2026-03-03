@@ -35,11 +35,7 @@ export default function AnimatedNumber({ value, class: className = '' }: Props) 
   else if (direction === 'down') slideClass = 'translate-y-full';
 
   return (
-    <span
-      class={`inline-flex overflow-hidden ${className}`}
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class={`inline-flex overflow-hidden ${className}`} aria-live="polite" aria-atomic="true">
       <span class={`inline-block transition-transform duration-150 ${slideClass}`}>
         {displayValue}
       </span>

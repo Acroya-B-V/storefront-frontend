@@ -79,11 +79,7 @@ export function getLineTotal(item: PricedItem, qty: number, modifiers?: Modifier
       const tierPrice = item.discount.price;
       const bundles = Math.floor(qty / threshold);
       const remainder = qty % threshold;
-      return round2(
-        bundles * tierPrice +
-        remainder * getOriginalPrice(item) +
-        qty * modTotal,
-      );
+      return round2(bundles * tierPrice + remainder * getOriginalPrice(item) + qty * modTotal);
     }
     default:
       return round2((getEffectivePrice(item) + modTotal) * qty);

@@ -65,7 +65,9 @@ describe('hasUnitDiscount', () => {
   });
 
   it('returns false for bogo', () => {
-    expect(hasUnitDiscount(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }))).toBe(false);
+    expect(
+      hasUnitDiscount(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } })),
+    ).toBe(false);
   });
 
   it('returns false for no discount', () => {
@@ -75,22 +77,36 @@ describe('hasUnitDiscount', () => {
 
 describe('getDiscountLabel', () => {
   it('returns percentage label', () => {
-    expect(getDiscountLabel(makeItem({ discount: { type: 'percentage', value: 15 } }), 'EUR', 'nl-NL')).toBe('-15%');
+    expect(
+      getDiscountLabel(makeItem({ discount: { type: 'percentage', value: 15 } }), 'EUR', 'nl-NL'),
+    ).toBe('-15%');
   });
 
   it('returns fixed label with currency', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'fixed', value: 2 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'fixed', value: 2 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('2');
     expect(label).toContain('off');
   });
 
   it('returns bogo label', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('Buy');
   });
 
   it('returns tiered label', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'tiered', quantity: 2, price: 15 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'tiered', quantity: 2, price: 15 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('2');
   });
 });

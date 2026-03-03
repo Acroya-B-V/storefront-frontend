@@ -16,11 +16,7 @@ const messages: Record<string, Messages> = { nl, en, de };
  * When Paraglide.js is fully integrated, this will be replaced by its
  * compiler-generated message functions.
  */
-export function t(
-  key: MessageKey,
-  lang: string,
-  params?: Record<string, string | number>,
-): string {
+export function t(key: MessageKey, lang: string, params?: Record<string, string | number>): string {
   const dict = messages[lang] ?? messages['nl'];
   let text = dict[key] ?? key;
 

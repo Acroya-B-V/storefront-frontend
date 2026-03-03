@@ -6,10 +6,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
-  integrations: [
-    preact({ compat: true }),
-    tailwind(),
-  ],
+  integrations: [preact({ compat: true }), tailwind()],
   prefetch: {
     prefetchAll: false,
     defaultStrategy: 'hover',

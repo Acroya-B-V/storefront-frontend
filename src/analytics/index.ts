@@ -34,10 +34,7 @@ export async function initAnalytics(): Promise<void> {
   await initPostHog();
 }
 
-export function capture(
-  event: EventName,
-  properties?: EventProperties,
-): void {
+export function capture(event: EventName, properties?: EventProperties): void {
   const posthog = getPostHog();
   if (!posthog) return;
 

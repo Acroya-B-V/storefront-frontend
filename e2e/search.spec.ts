@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
-import {
-  resetMockApi,
-  menuPage,
-  blockAnalytics,
-  waitForHydration,
-} from './helpers/test-utils';
+import { resetMockApi, menuPage, blockAnalytics, waitForHydration } from './helpers/test-utils';
+
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await resetMockApi(page);
@@ -52,7 +48,7 @@ test.describe('Search', () => {
     await expect(listbox.getByText('Falafel Wrap')).toBeVisible();
 
     // Should NOT show unrelated products
-    await expect(listbox.getByText('Shawarma Bowl')).not.toBeVisible();
+    await expect(listbox.getByText('Shawarma Bowl')).toBeHidden();
   });
 
   test('clicking result opens product detail', async ({ page }) => {
@@ -73,7 +69,7 @@ test.describe('Search', () => {
     await listbox.getByText('Shawarma Bowl').evaluate((el) => (el as HTMLElement).click());
 
     // The search overlay should close and product detail dialog should open
-    await expect(searchInput).not.toBeVisible();
+    await expect(searchInput).toBeHidden();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 5_000 });
   });
@@ -91,7 +87,7 @@ test.describe('Search', () => {
     await expect(page.getByText('No results')).toBeVisible({ timeout: 5_000 });
 
     // The listbox should not be present (no matching results)
-    await expect(page.getByRole('listbox', { name: 'Zoeken' })).not.toBeVisible();
+    await expect(page.getByRole('listbox', { name: 'Zoeken' })).toBeHidden();
   });
 
   test('Escape clears search', async ({ page }) => {
@@ -108,6 +104,6 @@ test.describe('Search', () => {
     await page.keyboard.press('Escape');
 
     // The search overlay (including the input) should disappear
-    await expect(searchInput).not.toBeVisible();
+    await expect(searchInput).toBeHidden();
   });
 });

@@ -51,10 +51,10 @@ test.describe('SEO', () => {
     await page.goto(menuPage());
 
     const jsonLd = page.locator('script[type="application/ld+json"]').first();
-    const content = await jsonLd.textContent();
-    expect(content).toBeTruthy();
+    await expect(jsonLd).toHaveText(/.+/);
 
-    const data = JSON.parse(content!);
+    const text = await jsonLd.textContent();
+    const data = JSON.parse(text!);
     expect(data['@type']).toBe('Restaurant');
     expect(data.name).toBe('Bar Sumac');
   });
@@ -66,9 +66,7 @@ test.describe('SEO', () => {
     await expect(ogTitle).toHaveAttribute('content', /Falafel Wrap/);
 
     const ogDescription = page.locator('meta[property="og:description"]');
-    const descContent = await ogDescription.getAttribute('content');
-    expect(descContent).toBeTruthy();
-    expect(descContent!.length).toBeGreaterThan(0);
+    await expect(ogDescription).toHaveAttribute('content', /.+/);
   });
 
   test('cart page has noindex robots meta', async ({ page }) => {
@@ -92,9 +90,9 @@ test.describe('SEO', () => {
       expect(body).toContain(`/product/${product.slug}`);
     }
 
-    // Should contain category URLs
+    // Should contain collection URLs
     for (const category of categories) {
-      expect(body).toContain(`/category/${category.slug}`);
+      expect(body).toContain(`/collection/${category.slug}`);
     }
 
     // Should contain the menu page root

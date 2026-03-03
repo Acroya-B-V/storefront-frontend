@@ -25,12 +25,14 @@ if (collectionResult.data) {
   const productsResult = await sdk.GET(`/api/v1/collections/{slug}/products/`, {
     params: { path: { slug: slug! } },
   });
-  const rawProducts = (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+  const rawProducts =
+    (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
   products = rawProducts.map(normalizeProduct);
 } else {
   // 2. Fallback: look up slug in categories
   const categoriesResult = await sdk.GET('/api/v1/categories/');
-  const rawCategories = (categoriesResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+  const rawCategories =
+    (categoriesResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
   const categories = flattenCategories(rawCategories);
   category = categories.find((c) => c.slug === slug);
 
@@ -38,7 +40,8 @@ if (collectionResult.data) {
     const productsResult = await sdk.GET('/api/v1/products/', {
       params: { query: { category: String(category.id) } },
     });
-    const rawProducts = (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+    const rawProducts =
+      (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
     products = rawProducts.map(normalizeProduct);
   }
 }

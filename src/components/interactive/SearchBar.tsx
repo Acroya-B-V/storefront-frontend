@@ -106,13 +106,13 @@ export default function SearchBar({ lang }: Props) {
       setIsOpen(true);
       setTimeout(() => inputRef.current?.focus(), 50);
     };
-    document.querySelectorAll('[data-search-trigger]').forEach((el) =>
-      el.addEventListener('click', handler),
-    );
+    document
+      .querySelectorAll('[data-search-trigger]')
+      .forEach((el) => el.addEventListener('click', handler));
     return () => {
-      document.querySelectorAll('[data-search-trigger]').forEach((el) =>
-        el.removeEventListener('click', handler),
-      );
+      document
+        .querySelectorAll('[data-search-trigger]')
+        .forEach((el) => el.removeEventListener('click', handler));
     };
   }, []);
 
@@ -120,12 +120,27 @@ export default function SearchBar({ lang }: Props) {
 
   return (
     <div class="fixed inset-0 z-50">
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={closeSearch} />
 
       <div class="relative mx-auto mt-16 w-full max-w-lg px-4">
         <div class="overflow-hidden rounded-lg bg-card shadow-xl">
           <div class="flex items-center border-b border-border px-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-muted-foreground"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="shrink-0 text-muted-foreground"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
             <input
               ref={inputRef}
               type="search"
@@ -136,7 +151,11 @@ export default function SearchBar({ lang }: Props) {
               aria-label={t('search', lang)}
             />
             {loading && (
-              <div class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent motion-reduce:animate-none" role="status" aria-label={t('loading', lang)} />
+              <div
+                class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent motion-reduce:animate-none"
+                role="status"
+                aria-label={t('loading', lang)}
+              />
             )}
             <button
               type="button"
@@ -144,7 +163,20 @@ export default function SearchBar({ lang }: Props) {
               class="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
               aria-label={t('close', lang)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
             </button>
           </div>
 
@@ -159,7 +191,14 @@ export default function SearchBar({ lang }: Props) {
                   >
                     {result.image && (
                       <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
-                        <img src={result.image} alt="" class="h-full w-full object-cover" width="40" height="40" loading="lazy" />
+                        <img
+                          src={result.image}
+                          alt=""
+                          class="h-full w-full object-cover"
+                          width="40"
+                          height="40"
+                          loading="lazy"
+                        />
                       </div>
                     )}
                     <div class="flex-1">
@@ -182,8 +221,10 @@ export default function SearchBar({ lang }: Props) {
 
           <div class="flex items-center justify-end border-t border-border px-3 py-2">
             <span class="text-xs text-muted-foreground">
-              <kbd class="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd>
-              {' '}{t('close', lang)}
+              <kbd class="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
+                Esc
+              </kbd>{' '}
+              {t('close', lang)}
             </span>
           </div>
         </div>

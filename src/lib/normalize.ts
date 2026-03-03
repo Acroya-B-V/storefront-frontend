@@ -9,11 +9,13 @@
 /**
  * Extract the product ID from a URL slug.
  * Slugs use a `--` separator: `{name}--{id}` (e.g. "bitterballen--42", "falafel-wrap--prod-1").
- * Falls back to the full slug if no `--` separator is found.
+ * Supports legacy `{name}-{numericId}` slugs as a fallback.
  */
 export function extractIdFromSlug(slug: string): string {
   const sepIndex = slug.lastIndexOf('--');
-  return sepIndex !== -1 ? slug.slice(sepIndex + 2) : slug;
+  if (sepIndex !== -1) return slug.slice(sepIndex + 2);
+  const legacyMatch = slug.match(/-(\d+)$/);
+  return legacyMatch ? legacyMatch[1] : slug;
 }
 
 /** Convert a string to a URL-friendly slug. */
@@ -137,7 +139,7 @@ interface RawCollection {
  * Collections use `title` while categories use `name` — this maps both.
  */
 export function normalizeCollection(raw: Record<string, unknown>): NormalizedCategory {
-  const r = raw as RawCollection;
+  const r = raw as unknown as RawCollection;
   return {
     id: r.id,
     name: r.title ?? r.name ?? '',

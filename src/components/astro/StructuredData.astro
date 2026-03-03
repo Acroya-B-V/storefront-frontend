@@ -1,16 +1,26 @@
 ---
 import type { MerchantConfig } from '@/types/merchant';
-import { generateRestaurantLD, generateMenuItemLD, generateBreadcrumbLD } from '@/lib/structured-data';
+import {
+  generateRestaurantLD,
+  generateMenuItemLD,
+  generateBreadcrumbLD,
+} from '@/lib/structured-data';
 
 interface Props {
   type: 'restaurant' | 'product' | 'breadcrumb';
   merchant: MerchantConfig;
-  product?: { name: string; price: string; description?: string; image?: string | null; slug?: string };
+  product?: {
+    name: string;
+    price: string;
+    description?: string;
+    image?: string | null;
+    slug?: string;
+  };
   breadcrumbs?: Array<{ name: string; url: string }>;
   sections?: Array<{ category: Record<string, unknown>; products: Array<Record<string, unknown>> }>;
 }
 
-const { type, merchant, product, breadcrumbs, sections } = Astro.props;
+const { type, merchant, product, breadcrumbs } = Astro.props;
 const siteUrl = Astro.url.origin;
 
 let jsonLd: Record<string, unknown> | null = null;
@@ -33,6 +43,4 @@ switch (type) {
 }
 ---
 
-{jsonLd && (
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-)}
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

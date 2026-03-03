@@ -69,7 +69,8 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   if (!inline && !isOpen) return null;
 
   const lineItems = cart?.line_items ?? [];
-  const savings = cart?.cart_savings && parseFloat(cart.cart_savings) > 0 ? cart.cart_savings : null;
+  const savings =
+    cart?.cart_savings && parseFloat(cart.cart_savings) > 0 ? cart.cart_savings : null;
 
   // Inline mode: render directly without overlay/modal chrome
   if (inline) {
@@ -92,7 +93,14 @@ export default function CartDrawer({ lang, inline = false }: Props) {
                 <li key={item.id} class="flex gap-3 py-3">
                   {item.product_image && (
                     <div class="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-card-image">
-                      <img src={item.product_image} alt="" class="h-full w-full object-cover" width="64" height="64" loading="lazy" />
+                      <img
+                        src={item.product_image}
+                        alt=""
+                        class="h-full w-full object-cover"
+                        width="64"
+                        height="64"
+                        loading="lazy"
+                      />
                     </div>
                   )}
                   <div class="flex flex-1 flex-col justify-between">
@@ -132,12 +140,16 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             {savings && (
               <div class="mb-2 flex items-center justify-between text-sm">
                 <span class="text-muted-foreground">{t('youSave', lang)}</span>
-                <span class="font-medium text-destructive">{formatPrice(savings, currency, locale)}</span>
+                <span class="font-medium text-destructive">
+                  {formatPrice(savings, currency, locale)}
+                </span>
               </div>
             )}
             <div class="mb-3 flex items-center justify-between">
               <span class="text-sm font-medium text-card-foreground">{t('orderTotal', lang)}</span>
-              <span class="text-lg font-bold text-card-foreground">{formatPrice(cartTotal, currency, locale)}</span>
+              <span class="text-lg font-bold text-card-foreground">
+                {formatPrice(cartTotal, currency, locale)}
+              </span>
             </div>
             <a
               href={`/${lang}/checkout`}
@@ -154,10 +166,8 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   return (
     <div class="fixed inset-0 z-50">
       {/* Backdrop */}
-      <div
-        class="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
-        onClick={close}
-      />
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={close} />
 
       {/* Drawer */}
       <div
@@ -178,7 +188,20 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             class="relative inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent before:absolute before:inset-[-6px]"
             aria-label={t('close', lang)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
@@ -235,9 +258,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
                           {formatPrice(item.line_total, currency, locale)}
                         </span>
                         {item.discount && (
-                          <span class="block text-xs text-destructive">
-                            {item.discount.label}
-                          </span>
+                          <span class="block text-xs text-destructive">{item.discount.label}</span>
                         )}
                       </div>
                     </div>
@@ -250,7 +271,10 @@ export default function CartDrawer({ lang, inline = false }: Props) {
 
         {/* Footer */}
         {lineItems.length > 0 && (
-          <div class="border-t border-border px-4 py-3" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+          <div
+            class="border-t border-border px-4 py-3"
+            style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+          >
             {savings && (
               <div class="mb-2 flex items-center justify-between text-sm">
                 <span class="text-muted-foreground">{t('youSave', lang)}</span>

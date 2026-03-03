@@ -37,7 +37,14 @@ export async function initPostHog(): Promise<void> {
   });
 }
 
-export function getPostHog() {
+/** Minimal contract for the PostHog client methods we actually use. */
+export interface PostHogLike {
+  capture(event: string, properties?: Record<string, unknown>): void;
+  identify(id: string): void;
+  reset(): void;
+}
+
+export function getPostHog(): PostHogLike | null {
   if (typeof window === 'undefined') return null;
-  return (window as any).posthog ?? null;
+  return (window as Window & { posthog?: PostHogLike }).posthog ?? null;
 }

@@ -9,8 +9,7 @@ export function aboutPage() {
       '<p>Bar Sumac is a Mediterranean-inspired kitchen in the heart of Amsterdam.</p>' +
       '<h2>Our Story</h2>' +
       '<p>Founded in 2020, we serve seasonal mezze, grilled meats, and natural wines.</p>',
-    meta_description:
-      'Learn about Bar Sumac, a Mediterranean restaurant in Amsterdam.',
+    meta_description: 'Learn about Bar Sumac, a Mediterranean restaurant in Amsterdam.',
   };
 }
 

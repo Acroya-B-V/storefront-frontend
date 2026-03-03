@@ -34,21 +34,33 @@ const langValue = lang ?? 'en';
     {themeCSS && <style set:html={`:root { ${themeCSS} }`} />}
     {/* PostHog queue stub — events pushed before SDK loads are replayed on init */}
     <script is:inline>
-      !function(){var p=window.posthog=window.posthog||[];if(!p.__loaded){p._i=[];
-      p.init=function(k,o){p._i.push([k,o])};
-      p.capture=function(){p.push(Array.prototype.slice.call(arguments))};
-      p.identify=function(){p.push(['$identify'].concat(Array.prototype.slice.call(arguments)))};
-      }}();
+      /* eslint-disable @typescript-eslint/no-unused-expressions, prefer-rest-params */
+      !(function () {
+        const p = (window.posthog = window.posthog || []);
+        if (!p.__loaded) {
+          p._i = [];
+          p.init = function (k, o) {
+            p._i.push([k, o]);
+          };
+          p.capture = function () {
+            p.push(Array.prototype.slice.call(arguments));
+          };
+          p.identify = function () {
+            p.push(['$identify'].concat(Array.prototype.slice.call(arguments)));
+          };
+        }
+      })();
     </script>
     <slot name="head" />
   </head>
   <body>
-    {merchantJSON && (
-      <script define:vars={{ merchantJSON, langValue }}>
-        window.__MERCHANT__ = JSON.parse(merchantJSON);
-        window.__LANG__ = langValue;
-      </script>
-    )}
+    {
+      merchantJSON && (
+        <script define:vars={{ merchantJSON, langValue }}>
+          window.__MERCHANT__ = JSON.parse(merchantJSON); window.__LANG__ = langValue;
+        </script>
+      )
+    }
     <slot />
 
     {/* Shared islands: cart, product detail modal, search */}

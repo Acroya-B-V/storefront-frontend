@@ -5,7 +5,7 @@
  * can track conversion funnels without querying separate systems.
  */
 
-import { $cart } from '@/stores/cart';
+import { $cart, type Cart } from '@/stores/cart';
 import { $merchant } from '@/stores/merchant';
 import type { CartSnapshot, FulfilmentSnapshot } from './types';
 
@@ -29,7 +29,8 @@ export function getFulfilmentSnapshot(): FulfilmentSnapshot {
   // Fulfilment mode is set during checkout — read from cart if available
   const cart = $cart.get();
   return {
-    fulfilment_mode: (cart as any)?.fulfilment_mode,
-    postal_code: (cart as any)?.delivery_address?.postal_code,
+    fulfilment_mode: (cart as Cart & { fulfilment_mode?: 'delivery' | 'pickup' })?.fulfilment_mode,
+    postal_code: (cart as Cart & { delivery_address?: { postal_code?: string } })?.delivery_address
+      ?.postal_code,
   };
 }

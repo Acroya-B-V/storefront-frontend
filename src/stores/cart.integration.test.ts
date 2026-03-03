@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { $cart, $itemCount, $cartTotal, getStoredCartId, setStoredCartId, clearStoredCartId } from './cart';
+import {
+  $cart,
+  $itemCount,
+  $cartTotal,
+  getStoredCartId,
+  setStoredCartId,
+  clearStoredCartId,
+} from './cart';
 import type { Cart } from './cart';
 
 const mockCart: Cart = {

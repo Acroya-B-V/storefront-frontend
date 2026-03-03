@@ -41,7 +41,13 @@ export interface CreateClientOptions {
 }
 
 /** Adapt openapi-fetch's `{ data?, error?, response }` to our `ApiResult` union. */
-function adaptResponse({ data, error, response }: any): ApiResult {
+interface RawSdkResponse {
+  data?: unknown;
+  error?: unknown;
+  response?: { status: number; statusText: string };
+}
+
+function adaptResponse({ data, error, response }: RawSdkResponse): ApiResult {
   if (error !== undefined) {
     return {
       data: null,
@@ -55,7 +61,7 @@ function adaptResponse({ data, error, response }: any): ApiResult {
 }
 
 /** Wrap an SDK call so thrown exceptions (network errors, etc.) become ApiResult. */
-function wrapCall(promise: Promise<any>): Promise<ApiResult> {
+function wrapCall(promise: Promise<RawSdkResponse>): Promise<ApiResult> {
   return promise.then(adaptResponse).catch((err: unknown) => ({
     data: null,
     error: err instanceof Error ? err : new Error(String(err)),
@@ -71,10 +77,12 @@ export function createStorefrontClient(options: CreateClientOptions): Storefront
     fetch: options.fetch,
   });
 
+  /* eslint-disable @typescript-eslint/no-explicit-any -- intentional: shim erases strict OpenAPI path-literal types */
   return {
     GET: (path, opts?) => wrapCall(realClient.GET(path as any, opts as any)),
     POST: (path, opts?) => wrapCall(realClient.POST(path as any, opts as any)),
     PATCH: (path, opts?) => wrapCall(realClient.PATCH(path as any, opts as any)),
     DELETE: (path, opts?) => wrapCall(realClient.DELETE(path as any, opts as any)),
   };
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }

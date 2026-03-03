@@ -30,6 +30,9 @@ Thumbs.db
 e2e/.results/
 e2e/.report/
 
+# coverage
+coverage/
+
 # debug
 npm-debug.log*
 pnpm-debug.log*

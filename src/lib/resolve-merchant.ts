@@ -1,8 +1,4 @@
-const PLATFORM_SUFFIXES = [
-  '.poweredbysous.com',
-  '.poweredbysous.localhost',
-  '.vercel.app',
-];
+const PLATFORM_SUFFIXES = ['.poweredbysous.com', '.poweredbysous.localhost', '.vercel.app'];
 
 /**
  * Resolves merchant slug from hostname.

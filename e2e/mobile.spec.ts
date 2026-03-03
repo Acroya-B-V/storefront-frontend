@@ -10,6 +10,7 @@ import {
 
 test.describe('Mobile', () => {
   test.beforeEach(async ({ page }) => {
+    // eslint-disable-next-line playwright/no-skipped-test -- project-gated tests
     test.skip(test.info().project.name !== 'mobile', 'Mobile only');
     await resetMockApi(page);
     await blockAnalytics(page);
@@ -102,9 +103,7 @@ test.describe('Mobile', () => {
 
     // The tablist container has overflow-x-auto for horizontal scrolling.
     // Verify the container allows horizontal overflow.
-    const overflowX = await tablist.evaluate(
-      (el) => getComputedStyle(el).overflowX,
-    );
+    const overflowX = await tablist.evaluate((el) => getComputedStyle(el).overflowX);
     expect(overflowX).toBe('auto');
 
     // Click the last tab and verify it scrolls into view and becomes selected

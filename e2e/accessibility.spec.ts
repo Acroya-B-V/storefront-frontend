@@ -17,11 +17,11 @@ import {
  *   in headless test environments where computed color resolution may differ.
  */
 const EXCLUDED_RULES = [
-  'color-contrast',       // oklch/CSS custom properties cause false positives in headless
-  'region',               // Astro dev toolbar injects content outside landmark regions
-  'image-redundant-alt',  // merchant logo used in both header link and hero
+  'color-contrast', // oklch/CSS custom properties cause false positives in headless
+  'region', // Astro dev toolbar injects content outside landmark regions
+  'image-redundant-alt', // merchant logo used in both header link and hero
   'page-has-heading-one', // cart and 404 pages have contextual headings, not necessarily h1
-  'landmark-one-main',    // 404 page renders without a <main> landmark
+  'landmark-one-main', // 404 page renders without a <main> landmark
 ];
 
 test.describe('Accessibility', () => {
@@ -37,9 +37,7 @@ test.describe('Accessibility', () => {
     // Wait for main content to render
     await expect(page.locator('main')).toBeVisible();
 
-    const results = await new AxeBuilder({ page })
-      .disableRules(EXCLUDED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(EXCLUDED_RULES).analyze();
 
     expect(results.violations).toEqual([]);
   });
@@ -52,9 +50,7 @@ test.describe('Accessibility', () => {
     const modal = await openProductDetailModal(page, 'prod-2');
     await expect(modal).toBeVisible({ timeout: 5_000 });
 
-    const results = await new AxeBuilder({ page })
-      .disableRules(EXCLUDED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(EXCLUDED_RULES).analyze();
 
     expect(results.violations).toEqual([]);
   });
@@ -68,9 +64,7 @@ test.describe('Accessibility', () => {
     const drawer = await openCartDrawer(page);
     await expect(drawer).toBeVisible({ timeout: 5_000 });
 
-    const results = await new AxeBuilder({ page })
-      .disableRules(EXCLUDED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(EXCLUDED_RULES).analyze();
 
     expect(results.violations).toEqual([]);
   });
@@ -82,9 +76,7 @@ test.describe('Accessibility', () => {
     // Wait for the cart content to render (inline CartDrawer)
     await expect(page.locator('main')).toBeVisible();
 
-    const results = await new AxeBuilder({ page })
-      .disableRules(EXCLUDED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(EXCLUDED_RULES).analyze();
 
     expect(results.violations).toEqual([]);
   });
@@ -96,9 +88,7 @@ test.describe('Accessibility', () => {
     // Wait for the page to render
     await expect(page.locator('body')).toBeVisible();
 
-    const results = await new AxeBuilder({ page })
-      .disableRules(EXCLUDED_RULES)
-      .analyze();
+    const results = await new AxeBuilder({ page }).disableRules(EXCLUDED_RULES).analyze();
 
     expect(results.violations).toEqual([]);
   });

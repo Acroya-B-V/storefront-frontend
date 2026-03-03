@@ -33,9 +33,9 @@ export default function CategoryTabs({ categories }: Props) {
 
   // Scroll-based active category tracking via IntersectionObserver
   useEffect(() => {
-    const sections = categories.map((c) =>
-      document.getElementById(`collection-${c.id}`),
-    ).filter(Boolean) as HTMLElement[];
+    const sections = categories
+      .map((c) => document.getElementById(`collection-${c.id}`))
+      .filter(Boolean) as HTMLElement[];
 
     if (sections.length === 0) return;
 
@@ -81,14 +81,16 @@ export default function CategoryTabs({ categories }: Props) {
     if (section) {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       // Re-enable scroll tracking after smooth scroll completes
-      setTimeout(() => { isUserClick.current = false; }, 800);
+      setTimeout(() => {
+        isUserClick.current = false;
+      }, 800);
     } else {
       isUserClick.current = false;
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent, index: number) => {
-    let nextIndex = index;
+    let nextIndex;
     if (e.key === 'ArrowRight') nextIndex = Math.min(index + 1, categories.length - 1);
     else if (e.key === 'ArrowLeft') nextIndex = Math.max(index - 1, 0);
     else return;
@@ -119,7 +121,9 @@ export default function CategoryTabs({ categories }: Props) {
           {categories.map((cat, i) => (
             <button
               key={cat.id}
-              ref={(el) => { if (el) tabRefs.current.set(String(cat.id), el); }}
+              ref={(el) => {
+                if (el) tabRefs.current.set(String(cat.id), el);
+              }}
               role="tab"
               type="button"
               aria-selected={activeCategory === String(cat.id)}

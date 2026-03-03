@@ -41,9 +41,10 @@ test.describe('Product detail modal — open and close', () => {
 
     // Click on the backdrop (the area outside the dialog panel).
     // The backdrop is a sibling div with aria-hidden="true" positioned at inset-0.
+    // eslint-disable-next-line playwright/no-force-option -- backdrop overlaps modal; force needed for reliable click
     await page.locator('[aria-hidden="true"]').first().click({ force: true });
 
-    await expect(modal).not.toBeVisible();
+    await expect(modal).toBeHidden();
   });
 
   test('modal closes on Escape', async ({ page }) => {
@@ -55,7 +56,7 @@ test.describe('Product detail modal — open and close', () => {
 
     await page.keyboard.press('Escape');
 
-    await expect(modal).not.toBeVisible();
+    await expect(modal).toBeHidden();
   });
 
   test('focus is trapped inside modal', async ({ page }) => {
@@ -98,7 +99,7 @@ test.describe('Product detail modal — modifier groups', () => {
 
     // The Extras group is optional — should NOT show the required badge
     const extrasSection = modal.locator(`#modifier-group-${extrasGroup.id}`);
-    await expect(extrasSection.getByText('Verplicht')).not.toBeVisible();
+    await expect(extrasSection.getByText('Verplicht')).toBeHidden();
   });
 
   test('selecting modifier updates CTA price', async ({ page }) => {
@@ -128,8 +129,8 @@ test.describe('Product detail modal — modifier groups', () => {
     await expect(modal).toBeVisible({ timeout: 5_000 });
 
     // Try to submit without selecting the required Size modifier.
-    // Use force:true to bypass any residual pointer-event interception.
     const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+    // eslint-disable-next-line playwright/no-force-option -- bypass pointer-event interception in modal
     await ctaButton.click({ force: true });
 
     // The required group should get the shake animation class
@@ -152,15 +153,15 @@ test.describe('Product detail modal — modifier groups', () => {
 
     // The "Verplicht" badge should change to a checkmark
     const sizeSection = modal.locator(`#modifier-group-${sizeGroup.id}`);
-    await expect(sizeSection.getByText('Verplicht')).not.toBeVisible();
+    await expect(sizeSection.getByText('Verplicht')).toBeHidden();
 
     // Submit should now work — clicking the CTA should close the modal.
-    // Use force:true to bypass any residual pointer-event interception.
     const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+    // eslint-disable-next-line playwright/no-force-option -- bypass pointer-event interception in modal
     await ctaButton.click({ force: true });
 
     // Modal should close after successful add
-    await expect(modal).not.toBeVisible();
+    await expect(modal).toBeHidden();
 
     // Cart state should be updated — the header cart trigger is always visible,
     // confirming the modal closed and the item was added

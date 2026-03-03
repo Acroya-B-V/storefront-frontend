@@ -16,27 +16,27 @@
 
 > **IMPORTANT:** Many tasks below still contain `git add`/`git commit` code blocks. **These are DEAD CODE — do not execute them.** They were part of an earlier per-task commit model. The phase-level table below is the only commit guidance.
 
-| Phase | Commit message |
-|-------|---------------|
-| 1 | `feat: initialize Astro project with Preact, Tailwind, Vercel` |
-| 2 | `feat: add core types and TDD libraries (currency, pricing, theme)` |
-| 3 | `feat: add merchant config system with import.meta.glob` |
-| 4 | `feat: add middleware with subdomain routing and language resolution` |
-| 5 | `feat: add BaseLayout with theme injection and branded 404 page` |
-| 6 | `feat: add nanostores for merchant, cart, UI, and auth state` |
-| 7 | `feat: add SDK client factories for server and client` |
-| 8 | `feat: set up Paraglide.js i18n with NL/EN/DE translations` |
-| 9 | `feat: add static Astro components (header, hero, cards, SEO)` |
-| 10 | `feat: add menu, category, and product detail pages` |
-| 11 | `feat: add interactive Preact islands` |
-| 12 | `feat: add PostHog analytics integration with PII guard` |
-| 13 | `feat: add dynamic sitemap.xml and robots.txt` |
-| 14 | `feat: add cart page and CMS pages` |
-| 15 | `feat: add checkout flow with address autofill and payment reliability` |
-| 16 | `feat: add auth system (login page, OTP flow, cookie management)` |
-| 17 | `feat: add order history and detail pages` |
-| 18 | `feat: add group order page and panel` |
-| 19 | `feat: add bundle size checks, accessibility pass, integration tests` |
+| Phase | Commit message                                                          |
+| ----- | ----------------------------------------------------------------------- |
+| 1     | `feat: initialize Astro project with Preact, Tailwind, Vercel`          |
+| 2     | `feat: add core types and TDD libraries (currency, pricing, theme)`     |
+| 3     | `feat: add merchant config system with import.meta.glob`                |
+| 4     | `feat: add middleware with subdomain routing and language resolution`   |
+| 5     | `feat: add BaseLayout with theme injection and branded 404 page`        |
+| 6     | `feat: add nanostores for merchant, cart, UI, and auth state`           |
+| 7     | `feat: add SDK client factories for server and client`                  |
+| 8     | `feat: set up Paraglide.js i18n with NL/EN/DE translations`             |
+| 9     | `feat: add static Astro components (header, hero, cards, SEO)`          |
+| 10    | `feat: add menu, category, and product detail pages`                    |
+| 11    | `feat: add interactive Preact islands`                                  |
+| 12    | `feat: add PostHog analytics integration with PII guard`                |
+| 13    | `feat: add dynamic sitemap.xml and robots.txt`                          |
+| 14    | `feat: add cart page and CMS pages`                                     |
+| 15    | `feat: add checkout flow with address autofill and payment reliability` |
+| 16    | `feat: add auth system (login page, OTP flow, cookie management)`       |
+| 17    | `feat: add order history and detail pages`                              |
+| 18    | `feat: add group order page and panel`                                  |
+| 19    | `feat: add bundle size checks, accessibility pass, integration tests`   |
 
 ---
 
@@ -47,11 +47,13 @@
 ### Gate 1: SDK availability (Go/No-Go)
 
 Determine how to install `@sous/storefront-sdk`:
+
 - Published to npm? → `pnpm add @sous/storefront-sdk`
 - Git dependency? → `pnpm add "git+ssh://..."`
 - Local link? → `pnpm add ../storefront-backend/storefront_backend/sdk/storefront-ts-client`
 
 **Verification:** `pnpm add <chosen-source>` succeeds, and this resolves in a `.ts` file:
+
 ```typescript
 import { createStorefrontClient } from '@sous/storefront-sdk';
 ```
@@ -61,6 +63,7 @@ import { createStorefrontClient } from '@sous/storefront-sdk';
 Confirm where product images are hosted and whether the CDN supports responsive variants (width/format query params for `srcset`).
 
 **Required output:** A documented image URL pattern, e.g.:
+
 ```
 https://cdn.poweredbysous.com/{merchant}/{image_id}?w=400&format=webp
 ```
@@ -88,6 +91,7 @@ Confirm two things against the live/staging API:
 Confirm the backend's CORS, cookie, and CSRF configuration for cross-subdomain authenticated requests. See Task 11 for the exact checklist. Without this, client-side authenticated API calls will silently fail.
 
 **Required output:** Documented answers to:
+
 - Does the backend echo requesting origin in `Access-Control-Allow-Origin`?
 - What is the auth cookie name and domain setting?
 - Is CSRF middleware active on API routes? If yes, what header/cookie name?
@@ -121,6 +125,7 @@ Does the merchant config need a `locationId` for time slot fetching via the API?
 ### Task 1: Initialize Astro project and install dependencies
 
 **Files:**
+
 - Create: `package.json`
 - Create: `astro.config.mjs`
 - Create: `tsconfig.json`
@@ -151,6 +156,7 @@ pnpm add -D tailwindcss typescript vitest @testing-library/preact jsdom happy-do
 ```
 
 Note: `@sous/storefront-sdk` — check open question #1 in design doc. If not published to npm, install via git dependency or local link:
+
 ```bash
 # If published: pnpm add @sous/storefront-sdk
 # If git: pnpm add "git+ssh://git@github.com:sous/storefront-sdk.git"
@@ -168,10 +174,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
-  integrations: [
-    preact({ compat: true }),
-    tailwind(),
-  ],
+  integrations: [preact({ compat: true }), tailwind()],
   prefetch: {
     prefetchAll: false,
     defaultStrategy: 'hover',
@@ -353,6 +356,7 @@ export default defineConfig({
 ```bash
 pnpm astro check && pnpm astro build
 ```
+
 Expected: Build succeeds (may warn about no pages yet).
 
 **Step 13: Commit**
@@ -367,6 +371,7 @@ git commit -m "feat: initialize Astro project with Preact, Tailwind, Vercel"
 ### Task 2: Create global styles and directory scaffolding
 
 **Files:**
+
 - Create: `src/styles/global.css`
 - Create: `public/fonts/.gitkeep`
 - Create: `public/merchants/.gitkeep`
@@ -425,6 +430,7 @@ git commit -m "feat: add global styles and directory scaffolding"
 ### Task 3: Create MerchantConfig type
 
 **Files:**
+
 - Create: `src/types/merchant.ts`
 
 **Step 1: Create the type** (`src/types/merchant.ts`)
@@ -501,6 +507,7 @@ git commit -m "feat: add MerchantConfig TypeScript type"
 ### Task 4: Currency formatting (TDD)
 
 **Files:**
+
 - Create: `src/lib/currency.ts`
 - Create: `src/lib/currency.test.ts`
 
@@ -539,6 +546,7 @@ describe('formatPrice', () => {
 ```bash
 pnpm vitest run src/lib/currency.test.ts
 ```
+
 Expected: FAIL — `formatPrice` not found.
 
 **Step 3: Implement** (`src/lib/currency.ts`)
@@ -557,6 +565,7 @@ export function formatPrice(amount: string, currency: string, locale: string): s
 ```bash
 pnpm vitest run src/lib/currency.test.ts
 ```
+
 Expected: All PASS.
 
 **Step 5: Commit**
@@ -571,6 +580,7 @@ git commit -m "feat: add currency formatting utility with tests"
 ### Task 5: Pricing engine (TDD)
 
 **Files:**
+
 - Create: `src/lib/pricing.ts`
 - Create: `src/lib/pricing.test.ts`
 
@@ -648,7 +658,9 @@ describe('hasUnitDiscount', () => {
   });
 
   it('returns false for bogo', () => {
-    expect(hasUnitDiscount(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }))).toBe(false);
+    expect(
+      hasUnitDiscount(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } })),
+    ).toBe(false);
   });
 
   it('returns false for no discount', () => {
@@ -658,22 +670,36 @@ describe('hasUnitDiscount', () => {
 
 describe('getDiscountLabel', () => {
   it('returns percentage label', () => {
-    expect(getDiscountLabel(makeItem({ discount: { type: 'percentage', value: 15 } }), 'EUR', 'nl-NL')).toBe('-15%');
+    expect(
+      getDiscountLabel(makeItem({ discount: { type: 'percentage', value: 15 } }), 'EUR', 'nl-NL'),
+    ).toBe('-15%');
   });
 
   it('returns fixed label with currency', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'fixed', value: 2 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'fixed', value: 2 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('2');
     expect(label).toContain('off');
   });
 
   it('returns bogo label', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'bogo', buyQuantity: 1, getQuantity: 1 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('Buy');
   });
 
   it('returns tiered label', () => {
-    const label = getDiscountLabel(makeItem({ discount: { type: 'tiered', quantity: 2, price: 15 } }), 'EUR', 'nl-NL');
+    const label = getDiscountLabel(
+      makeItem({ discount: { type: 'tiered', quantity: 2, price: 15 } }),
+      'EUR',
+      'nl-NL',
+    );
     expect(label).toContain('2');
   });
 });
@@ -737,11 +763,13 @@ describe('getLineSavings', () => {
 ```bash
 pnpm vitest run src/lib/pricing.test.ts
 ```
+
 Expected: FAIL.
 
 **Step 3: Implement** (`src/lib/pricing.ts`)
 
 Implement all 6 functions. Key rules:
+
 - `Math.round(x * 100) / 100` at each step (never `toFixed()`)
 - BOGO: `paidItems = qty - Math.floor(qty / (buy + get)) * get`
 - Tiered: if `qty >= tier.quantity`, use `tier.price` as line total
@@ -754,6 +782,7 @@ Reference: design doc section 8 (lines 637-672).
 ```bash
 pnpm vitest run src/lib/pricing.test.ts
 ```
+
 Expected: All PASS.
 
 **Step 5: Commit**
@@ -768,6 +797,7 @@ git commit -m "feat: add centralized pricing engine with discount support"
 ### Task 6: Theme mapping utility (TDD)
 
 **Files:**
+
 - Create: `src/lib/theme.ts`
 - Create: `src/lib/theme.test.ts`
 
@@ -825,6 +855,7 @@ git commit -m "feat: add theme-to-CSS mapping utility"
 ### Task 7: Merchant config loader with caching (TDD)
 
 **Files:**
+
 - Create: `src/merchants/index.ts`
 - Create: `src/merchants/index.test.ts`
 - Create: `src/merchants/bar-sumac.json`
@@ -836,6 +867,7 @@ Copy the full JSON from design doc section 3.1 (lines 118-170).
 **Step 2: Write failing tests** (`src/merchants/index.test.ts`)
 
 Test `loadMerchantConfig(slug)`:
+
 - Returns config for known slug
 - Returns `null` for unknown slug
 - Caches results (same object reference on second call)
@@ -881,6 +913,7 @@ git commit -m "feat: add merchant config loader with in-memory caching"
 ### Task 8: Implement middleware (TDD)
 
 **Files:**
+
 - Create: `src/middleware.ts`
 - Create: `src/lib/resolve-merchant.ts`
 - Create: `src/lib/resolve-merchant.test.ts`
@@ -934,6 +967,7 @@ Extract the pure function from design doc section 14 (lines 987-1012). Accept `h
 **Step 4: Implement middleware** (`src/middleware.ts`)
 
 Full implementation from design doc section 14 (lines 973-1088):
+
 - Calls `resolveMerchantSlug()` with env vars
 - Loads merchant config, rewrites to `/404` if not found
 - Extracts + validates language prefix, redirects preserving path+query
@@ -956,12 +990,14 @@ git commit -m "feat: add middleware with subdomain routing and language resoluti
 ### Task 9: Create BaseLayout and 404 page
 
 **Files:**
+
 - Create: `src/layouts/BaseLayout.astro`
 - Create: `src/pages/404.astro`
 
 **Step 1: Create BaseLayout** (`src/layouts/BaseLayout.astro`)
 
 The HTML shell that every page wraps. Key responsibilities:
+
 - Accepts `title`, `description`, `merchant` props
 - Injects merchant theme as CSS custom properties via `<style>` tag using `themeToCSS()`
 - Loads fonts (preload body font)
@@ -1031,6 +1067,7 @@ git commit -m "feat: add BaseLayout with theme injection and branded 404 page"
 ### Task 10: Create nanostores
 
 **Files:**
+
 - Create: `src/stores/merchant.ts`
 - Create: `src/stores/cart.ts`
 - Create: `src/stores/ui.ts`
@@ -1062,6 +1099,7 @@ git commit -m "feat: add nanostores for merchant, cart, UI, and auth state"
 ### Task 11: Create SDK client factories
 
 **Files:**
+
 - Create: `src/lib/api.ts`
 
 **Step 1: Create API client** (`src/lib/api.ts`)
@@ -1069,8 +1107,9 @@ git commit -m "feat: add nanostores for merchant, cart, UI, and auth state"
 Two patterns:
 
 1. **Server-side** (created in middleware, stored in `Astro.locals.sdk`):
+
    ```typescript
-   createStorefrontClient({ baseUrl, vendorId, language, token })
+   createStorefrontClient({ baseUrl, vendorId, language, token });
    ```
 
 2. **Client-side** (singleton for browser, `getClient()`):
@@ -1080,7 +1119,7 @@ Two patterns:
      vendorId: merchant.merchantId,
      language: document.documentElement.lang,
      fetch: (url, init) => globalThis.fetch(url, { ...init, credentials: 'include' }),
-   })
+   });
    ```
 
 Note: The SDK accepts a custom `fetch` function (not `fetchOptions`). To send httpOnly auth cookies, wrap `globalThis.fetch` with `credentials: 'include'`.
@@ -1113,6 +1152,7 @@ git commit -m "feat: add SDK client factories for server and client"
 ### Task 12: Set up Paraglide.js
 
 **Files:**
+
 - Create: `src/i18n/messages/nl.json`
 - Create: `src/i18n/messages/en.json`
 - Create: `src/i18n/messages/de.json`
@@ -1176,6 +1216,7 @@ git commit -m "feat: set up Paraglide.js i18n with NL/EN/DE translations"
 ### Task 13: Header and Footer
 
 **Files:**
+
 - Create: `src/components/astro/Header.astro`
 - Create: `src/components/astro/Footer.astro`
 
@@ -1199,11 +1240,13 @@ git commit -m "feat: add Header and Footer static components"
 ### Task 14: HeroSection
 
 **Files:**
+
 - Create: `src/components/astro/HeroSection.astro`
 
 Reference: design doc section 5.3 — Cover image with overlapping logo, restaurant name, description, location, hours. Port from prototype's `restaurant-hero.tsx`.
 
 Key details:
+
 - Hero image preloaded in `<head>` via `<link rel="preload">`
 - Logo overlaps the cover image (negative margin or absolute position)
 - Responsive: full-bleed on mobile, constrained on desktop
@@ -1221,6 +1264,7 @@ git commit -m "feat: add HeroSection component with cover image and merchant inf
 ### Task 15: ProductCard (grid + list variants) and PromoBadge
 
 **Files:**
+
 - Create: `src/components/astro/ProductCard.astro`
 - Create: `src/components/astro/ProductGrid.astro`
 - Create: `src/components/astro/ProductList.astro`
@@ -1230,6 +1274,7 @@ git commit -m "feat: add HeroSection component with cover image and merchant inf
 Reference: design doc section 5.3 (lines 380-412).
 
 **ProductCard:** Static markup wrapping an `<AddToCartButton>` Preact island. Two layout modes:
+
 - Grid: column layout, full-width square image, title, description, price, button
 - List (row): 104px fixed image left, content right
 
@@ -1253,6 +1298,7 @@ git commit -m "feat: add ProductCard, MenuSection, and PromoBadge static compone
 ### Task 16: SEOHead and StructuredData
 
 **Files:**
+
 - Create: `src/components/astro/SEOHead.astro`
 - Create: `src/components/astro/StructuredData.astro`
 - Create: `src/lib/structured-data.ts`
@@ -1267,6 +1313,7 @@ Reference: design doc section 11.3-11.4 (lines 824-839).
 **Step 2: Implement** (`src/lib/structured-data.ts`)
 
 Functions that return JSON-LD objects matching Schema.org types:
+
 - `generateRestaurantLD(merchant)` → `Restaurant` with `Menu`, `MenuSection[]`, `MenuItem[]`
 - `generateMenuItemLD(product, merchant)` → `MenuItem` + `Offer`
 - `generateBreadcrumbLD(items)` → `BreadcrumbList`
@@ -1274,6 +1321,7 @@ Functions that return JSON-LD objects matching Schema.org types:
 **Step 3: Create SEOHead.astro**
 
 Uses `astro-seo` to consolidate `<head>` tags. Reference design doc section 11.2 (lines 812-822):
+
 - Title with merchant's `titleTemplate`
 - Meta description
 - Canonical URL
@@ -1299,6 +1347,7 @@ git commit -m "feat: add SEO head, structured data components and JSON-LD genera
 ### Task 17: Menu page
 
 **Files:**
+
 - Create: `src/pages/[lang]/index.astro`
 
 This is the most important page — the entry point for every merchant storefront.
@@ -1318,7 +1367,8 @@ import type { paths } from '@sous/storefront-sdk';
 type SDK = ReturnType<typeof import('@sous/storefront-sdk').createStorefrontClient>;
 
 // Extract the product type from the SDK's typed response
-type ProductListResponse = paths['/api/v1/products/']['get']['responses']['200']['content']['application/json'];
+type ProductListResponse =
+  paths['/api/v1/products/']['get']['responses']['200']['content']['application/json'];
 type Product = ProductListResponse['results'][number];
 
 interface FetchAllOptions {
@@ -1326,10 +1376,7 @@ interface FetchAllOptions {
   language: string;
 }
 
-export async function fetchAllProducts(
-  sdk: SDK,
-  opts: FetchAllOptions,
-): Promise<Product[]> {
+export async function fetchAllProducts(sdk: SDK, opts: FetchAllOptions): Promise<Product[]> {
   // First page: use typed SDK call (handles headers automatically)
   const { data } = await sdk.GET('/api/v1/products/');
   if (!data) return [];
@@ -1358,16 +1405,18 @@ export async function fetchAllProducts(
       headers: {
         'X-Vendor-ID': opts.vendorId,
         'Accept-Language': opts.language,
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
     if (!res.ok) {
-      console.error(`fetchAllProducts: page fetch failed (${res.status}), returning partial results`);
+      console.error(
+        `fetchAllProducts: page fetch failed (${res.status}), returning partial results`,
+      );
       break;
     }
 
-    const page = await res.json() as ProductListResponse;
+    const page = (await res.json()) as ProductListResponse;
     all.push(...(page.results ?? []));
     nextUrl = page.next ?? null;
   }
@@ -1377,6 +1426,7 @@ export async function fetchAllProducts(
 ```
 
 Caller in `.astro` frontmatter passes values from `Astro.locals`:
+
 ```typescript
 const products = await fetchAllProducts(sdk, {
   vendorId: merchant.merchantId,
@@ -1404,10 +1454,11 @@ const { data: categories } = await sdk.GET('/api/v1/categories/');
 const products = await fetchAllProducts(sdk);
 
 // Group products by category, preserving category order
-const sections = categories?.results?.map(cat => ({
-  category: cat,
-  products: products.filter(p => p.category_id === cat.id),
-})) ?? [];
+const sections =
+  categories?.results?.map((cat) => ({
+    category: cat,
+    products: products.filter((p) => p.category_id === cat.id),
+  })) ?? [];
 ---
 
 <BaseLayout title={merchant.name} description={merchant.seo.defaultDescription}>
@@ -1416,9 +1467,11 @@ const sections = categories?.results?.map(cat => ({
   <Header merchant={merchant} lang={lang} />
   <HeroSection merchant={merchant} />
   <!-- CategoryTabs Preact island: client:load -->
-  {sections.map(s => (
-    <MenuSection category={s.category} products={s.products} merchant={merchant} lang={lang} />
-  ))}
+  {
+    sections.map((s) => (
+      <MenuSection category={s.category} products={s.products} merchant={merchant} lang={lang} />
+    ))
+  }
   <!-- CartBar, CartDrawer, ProductDetail: client:load -->
   <!-- FreshnessProvider: client:idle -->
   <Footer merchant={merchant} lang={lang} />
@@ -1445,6 +1498,7 @@ git commit -m "feat: add menu page with category sections and SSR data fetching"
 ### Task 18: Category and Product detail pages
 
 **Files:**
+
 - Create: `src/pages/[lang]/category/[slug].astro`
 - Create: `src/pages/[lang]/product/[slug].astro`
 
@@ -1454,17 +1508,21 @@ git commit -m "feat: add menu page with category sections and SSR data fetching"
 
 - **If API supports `?slug={slug}`:** Fetch directly in frontmatter:
   ```typescript
-  const { data } = await sdk.GET('/api/v1/products/', { params: { query: { slug: Astro.params.slug } } });
+  const { data } = await sdk.GET('/api/v1/products/', {
+    params: { query: { slug: Astro.params.slug } },
+  });
   const product = data?.results?.[0];
   if (!product) return Astro.redirect('/404');
   ```
 - **If slug is not supported:** Products include both `id` and `slug` in list results. Build a slug→id lookup from the category page's product list (passed via query param or fetched):
   ```typescript
   const products = await fetchAllProducts(sdk);
-  const product = products.find(p => p.slug === Astro.params.slug);
+  const product = products.find((p) => p.slug === Astro.params.slug);
   if (!product) return Astro.redirect('/404');
   // Fetch full detail with modifiers using the resolved ID
-  const { data: detail } = await sdk.GET('/api/v1/products/{id}/', { params: { path: { id: product.id } } });
+  const { data: detail } = await sdk.GET('/api/v1/products/{id}/', {
+    params: { path: { id: product.id } },
+  });
   ```
 
 Both pages include SEOHead + StructuredData (BreadcrumbList + relevant schema).
@@ -1483,11 +1541,13 @@ git commit -m "feat: add category and product detail pages"
 ### Task 19: CategoryTabs
 
 **Files:**
+
 - Create: `src/components/interactive/CategoryTabs.tsx`
 
 Reference: design doc section 5.3 (lines 387-390) and prototype `category-nav.tsx`.
 
 Key behaviors:
+
 - Horizontal scrollable tab bar
 - Animated sliding pill indicator (CSS transform based on active tab position)
 - Scroll-based active category tracking via IntersectionObserver on `MenuSection` headings
@@ -1511,6 +1571,7 @@ git commit -m "feat: add CategoryTabs island with scroll tracking and animated i
 ### Task 20: QuantitySelector, AnimatedNumber, and ConfirmRemoveDialog
 
 **Files:**
+
 - Create: `src/components/interactive/QuantitySelector.tsx`
 - Create: `src/components/interactive/AnimatedNumber.tsx`
 - Create: `src/components/interactive/ConfirmRemoveDialog.tsx`
@@ -1535,11 +1596,13 @@ git commit -m "feat: add QuantitySelector, AnimatedNumber, and ConfirmRemoveDial
 ### Task 21: AddToCartButton
 
 **Files:**
+
 - Create: `src/components/interactive/AddToCartButton.tsx`
 
 Reference: design doc section 5.3 (lines 381-385).
 
 Key behaviors:
+
 - Simple items (no modifiers): tap "Add" → instant add to cart via API, show quantity stepper
 - Complex items (has modifiers): tap "Add" → opens ProductDetail modal (sets `$selectedProduct`)
 - After first add: stepper mode (quantity count shown, expands to full stepper on hover/tap)
@@ -1562,6 +1625,7 @@ git commit -m "feat: add AddToCartButton island with quick-add and stepper modes
 ### Task 22: CartBar and CartDrawer
 
 **Files:**
+
 - Create: `src/components/interactive/CartBar.tsx`
 - Create: `src/components/interactive/CartDrawer.tsx`
 
@@ -1589,11 +1653,13 @@ git commit -m "feat: add CartBar and CartDrawer islands"
 ### Task 23: ProductDetail modal
 
 **Files:**
+
 - Create: `src/components/interactive/ProductDetail.tsx`
 
 Reference: design doc section 5.3 (lines 392-399).
 
 The most complex interactive component. Key behaviors:
+
 - Bottom sheet on mobile (slides up), centered dialog on desktop (scales in)
 - Modifier groups: `radio` (pick 1), `checkbox` (pick up to N), `quantity` (+/- per option)
 - Required groups: "Required" badge, green checkmark when filled
@@ -1620,6 +1686,7 @@ git commit -m "feat: add ProductDetail modal island with modifiers and cross-sel
 ### Task 24: SearchBar
 
 **Files:**
+
 - Create: `src/components/interactive/SearchBar.tsx`
 
 Product search with autocomplete. Calls `GET /api/v1/products/search/` with debounced input. Renders results as a dropdown. Click navigates to product detail or opens modal.
@@ -1638,11 +1705,13 @@ git commit -m "feat: add SearchBar island with product search"
 ### Task 25: FreshnessProvider
 
 **Files:**
+
 - Create: `src/components/interactive/FreshnessProvider.tsx`
 
 Reference: design doc section 2.4 (lines 92-108).
 
 Background data refresh island. On mount:
+
 1. Fetches fresh product data from API
 2. Compares `sold_out`, `is_available`, `price`, `compare_at_price` against SSR-rendered data
 3. Patches volatile fields silently (no loading indicators)
@@ -1662,9 +1731,11 @@ git commit -m "feat: add FreshnessProvider island for background data refresh"
 ### Task 26: Wire up islands in menu page
 
 **Files:**
+
 - Modify: `src/pages/[lang]/index.astro`
 
 Add all Preact island imports with correct hydration directives:
+
 - `<CategoryTabs client:load categories={...} />`
 - `<CartBar client:load />`
 - `<CartDrawer client:load />`
@@ -1673,6 +1744,7 @@ Add all Preact island imports with correct hydration directives:
 - `<AddToCartButton client:visible />` inside each ProductCard
 
 Also inject merchant config into `$merchant` store via an inline `<script>`:
+
 ```html
 <script define:vars={{ merchantJSON: JSON.stringify(merchant) }}>
   // Hydrate merchant store for Preact islands
@@ -1696,6 +1768,7 @@ git commit -m "feat: wire up all Preact islands in menu page"
 ### Task 27: PostHog analytics integration
 
 **Files:**
+
 - Create: `src/analytics/types.ts`
 - Create: `src/analytics/events.ts`
 - Create: `src/analytics/context.ts`
@@ -1754,11 +1827,21 @@ Add the inline PostHog stub (~200 bytes) to `BaseLayout.astro` `<head>`. The stu
 <script is:inline>
   // Queue-based stub: events are pushed as arrays, NOT via a method override.
   // The real PostHog SDK replaces this array and replays queued calls on init.
-  !function(){var p=window.posthog=window.posthog||[];if(!p.__loaded){p._i=[];
-  p.init=function(k,o){p._i.push([k,o])};
-  p.capture=function(){p.push(Array.prototype.slice.call(arguments))};
-  p.identify=function(){p.push(['$identify'].concat(Array.prototype.slice.call(arguments)))};
-  }}();
+  !(function () {
+    var p = (window.posthog = window.posthog || []);
+    if (!p.__loaded) {
+      p._i = [];
+      p.init = function (k, o) {
+        p._i.push([k, o]);
+      };
+      p.capture = function () {
+        p.push(Array.prototype.slice.call(arguments));
+      };
+      p.identify = function () {
+        p.push(['$identify'].concat(Array.prototype.slice.call(arguments)));
+      };
+    }
+  })();
 </script>
 ```
 
@@ -1778,10 +1861,12 @@ git commit -m "feat: add PostHog analytics with 31 events, PII guard, and async 
 ### Task 28: Sitemap and robots.txt
 
 **Files:**
+
 - Create: `src/pages/sitemap.xml.ts`
 - Create: `src/pages/robots.txt.ts`
 
 **sitemap.xml.ts:** SSR endpoint that:
+
 - Reads merchant from `Astro.locals`
 - Fetches all products, categories, CMS pages via SDK
 - Generates XML sitemap with `<xhtml:link>` for language alternates
@@ -1804,6 +1889,7 @@ git commit -m "feat: add dynamic sitemap.xml and robots.txt endpoints"
 ### Task 29: Cart page and CMS pages
 
 **Files:**
+
 - Create: `src/pages/[lang]/cart.astro`
 - Create: `src/pages/[lang]/pages/[slug].astro`
 
@@ -1825,22 +1911,26 @@ git commit -m "feat: add cart page and CMS pages"
 ### Task 30: Checkout flow
 
 **Files:**
+
 - Create: `src/components/interactive/CheckoutFlow.tsx`
 - Create: `src/components/interactive/AddressForm.tsx`
 - Create: `src/pages/[lang]/checkout.astro`
 
 **BLOCKER:** Requires Phase 0 gates:
+
 - Gate 5: Customer auth flow readiness (Keycloak OTP)
 - Gate 6: PostcodeAPI provider chosen
 - Gate 7: Fulfilment location IDs confirmed
 
 **CheckoutFlow.tsx:** Multi-step form island. Steps:
+
 1. Fulfilment mode (delivery/pickup)
 2. Delivery info (address, time slot)
 3. Payment method selection
 4. Review + pay
 
 Key reliability features (design doc section 7.2, lines 558-581):
+
 - Duplicate submit prevention (`submittingRef`)
 - Idempotency keys on payment/complete calls
 - Retry with exponential backoff for 502/503/504
@@ -1864,6 +1954,7 @@ git commit -m "feat: add checkout flow with address autofill and payment reliabi
 ### Task 31: Auth API routes
 
 **Files:**
+
 - Create: `src/pages/[lang]/login.astro` — user-facing login page (OTP entry form)
 - Create: `src/components/interactive/LoginFlow.tsx` — Preact island for OTP request/verify
 - Create: `src/pages/api/auth/request-otp.ts` — API route: proxy OTP request to backend
@@ -1876,10 +1967,12 @@ git commit -m "feat: add checkout flow with address autofill and payment reliabi
 **Login page** (`/:lang/login`): User-facing page that middleware redirects to when an authenticated route is accessed without an auth cookie. Accepts a `?redirect=` query param to return users to their original destination after login. SEO: `noindex`.
 
 **LoginFlow.tsx** (Preact island, `client:load`): Two-step form:
+
 1. Enter phone number → calls `POST /api/auth/request-otp`
 2. Enter OTP code → calls `POST /api/auth/verify-otp` → on success, redirects to `?redirect` param or `/:lang/`
 
 **API routes** (server-side only):
+
 - **request-otp:** Proxies to `POST /api/v1/auth/otp/request/` on backend
 - **verify-otp:** Proxies to `POST /api/v1/auth/otp/verify/`, receives JWT, sets httpOnly cookie with **env-driven attributes**:
   ```
@@ -1904,6 +1997,7 @@ Reference: design doc section 6.4 (lines 474-480).
 ### Task 32: Order history and detail pages
 
 **Files:**
+
 - Create: `src/components/interactive/OrderHistory.tsx`
 - Create: `src/pages/[lang]/orders/index.astro`
 - Create: `src/pages/[lang]/orders/[number].astro`
@@ -1928,6 +2022,7 @@ git commit -m "feat: add order history and detail pages"
 ### Task 33: Group order page
 
 **Files:**
+
 - Create: `src/components/interactive/GroupOrderPanel.tsx`
 - Create: `src/pages/[lang]/group/[joinCode].astro`
 
@@ -1951,6 +2046,7 @@ git commit -m "feat: add group order page and panel"
 ### Task 34: Bundle size CI check
 
 **Files:**
+
 - Create: `.github/workflows/bundle-size.yml` (or add to existing CI)
 - Modify: `package.json` (add `size-limit` config)
 
@@ -2023,9 +2119,11 @@ This is a coarse ceiling. If it trips, investigate with `pnpm astro build --verb
 ### Task 35: Accessibility review pass
 
 **Files:**
+
 - Modify: All interactive components as needed
 
 Verify:
+
 - [ ] All interactive elements have min 44px touch targets (`min-h-11 min-w-11`)
 - [ ] Category tabs: arrow key navigation, `aria-selected`, `tabindex` management
 - [ ] Cart drawer: focus trap, Escape to close, `role="dialog"`, `aria-modal="true"`
@@ -2049,6 +2147,7 @@ git commit -am "fix: accessibility review pass — ARIA, focus traps, touch targ
 ### Task 35b: Integration tests for critical flows
 
 **Files:**
+
 - Create: `src/lib/resolve-merchant.integration.test.ts`
 - Create: `src/stores/cart.integration.test.ts`
 - Create: `src/middleware.integration.test.ts`
@@ -2058,6 +2157,7 @@ The unit tests in Phase 2 cover pure functions. These integration tests cover **
 **Middleware integration tests** (`src/middleware.integration.test.ts`):
 
 Test the full `onRequest` handler with a mock `next()`:
+
 - Unknown merchant slug → returns rewritten 404 response
 - Valid merchant, no lang prefix → redirects to `/{defaultLang}{originalPath}{query}`
 - Valid merchant, invalid lang → redirects preserving path
@@ -2074,7 +2174,9 @@ function makeContext(url: string, overrides = {}) {
   return {
     request: new Request(url),
     locals: {} as any,
-    redirect: vi.fn((path: string) => new Response(null, { status: 302, headers: { Location: path } })),
+    redirect: vi.fn(
+      (path: string) => new Response(null, { status: 302, headers: { Location: path } }),
+    ),
     rewrite: vi.fn((path: string) => new Response(`rewritten:${path}`, { status: 404 })),
     ...overrides,
   };
@@ -2099,6 +2201,7 @@ describe('middleware', () => {
 **Cart store integration tests** (`src/stores/cart.integration.test.ts`):
 
 Test optimistic update → API failure → rollback:
+
 ```typescript
 describe('cart optimistic rollback', () => {
   it('reverts $cart on API error after optimistic add', async () => {
@@ -2116,9 +2219,15 @@ describe('cart optimistic rollback', () => {
 
 ```typescript
 describe('checkout payment', () => {
-  it('sends Idempotency-Key header on payment call', async () => { /* ... */ });
-  it('reuses same key on retry after network failure', async () => { /* ... */ });
-  it('prevents duplicate submit via submittingRef guard', async () => { /* ... */ });
+  it('sends Idempotency-Key header on payment call', async () => {
+    /* ... */
+  });
+  it('reuses same key on retry after network failure', async () => {
+    /* ... */
+  });
+  it('prevents duplicate submit via submittingRef guard', async () => {
+    /* ... */
+  });
 });
 ```
 
@@ -2126,9 +2235,15 @@ describe('checkout payment', () => {
 
 ```typescript
 describe('auth routes', () => {
-  it('POST /api/auth/login sets httpOnly cookie on success', async () => { /* ... */ });
-  it('POST /api/auth/refresh replaces cookie', async () => { /* ... */ });
-  it('POST /api/auth/logout clears cookie', async () => { /* ... */ });
+  it('POST /api/auth/login sets httpOnly cookie on success', async () => {
+    /* ... */
+  });
+  it('POST /api/auth/refresh replaces cookie', async () => {
+    /* ... */
+  });
+  it('POST /api/auth/logout clears cookie', async () => {
+    /* ... */
+  });
 });
 ```
 
@@ -2151,6 +2266,7 @@ DEFAULT_MERCHANT=bar-sumac pnpm astro dev
 **Step 2: Verify in browser**
 
 Visit `http://bar-sumac.poweredbysous.localhost:4321/nl/` and confirm:
+
 - [ ] Menu page renders with merchant branding
 - [ ] Category tabs work (click + scroll tracking)
 - [ ] Add to cart works (quick-add + modal for complex items)

@@ -34,8 +34,9 @@ export interface Cart {
 export const $cart = atom<Cart | null>(null);
 export const $cartLoading = atom(false);
 
-export const $itemCount = computed($cart, (cart) =>
-  cart?.line_items.reduce((sum, item) => sum + item.quantity, 0) ?? 0,
+export const $itemCount = computed(
+  $cart,
+  (cart) => cart?.line_items.reduce((sum, item) => sum + item.quantity, 0) ?? 0,
 );
 
 export const $cartTotal = computed($cart, (cart) => cart?.cart_total ?? '0.00');

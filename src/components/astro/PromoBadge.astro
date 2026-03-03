@@ -11,8 +11,10 @@ const { item, currency, locale } = Astro.props;
 const label = getDiscountLabel(item, currency, locale);
 ---
 
-{label && (
-  <span class="inline-flex items-center rounded-sm bg-destructive px-1.5 py-0.5 text-xs font-medium text-destructive-foreground">
-    {label}
-  </span>
-)}
+{
+  label && (
+    <span class="inline-flex items-center rounded-sm bg-destructive px-1.5 py-0.5 text-xs font-medium text-destructive-foreground">
+      {label}
+    </span>
+  )
+}

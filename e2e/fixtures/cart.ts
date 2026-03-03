@@ -5,12 +5,12 @@ export interface CartFixture {
   line_items: Array<{
     id: string;
     product_id: string;
-    product_name: string;
+    product_title: string;
     product_image?: string;
     quantity: number;
     unit_price: string;
     line_total: string;
-    modifiers: Array<{
+    selected_options: Array<{
       id: string;
       name: string;
       price: string;
@@ -44,12 +44,12 @@ export function cartWithOneItem(): CartFixture {
       {
         id: 'li-1',
         product_id: 'prod-1',
-        product_name: 'Falafel Wrap',
+        product_title: 'Falafel Wrap',
         product_image: 'https://images.example.com/falafel-wrap.jpg',
         quantity: 1,
         unit_price: '8.50',
         line_total: '8.50',
-        modifiers: [],
+        selected_options: [],
       },
     ],
     cart_total: '8.50',
@@ -64,24 +64,22 @@ export function cartWithMultipleItems(): CartFixture {
       {
         id: 'li-1',
         product_id: 'prod-1',
-        product_name: 'Falafel Wrap',
+        product_title: 'Falafel Wrap',
         product_image: 'https://images.example.com/falafel-wrap.jpg',
         quantity: 2,
         unit_price: '8.50',
         line_total: '17.00',
-        modifiers: [],
+        selected_options: [],
       },
       {
         id: 'li-2',
         product_id: 'prod-2',
-        product_name: 'Shawarma Bowl',
+        product_title: 'Shawarma Bowl',
         product_image: 'https://images.example.com/shawarma-bowl.jpg',
         quantity: 1,
         unit_price: '14.50',
         line_total: '14.50',
-        modifiers: [
-          { id: 'opt-regular', name: 'Regular', price: '0.00', quantity: 1 },
-        ],
+        selected_options: [{ id: 'opt-regular', name: 'Regular', price: '0.00', quantity: 1 }],
       },
     ],
     cart_total: '31.50',
@@ -96,12 +94,12 @@ export function cartWithDiscount(): CartFixture {
       {
         id: 'li-1',
         product_id: 'prod-4',
-        product_name: 'Baklava',
+        product_title: 'Baklava',
         product_image: 'https://images.example.com/baklava.jpg',
         quantity: 1,
         unit_price: '5.10',
         line_total: '5.10',
-        modifiers: [],
+        selected_options: [],
         discount: {
           type: 'percentage',
           label: '15% off',

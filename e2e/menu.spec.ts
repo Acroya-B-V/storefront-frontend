@@ -1,10 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {
-  resetMockApi,
-  menuPage,
-  blockAnalytics,
-  waitForHydration,
-} from './helpers/test-utils';
+import { resetMockApi, menuPage, blockAnalytics, waitForHydration } from './helpers/test-utils';
 import { categories, products } from './fixtures/products';
 
 test.describe('Menu page', () => {
@@ -50,7 +45,9 @@ test.describe('Menu page', () => {
     const baklavaSection = page.locator('[data-add-to-cart="prod-4"]');
     // If the button exists, it should be disabled
     const button = baklavaSection.first();
+    // eslint-disable-next-line playwright/no-conditional-in-test -- button only exists when sold-out variant is rendered
     if (await button.count()) {
+      // eslint-disable-next-line playwright/no-conditional-expect
       await expect(button).toBeDisabled();
     }
   });

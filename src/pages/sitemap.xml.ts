@@ -4,12 +4,17 @@ import { slugify } from '@/lib/normalize';
 import { fetchCollectionsOrCategories } from '@/lib/collections';
 
 function escapeXml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 export const GET: APIRoute = async ({ locals, url }) => {
   const merchant = locals.merchant as MerchantConfig | undefined;
-  const sdk = locals.sdk as any;
+  const sdk = locals.sdk;
 
   if (!merchant || !sdk) {
     return new Response('Not found', { status: 404 });
@@ -29,7 +34,8 @@ export const GET: APIRoute = async ({ locals, url }) => {
     console.error('sitemap: failed to fetch products', productsResult.error);
   }
 
-  const products: Record<string, unknown>[] = productsResult.data?.results ?? [];
+  const products: Record<string, unknown>[] =
+    ((productsResult.data as Record<string, unknown>)?.results as Record<string, unknown>[]) ?? [];
   const collections = sectionsResult.sections;
 
   // If both fetches returned empty, return 503 so crawlers retain the previous sitemap
@@ -55,14 +61,15 @@ export const GET: APIRoute = async ({ locals, url }) => {
 
   // Product pages
   for (const product of products) {
-    const raw = product as any;
-    const name = raw.title ?? raw.name ?? String(raw.id);
-    const apiSlug = raw.slug as string | undefined;
-    const productSlug = apiSlug?.includes('--') ? apiSlug : `${slugify(apiSlug ?? name)}--${raw.id}`;
+    const name = String(product.title ?? product.name ?? product.id);
+    const apiSlug = product.slug as string | undefined;
+    const productSlug = apiSlug?.includes('--')
+      ? apiSlug
+      : `${slugify(apiSlug ?? name)}--${product.id}`;
     urls.push({
       loc: `/product/${escapeXml(productSlug)}`,
       langs: languages,
-      lastmod: raw.updated_at,
+      lastmod: product.updated_at as string | undefined,
     });
   }
 

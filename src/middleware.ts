@@ -4,10 +4,10 @@ import { resolveMerchantSlug } from './lib/resolve-merchant';
 import { createStorefrontClient } from './lib/sdk-stub';
 
 const CACHEABLE_PATTERNS = [
-  /^\/[a-z]{2}\/?$/,          // menu page
-  /^\/[a-z]{2}\/product\//,   // product pages
-  /^\/[a-z]{2}\/collection\//,  // collection pages
-  /^\/[a-z]{2}\/pages\//,     // CMS pages
+  /^\/[a-z]{2}\/?$/, // menu page
+  /^\/[a-z]{2}\/product\//, // product pages
+  /^\/[a-z]{2}\/collection\//, // collection pages
+  /^\/[a-z]{2}\/pages\//, // CMS pages
 ];
 
 // Paths that need merchant context but skip language prefix routing
@@ -84,7 +84,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const response = await next();
 
   // 6. Add cache headers with auth/personalization guards
-  const isCacheable = CACHEABLE_PATTERNS.some(p => p.test(url.pathname));
+  const isCacheable = CACHEABLE_PATTERNS.some((p) => p.test(url.pathname));
   const hasAuthCookie = context.cookies.has('auth_token');
   const responseSetsCookie = response.headers.has('set-cookie');
 

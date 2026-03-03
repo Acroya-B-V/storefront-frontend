@@ -15,26 +15,28 @@ export default defineConfig({
   globalTeardown: './e2e/global-teardown.ts',
 
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: process.env.BASE_URL || 'http://localhost:4321',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
 
-  webServer: [
-    {
-      command: 'npx tsx e2e/helpers/mock-api.ts',
-      port: 4322,
-      timeout: 10_000,
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'astro dev --port 4321',
-      port: 4321,
-      timeout: 30_000,
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
+  webServer: process.env.BASE_URL
+    ? undefined
+    : [
+        {
+          command: 'npx tsx e2e/helpers/mock-api.ts',
+          port: 4322,
+          timeout: 10_000,
+          reuseExistingServer: !process.env.CI,
+        },
+        {
+          command: 'astro dev --port 4321',
+          port: 4321,
+          timeout: 30_000,
+          reuseExistingServer: !process.env.CI,
+        },
+      ],
 
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },

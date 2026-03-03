@@ -28,6 +28,7 @@ test.describe('Navigation and language routing', () => {
     const response = await page.goto('/nl/nonexistent-page-xyz');
     // The app either returns 404 or redirects — both are acceptable
     const status = response?.status() ?? 0;
+    // eslint-disable-next-line playwright/no-conditional-in-test -- multiple valid response codes
     const isRedirect = status >= 300 && status < 400;
     const isNotFound = status === 404;
     const isOk = status === 200; // Redirected to menu
@@ -39,7 +40,9 @@ test.describe('Navigation and language routing', () => {
     await waitForHydration(page);
 
     // Click a category tab — "Main Courses"
-    const tab = page.getByRole('tablist', { name: 'Menu' }).getByRole('tab', { name: 'Main Courses' });
+    const tab = page
+      .getByRole('tablist', { name: 'Menu' })
+      .getByRole('tab', { name: 'Main Courses' });
     await tab.click();
 
     // The corresponding section heading should be visible in the viewport

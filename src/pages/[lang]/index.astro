@@ -20,13 +20,14 @@ const { sections: menuSections, source } = await fetchCollectionsOrCategories(sd
 
 const sectionProducts = await Promise.all(
   menuSections.map(async (section) => {
-    const result = source === 'collections'
-      ? await sdk.GET(`/api/v1/collections/{slug}/products/`, {
-          params: { path: { slug: section.slug } },
-        })
-      : await sdk.GET('/api/v1/products/', {
-          params: { query: { category: String(section.id) } },
-        });
+    const result =
+      source === 'collections'
+        ? await sdk.GET(`/api/v1/collections/{slug}/products/`, {
+            params: { path: { slug: section.slug } },
+          })
+        : await sdk.GET('/api/v1/products/', {
+            params: { query: { category: String(section.id) } },
+          });
 
     if (result.error) {
       console.error(`[index] failed to fetch products for "${section.name}"`, result.error);
@@ -58,15 +59,17 @@ const productIds = allProducts.map((p) => String(p.id));
   <CategoryTabs client:load categories={categories} />
 
   <main>
-    {sections.map((s) => (
-      <MenuSection
-        category={s.category}
-        products={s.products}
-        lang={lang}
-        currency={merchant.currency}
-        layout={merchant.layout}
-      />
-    ))}
+    {
+      sections.map((s) => (
+        <MenuSection
+          category={s.category}
+          products={s.products}
+          lang={lang}
+          currency={merchant.currency}
+          layout={merchant.layout}
+        />
+      ))
+    }
   </main>
 
   <FreshnessProvider client:idle productIds={productIds} />

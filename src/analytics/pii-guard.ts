@@ -19,10 +19,7 @@ const PII_FIELDS = new Set([
   'city',
 ]);
 
-export function stripPII(
-  props: Record<string, unknown>,
-  depth = 0,
-): Record<string, unknown> {
+export function stripPII(props: Record<string, unknown>, depth = 0): Record<string, unknown> {
   // Cap recursion to avoid pathological inputs
   const MAX_DEPTH = 4;
   const cleaned: Record<string, unknown> = {};

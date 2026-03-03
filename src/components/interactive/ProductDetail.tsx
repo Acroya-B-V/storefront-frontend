@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { $selectedProduct } from '@/stores/ui';
-import { $cart, $cartLoading, ensureCart, setStoredCartId } from '@/stores/cart';
+import { $cart, $cartLoading, ensureCart, setStoredCartId, type Cart } from '@/stores/cart';
 import { $merchant } from '@/stores/merchant';
 import { formatPrice, langToLocale } from '@/lib/currency';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
@@ -134,7 +134,6 @@ export default function ProductDetail({ lang }: Props) {
     fetchProduct();
   }, [selectedProduct]);
 
-
   const handleRadioSelect = (groupId: string, optionId: string) => {
     setSelections((prev) => ({ ...prev, [groupId]: [optionId] }));
   };
@@ -219,9 +218,17 @@ export default function ProductDetail({ lang }: Props) {
 
         for (const opt of group.options) {
           if (group.type === 'quantity' && (groupQtys[opt.id] ?? 0) > 0) {
-            options.push({ option_id: Number(opt.id), option_group_id: Number(group.id), quantity: groupQtys[opt.id] });
+            options.push({
+              option_id: Number(opt.id),
+              option_group_id: Number(group.id),
+              quantity: groupQtys[opt.id],
+            });
           } else if (selected.includes(opt.id)) {
-            options.push({ option_id: Number(opt.id), option_group_id: Number(group.id), quantity: 1 });
+            options.push({
+              option_id: Number(opt.id),
+              option_group_id: Number(group.id),
+              quantity: 1,
+            });
           }
         }
       }
@@ -239,9 +246,9 @@ export default function ProductDetail({ lang }: Props) {
       });
 
       if (data) {
-        const cartData = data as any;
+        const cartData = data as Cart;
         $cart.set(cartData);
-        if (cartData?.id) setStoredCartId(cartData.id);
+        if (cartData.id) setStoredCartId(cartData.id);
         close();
       }
     } catch (err) {
@@ -258,7 +265,11 @@ export default function ProductDetail({ lang }: Props) {
   return (
     <div class="fixed inset-0 z-50">
       {/* Backdrop */}
-      <div class="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={close} aria-hidden="true" />
+      <div
+        class="absolute inset-0 bg-foreground/20 backdrop-blur-sm"
+        onClick={close}
+        aria-hidden="true"
+      />
 
       {/* Dialog — bottom sheet on mobile, centered on desktop */}
       <div
@@ -269,7 +280,11 @@ export default function ProductDetail({ lang }: Props) {
         class="absolute bottom-0 left-0 right-0 max-h-[90vh] overflow-hidden rounded-t-xl bg-card shadow-xl md:bottom-auto md:left-1/2 md:top-1/2 md:w-full md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-lg"
       >
         {loadingProduct || !product ? (
-          <div class="flex h-64 items-center justify-center" role="status" aria-label={t('loading', lang)}>
+          <div
+            class="flex h-64 items-center justify-center"
+            role="status"
+            aria-label={t('loading', lang)}
+          >
             <div class="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
           </div>
         ) : (
@@ -281,7 +296,20 @@ export default function ProductDetail({ lang }: Props) {
               class="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-card/80 text-muted-foreground backdrop-blur-sm hover:bg-accent before:absolute before:inset-[-6px]"
               aria-label={t('close', lang)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
             </button>
 
             {/* Product image */}
@@ -298,7 +326,10 @@ export default function ProductDetail({ lang }: Props) {
             )}
 
             {/* Scrollable content */}
-            <div class="overflow-y-auto px-4 py-4" style={{ maxHeight: product.image ? 'calc(90vh - 340px)' : 'calc(90vh - 160px)' }}>
+            <div
+              class="overflow-y-auto px-4 py-4"
+              style={{ maxHeight: product.image ? 'calc(90vh - 340px)' : 'calc(90vh - 160px)' }}
+            >
               <h2 class="font-heading text-xl font-bold text-card-foreground">{product.name}</h2>
               {product.description && (
                 <p class="mt-1 text-sm text-muted-foreground">{product.description}</p>
@@ -341,15 +372,18 @@ export default function ProductDetail({ lang }: Props) {
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-card-foreground">{group.name}</h3>
                     {group.required && (
-                      <span class={`text-xs font-medium ${
-                        (selections[group.id]?.length ?? 0) > 0 || Object.values(quantities[group.id] ?? {}).some((q) => q > 0)
-                          ? 'text-green-600'
-                          : 'text-destructive'
-                      }`}>
-                        {(selections[group.id]?.length ?? 0) > 0 || Object.values(quantities[group.id] ?? {}).some((q) => q > 0)
+                      <span
+                        class={`text-xs font-medium ${
+                          (selections[group.id]?.length ?? 0) > 0 ||
+                          Object.values(quantities[group.id] ?? {}).some((q) => q > 0)
+                            ? 'text-green-600'
+                            : 'text-destructive'
+                        }`}
+                      >
+                        {(selections[group.id]?.length ?? 0) > 0 ||
+                        Object.values(quantities[group.id] ?? {}).some((q) => q > 0)
                           ? '✓'
-                          : t('required', lang)
-                        }
+                          : t('required', lang)}
                       </span>
                     )}
                   </div>
@@ -376,7 +410,9 @@ export default function ProductDetail({ lang }: Props) {
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
-                                  onChange={() => handleCheckboxToggle(group.id, opt.id, group.max_selections)}
+                                  onChange={() =>
+                                    handleCheckboxToggle(group.id, opt.id, group.max_selections)
+                                  }
                                   class="h-4 w-4 accent-primary"
                                 />
                               )}
@@ -396,7 +432,11 @@ export default function ProductDetail({ lang }: Props) {
                                     +{formatPrice(opt.price, currency, locale)}
                                   </span>
                                 )}
-                                <div class="inline-flex items-center gap-1" role="group" aria-label={opt.name}>
+                                <div
+                                  class="inline-flex items-center gap-1"
+                                  role="group"
+                                  aria-label={opt.name}
+                                >
                                   <button
                                     type="button"
                                     onClick={() => handleQuantityChange(group.id, opt.id, -1)}
@@ -406,7 +446,9 @@ export default function ProductDetail({ lang }: Props) {
                                   >
                                     −
                                   </button>
-                                  <span class="w-6 text-center text-sm" aria-live="polite">{optQty}</span>
+                                  <span class="w-6 text-center text-sm" aria-live="polite">
+                                    {optQty}
+                                  </span>
                                   <button
                                     type="button"
                                     onClick={() => handleQuantityChange(group.id, opt.id, 1)}
@@ -434,10 +476,20 @@ export default function ProductDetail({ lang }: Props) {
                   </h3>
                   <div class="mt-2 space-y-2">
                     {product.cross_sells.map((cs) => (
-                      <div key={cs.id} class="flex items-center gap-3 rounded-lg border border-border p-2">
+                      <div
+                        key={cs.id}
+                        class="flex items-center gap-3 rounded-lg border border-border p-2"
+                      >
                         {cs.image && (
                           <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
-                            <img src={cs.image} alt="" class="h-full w-full object-cover" width="40" height="40" loading="lazy" />
+                            <img
+                              src={cs.image}
+                              alt=""
+                              class="h-full w-full object-cover"
+                              width="40"
+                              height="40"
+                              loading="lazy"
+                            />
                           </div>
                         )}
                         <div class="flex-1">
@@ -475,7 +527,10 @@ export default function ProductDetail({ lang }: Props) {
             </div>
 
             {/* Sticky bottom CTA */}
-            <div class="border-t border-border px-4 py-3" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+            <div
+              class="border-t border-border px-4 py-3"
+              style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+            >
               <div class="flex items-center gap-3">
                 <QuantitySelector
                   quantity={quantity}

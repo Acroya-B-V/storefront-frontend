@@ -54,12 +54,16 @@ const alternates = merchant.languages.map((l) => ({
 {ogImage && <meta name="twitter:image" content={ogImage} />}
 
 {/* Hreflang alternates */}
-{alternates.map((alt) => (
-  <link rel="alternate" hreflang={alt.lang} href={alt.href} />
-))}
-<link rel="alternate" hreflang="x-default" href={`${Astro.url.origin}/${merchant.defaultLanguage}${currentPath}`} />
+{alternates.map((alt) => <link rel="alternate" hreflang={alt.lang} href={alt.href} />)}
+<link
+  rel="alternate"
+  hreflang="x-default"
+  href={`${Astro.url.origin}/${merchant.defaultLanguage}${currentPath}`}
+/>
 
 {/* Hero image preload for menu page */}
-{page === 'menu' && merchant.heroImage && (
-  <link rel="preload" as="image" href={merchant.heroImage} />
-)}
+{
+  page === 'menu' && merchant.heroImage && (
+    <link rel="preload" as="image" href={merchant.heroImage} />
+  )
+}

@@ -1,14 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-import type { MerchantConfig } from './types/merchant';
-import type { StorefrontClient } from './lib/sdk-stub';
-
 declare namespace App {
   interface Locals {
-    merchant: MerchantConfig;
+    merchant: import('./types/merchant').MerchantConfig;
     lang: string;
-    sdk: StorefrontClient;
+    sdk: import('./lib/sdk-stub').StorefrontClient;
   }
 }
 

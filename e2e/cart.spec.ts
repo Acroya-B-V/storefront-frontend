@@ -152,7 +152,7 @@ test.describe('Cart drawer — display and interaction', () => {
     await expect(drawer).toBeVisible({ timeout: 5_000 });
 
     await drawer.getByRole('button', { name: 'Sluiten' }).click();
-    await expect(drawer).not.toBeVisible();
+    await expect(drawer).toBeHidden();
   });
 
   test('cart drawer closes on Escape key', async ({ page }) => {
@@ -170,7 +170,7 @@ test.describe('Cart drawer — display and interaction', () => {
     // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(300);
     await page.keyboard.press('Escape');
-    await expect(drawer).not.toBeVisible();
+    await expect(drawer).toBeHidden();
   });
 });
 
@@ -188,7 +188,7 @@ test.describe('Cart page — inline mode', () => {
     await expect(page.getByText('Je winkelwagen is leeg')).toBeVisible();
 
     // No dialog overlay should be present — inline mode renders a plain <div>
-    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.getByRole('dialog')).toBeHidden();
   });
 
   test('cart page empty state has continue shopping link', async ({ page }) => {

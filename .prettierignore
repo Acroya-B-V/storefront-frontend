@@ -1,0 +1,8 @@
+dist/
+.astro/
+.vercel/
+node_modules/
+pnpm-lock.yaml
+coverage/
+e2e/.results/
+e2e/.report/

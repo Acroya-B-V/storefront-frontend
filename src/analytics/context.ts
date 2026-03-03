@@ -26,7 +26,7 @@ function getSessionId(): string {
     console.warn('[analytics] crypto.randomUUID() unavailable, using fallback:', err);
     try {
       sessionId = Array.from(crypto.getRandomValues(new Uint8Array(16)))
-        .map(b => b.toString(16).padStart(2, '0'))
+        .map((b) => b.toString(16).padStart(2, '0'))
         .join('');
     } catch (fallbackErr) {
       console.error('[analytics] crypto fallback also failed:', fallbackErr);
@@ -42,16 +42,12 @@ function getSessionId(): string {
 }
 
 export function getCoreProperties(): CoreProperties {
-  const merchant = typeof window !== 'undefined'
-    ? (window as any).__MERCHANT__
-    : null;
+  const merchant = typeof window !== 'undefined' ? window.__MERCHANT__ : null;
 
   return {
     merchant_id: merchant?.merchantId ?? '',
     merchant_slug: merchant?.slug ?? '',
-    language: typeof document !== 'undefined'
-      ? document.documentElement.lang || 'nl'
-      : 'nl',
+    language: typeof document !== 'undefined' ? document.documentElement.lang || 'nl' : 'nl',
     session_id: getSessionId(),
     environment: import.meta.env.PUBLIC_ENVIRONMENT ?? 'production',
   };

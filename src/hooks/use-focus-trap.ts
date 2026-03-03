@@ -1,8 +1,7 @@
 import { useEffect } from 'preact/hooks';
 import type { RefObject } from 'preact';
 
-const FOCUSABLE_SELECTOR =
-  'button, a, input, textarea, select, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE_SELECTOR = 'button, a, input, textarea, select, [tabindex]:not([tabindex="-1"])';
 
 // Ref-counted scroll lock — multiple nested dialogs can each request a lock
 // without the inner one accidentally restoring scroll while the outer is open.

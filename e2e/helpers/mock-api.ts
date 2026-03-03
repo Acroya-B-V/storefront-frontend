@@ -44,7 +44,10 @@ function cors(res: ServerResponse) {
   res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Vendor-ID, Accept-Language, Accept, Authorization');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, X-Vendor-ID, Accept-Language, Accept, Authorization',
+  );
 }
 
 function json(res: ServerResponse, data: unknown, status = 200) {
@@ -60,7 +63,9 @@ function notFound(res: ServerResponse) {
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
     let body = '';
-    req.on('data', (chunk: Buffer) => { body += chunk.toString(); });
+    req.on('data', (chunk: Buffer) => {
+      body += chunk.toString();
+    });
     req.on('end', () => resolve(body));
   });
 }
@@ -69,7 +74,10 @@ function recalcCart(cart: CartFixture) {
   let total = 0;
   let count = 0;
   for (const item of cart.line_items) {
-    const modTotal = item.modifiers.reduce((s, m) => s + parseFloat(m.price) * m.quantity, 0);
+    const modTotal = item.selected_options.reduce(
+      (s, m) => s + parseFloat(m.price) * m.quantity,
+      0,
+    );
     const lineTotal = (parseFloat(item.unit_price) + modTotal) * item.quantity;
     item.line_total = lineTotal.toFixed(2);
     total += lineTotal;
@@ -195,28 +203,30 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       return;
     }
 
-    const modifiers = (body.modifiers ?? []).map((m: { option_id: string; quantity: number }) => {
-      // Look up modifier name/price from product details
-      const detail = productDetails[product.id] as typeof shawarmaDetail | undefined;
-      const allOpts = detail?.modifier_groups?.flatMap((g) => g.options) ?? [];
-      const opt = allOpts.find((o) => o.id === m.option_id);
-      return {
-        id: m.option_id,
-        name: opt?.name ?? m.option_id,
-        price: opt?.price ?? '0.00',
-        quantity: m.quantity,
-      };
-    });
+    const selectedOptions = (body.modifiers ?? []).map(
+      (m: { option_id: string; quantity: number }) => {
+        // Look up modifier name/price from product details
+        const detail = productDetails[product.id] as typeof shawarmaDetail | undefined;
+        const allOpts = detail?.modifier_groups?.flatMap((g) => g.options) ?? [];
+        const opt = allOpts.find((o) => o.id === m.option_id);
+        return {
+          id: m.option_id,
+          name: opt?.name ?? m.option_id,
+          price: opt?.price ?? '0.00',
+          quantity: m.quantity,
+        };
+      },
+    );
 
     const lineItem = {
       id: `li-${state.nextLineItemId++}`,
       product_id: product.id,
-      product_name: product.name,
+      product_title: product.name,
       product_image: product.image ?? undefined,
       quantity: body.quantity ?? 1,
       unit_price: product.price,
       line_total: '0.00', // recalculated below
-      modifiers,
+      selected_options: selectedOptions,
       notes: body.notes,
     };
 

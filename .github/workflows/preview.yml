@@ -1,0 +1,37 @@
+name: Preview
+on:
+  deployment_status:
+
+jobs:
+  lighthouse:
+    name: Lighthouse CI
+    if: >
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment == 'Preview'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install -g @lhci/cli@0.14.x
+      - run: lhci autorun
+        env:
+          LHCI_TARGET_URL: ${{ github.event.deployment_status.target_url }}
+
+  smoke:
+    name: Smoke Test
+    if: >
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment == 'Preview'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright test e2e/smoke.spec.ts --project=desktop
+        env:
+          CI: 'true'
+          BASE_URL: ${{ github.event.deployment_status.target_url }}

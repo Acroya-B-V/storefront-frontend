@@ -11,9 +11,7 @@ export interface SectionsResult {
  * Fetch collections from the API, falling back to flattened categories
  * if the collections endpoint returns empty or errors.
  */
-export async function fetchCollectionsOrCategories(
-  sdk: StorefrontClient,
-): Promise<SectionsResult> {
+export async function fetchCollectionsOrCategories(sdk: StorefrontClient): Promise<SectionsResult> {
   const collectionsResult = await sdk.GET('/api/v1/collections/');
 
   if (collectionsResult.error) {

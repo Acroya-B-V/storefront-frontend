@@ -1,9 +1,10 @@
 ---
 import ProductCard from './ProductCard.astro';
+import type { NormalizedProduct } from '@/lib/normalize';
 
 interface Props {
   category: { id: string | number; name: string; slug?: string };
-  products: Array<Record<string, unknown>>;
+  products: NormalizedProduct[];
   lang: string;
   currency: string;
   layout?: 'grid' | 'list';
@@ -12,15 +13,28 @@ interface Props {
 const { category, products, lang, currency, layout = 'grid' } = Astro.props;
 ---
 
-{products.length > 0 && (
-  <section id={`collection-${category.id}`} class="scroll-mt-28 px-4 py-6" data-category-id={category.id}>
-    <div class="mx-auto max-w-screen-xl">
-      <h2 class="font-heading text-lg font-bold text-foreground">{category.name}</h2>
-      <div class:list={['mt-3', layout === 'list' ? 'flex flex-col gap-3' : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4']}>
-        {products.map((product) => (
-          <ProductCard product={product as any} lang={lang} currency={currency} variant={layout} />
-        ))}
+{
+  products.length > 0 && (
+    <section
+      id={`collection-${category.id}`}
+      class="scroll-mt-28 px-4 py-6"
+      data-category-id={category.id}
+    >
+      <div class="mx-auto max-w-screen-xl">
+        <h2 class="font-heading text-lg font-bold text-foreground">{category.name}</h2>
+        <div
+          class:list={[
+            'mt-3',
+            layout === 'list'
+              ? 'flex flex-col gap-3'
+              : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
+          ]}
+        >
+          {products.map((product) => (
+            <ProductCard product={product} lang={lang} currency={currency} variant={layout} />
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-)}
+    </section>
+  )
+}

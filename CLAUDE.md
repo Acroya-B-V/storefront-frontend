@@ -55,7 +55,7 @@ All requests flow through middleware in this order:
 6. Create SDK client with language, inject into `Astro.locals`
 7. Execute page, then apply cache headers
 
-**Critical:** SEO endpoints must be checked *before* the static-asset bypass. Both `.xml` and `.txt` match the static-asset regex, so `LANG_EXEMPT_PATHS` guards them.
+**Critical:** SEO endpoints must be checked _before_ the static-asset bypass. Both `.xml` and `.txt` match the static-asset regex, so `LANG_EXEMPT_PATHS` guards them.
 
 ### Product Slug Format: `{name}--{id}`
 
@@ -129,6 +129,7 @@ Always normalize API responses at the boundary (`src/lib/normalize.ts`):
 ### Caching
 
 Middleware applies cache headers after page execution:
+
 - Products/collections: `s-maxage=300` (5 min)
 - CMS pages: `s-maxage=3600` (1 hour)
 - Authenticated/cookie responses: `private, no-store`
@@ -144,14 +145,14 @@ Middleware applies cache headers after page execution:
 
 ## Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `API_BASE_URL` | Server-side API base |
-| `PUBLIC_API_BASE_URL` | Client-side API base (browser) |
-| `DEFAULT_MERCHANT` | Fallback merchant slug |
-| `CUSTOM_DOMAINS` | JSON map: custom domain → merchant slug |
-| `PUBLIC_POSTHOG_KEY` | PostHog analytics key |
-| `AUTH_COOKIE_DOMAIN` | Auth cookie domain |
+| Variable              | Purpose                                 |
+| --------------------- | --------------------------------------- |
+| `API_BASE_URL`        | Server-side API base                    |
+| `PUBLIC_API_BASE_URL` | Client-side API base (browser)          |
+| `DEFAULT_MERCHANT`    | Fallback merchant slug                  |
+| `CUSTOM_DOMAINS`      | JSON map: custom domain → merchant slug |
+| `PUBLIC_POSTHOG_KEY`  | PostHog analytics key                   |
+| `AUTH_COOKIE_DOMAIN`  | Auth cookie domain                      |
 
 ## Common Patterns
 

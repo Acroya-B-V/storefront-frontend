@@ -7,5 +7,6 @@
     },
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
-  }
+  },
+  "exclude": ["dist", "coverage", "node_modules"]
 }

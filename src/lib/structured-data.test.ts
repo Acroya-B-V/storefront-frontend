@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { generateRestaurantLD, generateMenuItemLD, generateBreadcrumbLD } from './structured-data';
 
+interface JsonLd extends Record<string, unknown> {
+  offers: Record<string, unknown>;
+  itemListElement: Array<Record<string, unknown>>;
+}
+
 const merchant = {
   slug: 'bar-sumac',
   merchantId: 'BAR_SUMAC_01',
@@ -51,7 +56,11 @@ describe('generateRestaurantLD', () => {
 describe('generateMenuItemLD', () => {
   it('returns a MenuItem schema with offer', () => {
     const product = { name: 'Falafel Wrap', price: '8.50', description: 'Crispy falafel' };
-    const ld = generateMenuItemLD(product, 'EUR', 'https://example.com/nl/product/falafel');
+    const ld = generateMenuItemLD(
+      product,
+      'EUR',
+      'https://example.com/nl/product/falafel',
+    ) as JsonLd;
     expect(ld['@context']).toBe('https://schema.org');
     expect(ld['@type']).toBe('MenuItem');
     expect(ld.name).toBe('Falafel Wrap');
@@ -67,7 +76,7 @@ describe('generateBreadcrumbLD', () => {
       { name: 'Menu', url: '/nl/' },
       { name: 'Mezze', url: '/nl/category/mezze' },
     ];
-    const ld = generateBreadcrumbLD(items);
+    const ld = generateBreadcrumbLD(items) as JsonLd;
     expect(ld['@context']).toBe('https://schema.org');
     expect(ld['@type']).toBe('BreadcrumbList');
     expect(ld.itemListElement).toHaveLength(2);

@@ -22,8 +22,7 @@ export function getClient(): StorefrontClient {
       baseUrl: import.meta.env.PUBLIC_API_BASE_URL,
       vendorId: merchant.merchantId,
       language: document.documentElement.lang,
-      fetch: (url, init) =>
-        globalThis.fetch(url, { ...init, credentials: 'include' }),
+      fetch: (url, init) => globalThis.fetch(url, { ...init, credentials: 'include' }),
     });
   }
   return client;

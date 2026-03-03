@@ -35,20 +35,20 @@ Build the frontend for eatsous, a multi-tenant restaurant ordering storefront pl
 
 ### 2.1 Technology Stack
 
-| Layer | Choice | Rationale |
-|---|---|---|
-| Framework | Astro 5 | Islands architecture — zero JS by default, hydrate only interactive parts |
-| Interactive islands | Preact | 3KB React alternative with API compatibility. Team already knows React. |
-| Hosting | Vercel | `@astrojs/vercel` adapter. Single deployment. |
-| Rendering | SSR everywhere | Multi-tenant requires runtime merchant resolution. Edge-cached for catalog pages. |
-| Styling | Tailwind CSS 4 | Utility-first, pairs with CSS custom properties for theming. `tailwindcss-animate` for animations. |
-| State management | nanostores | Astro-recommended cross-island state. Framework-agnostic. ~1KB. |
-| API client | `@sous/storefront-sdk` | Auto-generated TypeScript client from OpenAPI spec. Uses `openapi-fetch` (~2KB). |
-| i18n routing | Path prefix (`/:lang/`) | `/nl/`, `/en/`, `/de/` — best for SEO, clean hreflang tags |
-| i18n strings | Paraglide.js | Compile-time i18n. Tree-shakes to only active language. Zero runtime overhead. |
-| Analytics | PostHog | 31 events with centralized capture wrapper. Async loading, no render blocking. |
-| Package manager | pnpm | Fast, disk-efficient, strict dependency resolution. First-class Vercel support. |
-| SEO | `astro-seo` + `astro-seo-schema` | Consolidates `<head>` tags. JSON-LD structured data for Restaurant/Menu/MenuItem. |
+| Layer               | Choice                           | Rationale                                                                                          |
+| ------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Framework           | Astro 5                          | Islands architecture — zero JS by default, hydrate only interactive parts                          |
+| Interactive islands | Preact                           | 3KB React alternative with API compatibility. Team already knows React.                            |
+| Hosting             | Vercel                           | `@astrojs/vercel` adapter. Single deployment.                                                      |
+| Rendering           | SSR everywhere                   | Multi-tenant requires runtime merchant resolution. Edge-cached for catalog pages.                  |
+| Styling             | Tailwind CSS 4                   | Utility-first, pairs with CSS custom properties for theming. `tailwindcss-animate` for animations. |
+| State management    | nanostores                       | Astro-recommended cross-island state. Framework-agnostic. ~1KB.                                    |
+| API client          | `@sous/storefront-sdk`           | Auto-generated TypeScript client from OpenAPI spec. Uses `openapi-fetch` (~2KB).                   |
+| i18n routing        | Path prefix (`/:lang/`)          | `/nl/`, `/en/`, `/de/` — best for SEO, clean hreflang tags                                         |
+| i18n strings        | Paraglide.js                     | Compile-time i18n. Tree-shakes to only active language. Zero runtime overhead.                     |
+| Analytics           | PostHog                          | 31 events with centralized capture wrapper. Async loading, no render blocking.                     |
+| Package manager     | pnpm                             | Fast, disk-efficient, strict dependency resolution. First-class Vercel support.                    |
+| SEO                 | `astro-seo` + `astro-seo-schema` | Consolidates `<head>` tags. JSON-LD structured data for Restaurant/Menu/MenuItem.                  |
 
 ### 2.2 Multi-Tenancy Model
 
@@ -75,19 +75,19 @@ User visits bar-sumac.poweredbysous.com/nl/
 
 ### 2.3 Rendering Strategy
 
-| Route | Rendering | Caching | Auth |
-|---|---|---|---|
-| `/:lang/` (menu) | SSR | `s-maxage=300, stale-while-revalidate=3600` | No |
-| `/:lang/product/[slug]` | SSR | `s-maxage=300, stale-while-revalidate=3600` | No |
-| `/:lang/category/[slug]` | SSR | `s-maxage=300, stale-while-revalidate=3600` | No |
-| `/:lang/cart` | SSR | No cache | No |
-| `/:lang/checkout` | SSR | No cache | Optional |
-| `/:lang/orders` | SSR | No cache | Yes |
-| `/:lang/orders/[number]` | SSR | No cache | Yes |
-| `/:lang/group/[joinCode]` | SSR | No cache | No |
-| `/:lang/pages/[slug]` (CMS) | SSR | `s-maxage=3600, stale-while-revalidate=86400` | No |
-| `/sitemap.xml` | SSR | `s-maxage=3600` | No |
-| `/robots.txt` | SSR | `s-maxage=86400` | No |
+| Route                       | Rendering | Caching                                       | Auth     |
+| --------------------------- | --------- | --------------------------------------------- | -------- |
+| `/:lang/` (menu)            | SSR       | `s-maxage=300, stale-while-revalidate=3600`   | No       |
+| `/:lang/product/[slug]`     | SSR       | `s-maxage=300, stale-while-revalidate=3600`   | No       |
+| `/:lang/category/[slug]`    | SSR       | `s-maxage=300, stale-while-revalidate=3600`   | No       |
+| `/:lang/cart`               | SSR       | No cache                                      | No       |
+| `/:lang/checkout`           | SSR       | No cache                                      | Optional |
+| `/:lang/orders`             | SSR       | No cache                                      | Yes      |
+| `/:lang/orders/[number]`    | SSR       | No cache                                      | Yes      |
+| `/:lang/group/[joinCode]`   | SSR       | No cache                                      | No       |
+| `/:lang/pages/[slug]` (CMS) | SSR       | `s-maxage=3600, stale-while-revalidate=86400` | No       |
+| `/sitemap.xml`              | SSR       | `s-maxage=3600`                               | No       |
+| `/robots.txt`               | SSR       | `s-maxage=86400`                              | No       |
 
 ### 2.4 Data Freshness
 
@@ -346,21 +346,21 @@ eatsous-storefront/
 
 Astro components ship zero JavaScript. Preact islands hydrate independently with different strategies:
 
-| Component | Type | Hydration | Rationale |
-|---|---|---|---|
-| Header | Astro | None | Static logo + nav |
-| HeroSection | Astro | None | Static image + text |
-| CategoryTabs | Preact | `client:load` | Needs JS immediately for tab switching + scroll tracking |
-| ProductCard | Astro | None | Static card markup |
-| PromoBadge | Astro | None | Static badge |
-| AddToCartButton | Preact | `client:visible` | Hydrate when card scrolls into view |
-| CartBar | Preact | `client:load` | Always visible, needs immediate reactivity |
-| CartDrawer | Preact | `client:load` | Must respond to cart state changes |
-| ProductDetail | Preact | `client:load` | Modal with modifier selection |
-| SearchBar | Preact | `client:idle` | Hydrate after page is idle |
-| FreshnessProvider | Preact | `client:idle` | Background data refresh, non-urgent |
-| CheckoutFlow | Preact | `client:load` | Full interactive form |
-| Footer | Astro | None | Static HTML |
+| Component         | Type   | Hydration        | Rationale                                                |
+| ----------------- | ------ | ---------------- | -------------------------------------------------------- |
+| Header            | Astro  | None             | Static logo + nav                                        |
+| HeroSection       | Astro  | None             | Static image + text                                      |
+| CategoryTabs      | Preact | `client:load`    | Needs JS immediately for tab switching + scroll tracking |
+| ProductCard       | Astro  | None             | Static card markup                                       |
+| PromoBadge        | Astro  | None             | Static badge                                             |
+| AddToCartButton   | Preact | `client:visible` | Hydrate when card scrolls into view                      |
+| CartBar           | Preact | `client:load`    | Always visible, needs immediate reactivity               |
+| CartDrawer        | Preact | `client:load`    | Must respond to cart state changes                       |
+| ProductDetail     | Preact | `client:load`    | Modal with modifier selection                            |
+| SearchBar         | Preact | `client:idle`    | Hydrate after page is idle                               |
+| FreshnessProvider | Preact | `client:idle`    | Background data refresh, non-urgent                      |
+| CheckoutFlow      | Preact | `client:load`    | Full interactive form                                    |
+| Footer            | Astro  | None             | Static HTML                                              |
 
 ### 5.2 Cross-Island Communication
 
@@ -378,6 +378,7 @@ Nanostores work across islands because they share the same JavaScript module ins
 ### 5.3 Key UX Patterns (from prototype)
 
 **Product cards:**
+
 - Responsive: row layout on mobile (104px fixed image), column on desktop (full-width square image)
 - Quick-add for simple items (no modifiers) — tap "Add" button, instant add
 - Complex items (with modifiers) — tap "Add" or card opens the product modal
@@ -385,11 +386,13 @@ Nanostores work across islands because they share the same JavaScript module ins
 - When quantity is 1, minus button becomes a trash icon with confirm dialog
 
 **Category navigation:**
+
 - Horizontal scrollable tab bar with animated sliding pill indicator
 - Scroll-based active category tracking (intersection observer pattern)
 - When tabs overflow, a list icon appears that opens a bottom sheet drawer with all categories
 
 **Product modal:**
+
 - Bottom sheet on mobile (slides up), centered dialog on desktop (scales in)
 - Modifier groups: radio (pick 1), checkbox (pick up to N), quantity (add 0-N of each)
 - Required groups show "Required" badge, turn green with checkmark when filled
@@ -399,6 +402,7 @@ Nanostores work across islands because they share the same JavaScript module ins
 - Sticky bottom CTA: quantity stepper + "Add to order · €XX,XX" button
 
 **Cart:**
+
 - Desktop: popover dropdown from cart button in header
 - Mobile: bottom sheet sliding up from cart bar
 - Line items show: image, name, selected modifiers (truncated), discount badge, price (with strikethrough if discounted), quantity stepper
@@ -406,6 +410,7 @@ Nanostores work across islands because they share the same JavaScript module ins
 - "Next: Checkout" CTA at bottom
 
 **Mobile cart bar:**
+
 - Dark background (`#1C1C1E`), sticky bottom
 - Shows "Cart · N items" and total
 - Hides when: cart is empty, cart drawer is open, or category drawer is open
@@ -426,14 +431,16 @@ import { atom, computed } from 'nanostores';
 export const $cart = atom<Cart | null>(null);
 export const $cartLoading = atom(false);
 
-export const $itemCount = computed($cart, cart =>
-  cart?.line_items.reduce((sum, item) => sum + item.quantity, 0) ?? 0
+export const $itemCount = computed(
+  $cart,
+  (cart) => cart?.line_items.reduce((sum, item) => sum + item.quantity, 0) ?? 0,
 );
 
-export const $cartTotal = computed($cart, cart => cart?.cart_total ?? "0.00");
+export const $cartTotal = computed($cart, (cart) => cart?.cart_total ?? '0.00');
 ```
 
 **Persistence:**
+
 1. On page load → check `localStorage` for `cartId`
 2. If found → `GET /api/v1/cart/{cartId}/` to restore server-side cart
 3. If expired/missing → user starts fresh, cart created on first "Add to Cart"
@@ -475,7 +482,7 @@ export const $customerId = atom<string | null>(null);
 **Token storage model:** Customer JWTs are stored exclusively in **httpOnly, Secure, SameSite=Lax cookies**. This prevents XSS attacks from accessing tokens.
 
 - **SSR:** Middleware reads the cookie and passes the token to the SDK client for authenticated API calls. The token value is never serialized to HTML or client-side JavaScript.
-- **Client-side:** Preact islands know *whether* the user is authenticated (via `$isAuthenticated`, set from SSR-injected data), but never have access to the raw token. Client-side API calls that require auth use `credentials: 'include'` to send the cookie automatically, or go through an Astro API route that proxies the request with the token.
+- **Client-side:** Preact islands know _whether_ the user is authenticated (via `$isAuthenticated`, set from SSR-injected data), but never have access to the raw token. Client-side API calls that require auth use `credentials: 'include'` to send the cookie automatically, or go through an Astro API route that proxies the request with the token.
 - **Token refresh:** Handled via a server-side Astro API route (`/api/auth/refresh`) that reads the httpOnly cookie, calls the backend's refresh endpoint, and sets the new cookie.
 - **Logout:** Clears the httpOnly cookie via a server-side route.
 
@@ -500,7 +507,7 @@ locals.sdk = sdk;
 
 // In .astro page frontmatter
 const { sdk } = Astro.locals;
-const { data: products } = await sdk.GET("/api/v1/products/");
+const { data: products } = await sdk.GET('/api/v1/products/');
 ```
 
 **Client-side (Preact islands):**
@@ -530,6 +537,7 @@ export function getClient() {
 ### 7.2 Key API Endpoints
 
 **Catalog (SSR data fetching):**
+
 - `GET /api/v1/categories/` — category list
 - `GET /api/v1/products/` — product list (paginated)
 - `GET /api/v1/products/{id}/` — product detail with modifiers, variants, images
@@ -538,6 +546,7 @@ export function getClient() {
 - `GET /api/v1/promotions/` — active promotions
 
 **Cart (client-side, optimistic UI):**
+
 - `POST /api/v1/cart/` — create cart
 - `GET /api/v1/cart/{cart_id}/` — get cart
 - `POST /api/v1/cart/{cart_id}/items/` — add item (product_id, quantity, options[])
@@ -546,6 +555,7 @@ export function getClient() {
 - `GET /api/v1/cart/{cart_id}/suggestions/` — upsell recommendations
 
 **Checkout (client-side, sequential):**
+
 - `POST /api/v1/checkout/` — create from cart
 - `PATCH /api/v1/checkout/{id}/delivery/` — set delivery info
 - `GET /api/v1/checkout/{id}/shipping/` — available shipping methods
@@ -560,6 +570,7 @@ export function getClient() {
 Payment and order completion are the most failure-sensitive operations. The frontend must handle:
 
 1. **Duplicate submit prevention:** The "Pay" and "Complete" buttons are disabled immediately on click and show a spinner. Re-enabling only happens on explicit error response. A `submittingRef` (not state — survives React re-renders) gates the handler:
+
    ```typescript
    const submittingRef = useRef(false);
    async function handlePay() {
@@ -581,11 +592,13 @@ Payment and order completion are the most failure-sensitive operations. The fron
 5. **Cart version conflicts:** The cart uses `version` (optimistic locking). If a `PATCH` returns a version conflict (409), re-fetch the cart and show the user what changed before retrying.
 
 **Orders (authenticated):**
+
 - `GET /api/v1/orders/` — order history (cursor-paginated)
 - `GET /api/v1/orders/{order_number}/` — order detail
 - `POST /api/v1/orders/{order_number}/reorder/` — create cart from previous order
 
 **Group orders:**
+
 - `POST /api/v1/group-orders/` — create group order
 - `GET /api/v1/group-orders/{join_code}/` — get group order
 - `POST /api/v1/group-orders/{join_code}/join/` — join
@@ -593,6 +606,7 @@ Payment and order completion are the most failure-sensitive operations. The fron
 - `POST /api/v1/group-orders/{join_code}/close/` — close group
 
 **CMS:**
+
 - `GET /api/v1/pages/` — list pages
 - `GET /api/v1/pages/navigation/` — nav structure
 - `GET /api/v1/pages/{slug}/` — page content
@@ -619,11 +633,13 @@ export function formatPrice(amount: string, currency: string, locale: string): s
 ```
 
 **Client-side arithmetic (pricing engine):** The prototype's pricing engine uses `number` for discount calculations (percentage, BOGO, tiered). This is acceptable for preview totals shown in the product modal and cart drawer, because:
+
 - All values are capped at menu-price scale (< €10,000)
 - Results are rounded to 2 decimal places at each step: `Math.round(x * 100) / 100`
 - The cart API recalculates and returns authoritative totals — the frontend replaces its estimate
 
 **What we do NOT do:**
+
 - Never accumulate money across many operations without rounding at each step
 - Never use the frontend's calculated total as the payment amount — always use the backend's `cart_total` / `checkout.total`
 - Never use `toFixed()` for rounding (it rounds incorrectly for some edge cases) — use `Math.round(x * 100) / 100`
@@ -640,33 +656,33 @@ Port the prototype's centralized pricing engine to TypeScript. All price calcula
 
 ### 8.1 Discount Types
 
-| Type | Behaviour | Badge Example |
-|---|---|---|
-| `percentage` | Unit price reduced by N% | "-15%" |
-| `fixed` | Unit price reduced by fixed amount | "€2,00 off" |
-| `bogo` | Buy X get Y free (line-level) | "Buy 1 Get 1 Free" |
-| `tiered` | Quantity-based pricing (line-level) | "2 for €15" |
+| Type         | Behaviour                           | Badge Example      |
+| ------------ | ----------------------------------- | ------------------ |
+| `percentage` | Unit price reduced by N%            | "-15%"             |
+| `fixed`      | Unit price reduced by fixed amount  | "€2,00 off"        |
+| `bogo`       | Buy X get Y free (line-level)       | "Buy 1 Get 1 Free" |
+| `tiered`     | Quantity-based pricing (line-level) | "2 for €15"        |
 
 ### 8.2 Core Functions
 
 ```typescript
-getOriginalPrice(item)        // Always item.price
-getEffectivePrice(item)       // After percentage/fixed discount (BOGO/tiered: unchanged)
-hasUnitDiscount(item)         // True for percentage/fixed
-getDiscountLabel(item)        // Badge text: "-15%", "€2,00 off", "2 for €15"
-getLineTotal(item, qty, mods) // Full line calculation including quantity-dependent discounts
-getLineSavings(item, qty, mods) // How much customer saves vs. full price
+getOriginalPrice(item); // Always item.price
+getEffectivePrice(item); // After percentage/fixed discount (BOGO/tiered: unchanged)
+hasUnitDiscount(item); // True for percentage/fixed
+getDiscountLabel(item); // Badge text: "-15%", "€2,00 off", "2 for €15"
+getLineTotal(item, qty, mods); // Full line calculation including quantity-dependent discounts
+getLineSavings(item, qty, mods); // How much customer saves vs. full price
 ```
 
 ### 8.3 Modifier Pricing
 
 Modifiers have three types mapping to backend `ProductModifierGroup.selection_type`:
 
-| Prototype Type | Backend `selection_type` | UI |
-|---|---|---|
-| `radio` | `single` | Radio buttons — pick exactly 1 |
-| `checkbox` | `multiple` | Checkboxes — pick up to `max_selections` |
-| `quantity` | `multiple` (with quantity) | +/- stepper per option |
+| Prototype Type | Backend `selection_type`   | UI                                       |
+| -------------- | -------------------------- | ---------------------------------------- |
+| `radio`        | `single`                   | Radio buttons — pick exactly 1           |
+| `checkbox`     | `multiple`                 | Checkboxes — pick up to `max_selections` |
+| `quantity`     | `multiple` (with quantity) | +/- stepper per option                   |
 
 Modifier prices are additive per unit: `(base_price + sum(modifier_prices)) × quantity`.
 
@@ -763,7 +779,7 @@ Every event includes three layers of properties merged automatically:
 export function capture(eventName: EventName, eventProps: EventSpecificProps = {}) {
   const payload = {
     ...getCoreProperties(),
-    ...getCartSnapshot(),       // reads from $cart nanostore
+    ...getCartSnapshot(), // reads from $cart nanostore
     ...getFulfilmentSnapshot(),
     ...eventProps,
   };
@@ -823,16 +839,17 @@ Uses `astro-seo` to manage per-page metadata:
 
 ### 11.3 Structured Data (JSON-LD)
 
-| Page | Schema Types |
-|---|---|
-| Menu (`/:lang/`) | `Restaurant` + `Menu` with `MenuSection[]` containing `MenuItem[]` |
-| Product (`/:lang/product/[slug]`) | `MenuItem` + `Offer` (price, availability, promo pricing) + `BreadcrumbList` |
-| Category (`/:lang/category/[slug]`) | `ItemList` + `BreadcrumbList` |
-| CMS page (`/:lang/pages/[slug]`) | `WebPage` + `BreadcrumbList` |
+| Page                                | Schema Types                                                                 |
+| ----------------------------------- | ---------------------------------------------------------------------------- |
+| Menu (`/:lang/`)                    | `Restaurant` + `Menu` with `MenuSection[]` containing `MenuItem[]`           |
+| Product (`/:lang/product/[slug]`)   | `MenuItem` + `Offer` (price, availability, promo pricing) + `BreadcrumbList` |
+| Category (`/:lang/category/[slug]`) | `ItemList` + `BreadcrumbList`                                                |
+| CMS page (`/:lang/pages/[slug]`)    | `WebPage` + `BreadcrumbList`                                                 |
 
 ### 11.4 Sitemap
 
 Dynamic SSR endpoint at `/sitemap.xml`:
+
 - Per-merchant: lists all product URLs, category URLs, CMS pages
 - Includes `<xhtml:link>` for language alternates
 - `lastmod` from product `updated_at`
@@ -863,20 +880,20 @@ Sitemap: https://{merchant-slug}.poweredbysous.com/sitemap.xml
 
 **JS budget for the menu page (critical path):**
 
-| Chunk | Estimated gzipped |
-|---|---|
-| Preact runtime | ~4KB |
-| nanostores + @nanostores/preact | ~1.5KB |
-| @sous/storefront-sdk (openapi-fetch) | ~2KB |
-| CategoryTabs (`client:load`) | ~3KB |
-| AddToCartButton × N (`client:visible`) | ~4KB shared + ~0.5KB per instance |
-| CartBar + CartDrawer (`client:load`) | ~6KB |
-| ProductDetail modal (`client:load`) | ~8KB |
-| FreshnessProvider (`client:idle`) | ~2KB |
-| Analytics stub (inline) | ~0.2KB |
-| Shared: pricing engine, currency, stores | ~4KB |
-| **Menu page total** | **~35KB** |
-| PostHog SDK (`async`, not blocking) | ~20KB (loaded after interactive) |
+| Chunk                                    | Estimated gzipped                 |
+| ---------------------------------------- | --------------------------------- |
+| Preact runtime                           | ~4KB                              |
+| nanostores + @nanostores/preact          | ~1.5KB                            |
+| @sous/storefront-sdk (openapi-fetch)     | ~2KB                              |
+| CategoryTabs (`client:load`)             | ~3KB                              |
+| AddToCartButton × N (`client:visible`)   | ~4KB shared + ~0.5KB per instance |
+| CartBar + CartDrawer (`client:load`)     | ~6KB                              |
+| ProductDetail modal (`client:load`)      | ~8KB                              |
+| FreshnessProvider (`client:idle`)        | ~2KB                              |
+| Analytics stub (inline)                  | ~0.2KB                            |
+| Shared: pricing engine, currency, stores | ~4KB                              |
+| **Menu page total**                      | **~35KB**                         |
+| PostHog SDK (`async`, not blocking)      | ~20KB (loaded after interactive)  |
 
 **Realistic total with PostHog: ~55KB.** The 50KB budget was optimistic. Revised targets:
 
@@ -887,6 +904,7 @@ Sitemap: https://{merchant-slug}.poweredbysous.com/sitemap.xml
 - CLS target: < 0.1
 
 **Enforcement:**
+
 - Add `bundlesize` or `size-limit` to CI — fail the build if blocking JS exceeds 40KB gzipped
 - Measure after first implementation sprint with Lighthouse CI on Vercel preview deployments
 - If budget is exceeded, escalation path: move ProductDetail to `client:visible` (lazy), reduce icon imports, or split CartDrawer into a separate lazy-loaded chunk
@@ -950,7 +968,9 @@ All animations respect `prefers-reduced-motion`:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
@@ -1012,10 +1032,10 @@ function resolveMerchantSlug(hostname: string): string {
 }
 
 const CACHEABLE_PATTERNS = [
-  /^\/[a-z]{2}\/?$/,                    // menu page
-  /^\/[a-z]{2}\/product\//,             // product pages
-  /^\/[a-z]{2}\/category\//,            // category pages
-  /^\/[a-z]{2}\/pages\//,               // CMS pages
+  /^\/[a-z]{2}\/?$/, // menu page
+  /^\/[a-z]{2}\/product\//, // product pages
+  /^\/[a-z]{2}\/category\//, // category pages
+  /^\/[a-z]{2}\/pages\//, // CMS pages
 ];
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
@@ -1047,7 +1067,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     //   b) Path has no lang prefix at all (e.g. /product/slug?x=1)
     //      → prepend the default language to the full original pathname
     const targetPath = lang
-      ? `/${merchant.defaultLanguage}${restOfPath}${url.search}`   // case (a)
+      ? `/${merchant.defaultLanguage}${restOfPath}${url.search}` // case (a)
       : `/${merchant.defaultLanguage}${url.pathname}${url.search}`; // case (b)
     return redirect(targetPath);
   }
@@ -1068,7 +1088,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const response = await next();
 
   // 6. Add cache headers — with safety guardrails against caching personalized responses
-  const isCacheable = CACHEABLE_PATTERNS.some(p => p.test(url.pathname));
+  const isCacheable = CACHEABLE_PATTERNS.some((p) => p.test(url.pathname));
   const hasAuthCookie = request.headers.get('cookie')?.includes('auth_token');
   const responseSetsCookie = response.headers.has('set-cookie');
 
@@ -1076,7 +1096,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const ttl = url.pathname.includes('/pages/') ? 3600 : 300;
     response.headers.set(
       'Cache-Control',
-      `public, s-maxage=${ttl}, stale-while-revalidate=${ttl * 12}`
+      `public, s-maxage=${ttl}, stale-while-revalidate=${ttl * 12}`,
     );
   } else if (isCacheable && (hasAuthCookie || responseSetsCookie)) {
     // Authenticated user on a cacheable route — serve fresh but don't poison the cache
@@ -1118,29 +1138,29 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
 ### Runtime
 
-| Package | Purpose | Size |
-|---|---|---|
-| `astro` | Framework | — |
-| `@astrojs/preact` | Preact integration | — |
-| `@astrojs/vercel` | Vercel adapter | — |
-| `@astrojs/tailwind` | Tailwind integration | — |
-| `preact` | UI library for islands | ~4KB |
-| `nanostores` | Cross-island state | ~1KB |
-| `@nanostores/preact` | Preact bindings for nanostores | ~0.5KB |
-| `@sous/storefront-sdk` | API client | ~2KB |
-| `astro-seo` | SEO `<head>` management | — |
-| `astro-seo-schema` | JSON-LD helpers | — |
-| `posthog-js` | Analytics | ~20KB (async) |
-| `tailwindcss-animate` | Animation utilities | — |
-| `lucide-preact` | Icon library | Tree-shaken |
+| Package                | Purpose                        | Size          |
+| ---------------------- | ------------------------------ | ------------- |
+| `astro`                | Framework                      | —             |
+| `@astrojs/preact`      | Preact integration             | —             |
+| `@astrojs/vercel`      | Vercel adapter                 | —             |
+| `@astrojs/tailwind`    | Tailwind integration           | —             |
+| `preact`               | UI library for islands         | ~4KB          |
+| `nanostores`           | Cross-island state             | ~1KB          |
+| `@nanostores/preact`   | Preact bindings for nanostores | ~0.5KB        |
+| `@sous/storefront-sdk` | API client                     | ~2KB          |
+| `astro-seo`            | SEO `<head>` management        | —             |
+| `astro-seo-schema`     | JSON-LD helpers                | —             |
+| `posthog-js`           | Analytics                      | ~20KB (async) |
+| `tailwindcss-animate`  | Animation utilities            | —             |
+| `lucide-preact`        | Icon library                   | Tree-shaken   |
 
 ### Build-time
 
-| Package | Purpose |
-|---|---|
-| `tailwindcss` | CSS utility framework |
-| `typescript` | Type checking |
-| `@anthropic-ai/paraglide-js` | Compile-time i18n |
+| Package                      | Purpose               |
+| ---------------------------- | --------------------- |
+| `tailwindcss`                | CSS utility framework |
+| `typescript`                 | Type checking         |
+| `@anthropic-ai/paraglide-js` | Compile-time i18n     |
 
 ### NOT included
 
@@ -1156,12 +1176,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
 These must be resolved before implementation can begin on the affected features. Each is tagged with a severity indicating whether it blocks the entire project or just a specific feature.
 
-| # | Question | Blocks | Severity | Owner | Target |
-|---|---|---|---|---|---|
-| 1 | **SDK installation** — Is `@sous/storefront-sdk` published to npm, or do we need to link it locally / use a git dependency? | All API integration | **Go/No-Go** | TBD | Before sprint 1 |
-| 2 | **Image CDN** — Where are product images hosted? Do they support responsive variants (width/format params)? | Image optimization, `srcset` | **Go/No-Go** | TBD | Before sprint 1 |
-| 3 | **Customer auth flow** — Is the Keycloak OTP integration ready? Can we test login → JWT → httpOnly cookie flow? | Orders, checkout with saved addresses | Feature-blocker | TBD | Before checkout sprint |
-| 4 | **PostcodeAPI provider** — Which provider for Dutch address autofill? (postcode.tech, postcodeapi.nu, etc.) Need API key. | Address autofill in checkout | Feature-blocker | TBD | Before checkout sprint |
-| 5 | **Fulfilment locations** — Does the merchant config need a `locationId` for time slot fetching? | Delivery/pickup slot selection | Feature-blocker | TBD | Before checkout sprint |
-| 6 | **Dark mode** — The prototype has dark mode CSS variables defined. Do merchants need dark mode support in MVP? | Theme system scope | Nice-to-have | TBD | Before theme finalization |
-| 7 | **Font licensing** — Are DM Sans and Inter the default fonts, or per-merchant? Both are open source (OFL). | Font loading strategy | Low | TBD | Before first merchant onboarding |
+| #   | Question                                                                                                                    | Blocks                                | Severity        | Owner | Target                           |
+| --- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | --------------- | ----- | -------------------------------- |
+| 1   | **SDK installation** — Is `@sous/storefront-sdk` published to npm, or do we need to link it locally / use a git dependency? | All API integration                   | **Go/No-Go**    | TBD   | Before sprint 1                  |
+| 2   | **Image CDN** — Where are product images hosted? Do they support responsive variants (width/format params)?                 | Image optimization, `srcset`          | **Go/No-Go**    | TBD   | Before sprint 1                  |
+| 3   | **Customer auth flow** — Is the Keycloak OTP integration ready? Can we test login → JWT → httpOnly cookie flow?             | Orders, checkout with saved addresses | Feature-blocker | TBD   | Before checkout sprint           |
+| 4   | **PostcodeAPI provider** — Which provider for Dutch address autofill? (postcode.tech, postcodeapi.nu, etc.) Need API key.   | Address autofill in checkout          | Feature-blocker | TBD   | Before checkout sprint           |
+| 5   | **Fulfilment locations** — Does the merchant config need a `locationId` for time slot fetching?                             | Delivery/pickup slot selection        | Feature-blocker | TBD   | Before checkout sprint           |
+| 6   | **Dark mode** — The prototype has dark mode CSS variables defined. Do merchants need dark mode support in MVP?              | Theme system scope                    | Nice-to-have    | TBD   | Before theme finalization        |
+| 7   | **Font licensing** — Are DM Sans and Inter the default fonts, or per-merchant? Both are open source (OFL).                  | Font loading strategy                 | Low             | TBD   | Before first merchant onboarding |

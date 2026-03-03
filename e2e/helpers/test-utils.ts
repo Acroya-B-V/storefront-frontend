@@ -66,11 +66,13 @@ export async function waitForHydration(page: Page) {
   });
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- waitForFunction runs in serialized browser context; Window augmentation unavailable
     await page.waitForFunction(() => !!(window as any).__MERCHANT__, null, {
       timeout: 5_000,
     });
   } catch {
     // Not all pages inject __MERCHANT__ — wait for load state instead
+    // eslint-disable-next-line playwright/no-networkidle -- intentional fallback for pages without __MERCHANT__
     await page.waitForLoadState('networkidle');
   }
 }

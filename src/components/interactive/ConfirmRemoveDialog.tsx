@@ -19,10 +19,12 @@ export default function ConfirmRemoveDialog({ lang, onConfirm, onCancel }: Props
   }, []);
 
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       class="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm"
       onClick={onCancel}
     >
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <div
         ref={dialogRef}
         role="alertdialog"
@@ -31,9 +33,7 @@ export default function ConfirmRemoveDialog({ lang, onConfirm, onCancel }: Props
         class="mx-4 w-full max-w-xs rounded-lg bg-card p-4 shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        <p class="text-sm font-medium text-card-foreground">
-          {t('remove', lang)}?
-        </p>
+        <p class="text-sm font-medium text-card-foreground">{t('remove', lang)}?</p>
         <div class="mt-3 flex gap-2">
           <button
             ref={cancelRef}
