@@ -12,3 +12,15 @@ declare global {
 export const $merchant = atom<MerchantConfig | null>(
   typeof window !== 'undefined' ? (window.__MERCHANT__ ?? null) : null,
 );
+
+/**
+ * Safety net: if module evaluation somehow beats the inline define:vars script,
+ * re-read window.__MERCHANT__ once the DOM is fully parsed.
+ */
+if (typeof window !== 'undefined' && !$merchant.get()) {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!$merchant.get() && window.__MERCHANT__) {
+      $merchant.set(window.__MERCHANT__);
+    }
+  });
+}

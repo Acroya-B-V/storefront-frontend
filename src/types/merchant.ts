@@ -48,6 +48,7 @@ export interface MerchantConfig {
   };
   hours: MerchantHours[];
   social: Record<string, string>;
+  website?: string;
   seo: {
     titleTemplate: string;
     defaultDescription: string;

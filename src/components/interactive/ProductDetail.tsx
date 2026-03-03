@@ -25,13 +25,27 @@ interface ModifierGroup {
 }
 
 interface ProductData {
-  id: string;
+  id: string | number;
   name: string;
   description?: string;
   price: string;
   image?: string | null;
   modifier_groups?: ModifierGroup[];
   cross_sells?: Array<{ id: string; name: string; price: string; image?: string | null }>;
+}
+
+/** Normalize raw API product detail to ProductData shape. */
+function toProductData(raw: Record<string, unknown>): ProductData {
+  const images = raw.images as Array<{ image_url: string }> | undefined;
+  return {
+    ...raw,
+    id: raw.id as string | number,
+    name: (raw.title ?? raw.name ?? '') as string,
+    description: raw.description as string | undefined,
+    price: (raw.price ?? '0') as string,
+    image: images?.[0]?.image_url ?? (raw.image as string | null) ?? null,
+    modifier_groups: raw.modifier_groups as ModifierGroup[] | undefined,
+  } as ProductData;
 }
 
 interface Props {
@@ -77,7 +91,7 @@ export default function ProductDetail({ lang }: Props) {
         const { data } = await client.GET(`/api/v1/products/{id}/`, {
           params: { path: { id: String(selectedProduct.id) } },
         });
-        if (data) setProduct(data as ProductData);
+        if (data) setProduct(toProductData(data as Record<string, unknown>));
       } finally {
         setLoadingProduct(false);
       }

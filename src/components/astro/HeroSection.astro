@@ -10,7 +10,7 @@ const { merchant } = Astro.props;
 
 <section class="relative">
   <div class="aspect-[21/9] w-full overflow-hidden bg-card-image sm:aspect-[3/1]">
-    {merchant.heroImage && (
+    {merchant.heroImage ? (
       <img
         src={merchant.heroImage}
         alt={merchant.name}
@@ -21,7 +21,7 @@ const { merchant } = Astro.props;
         decoding="async"
         fetchpriority="high"
       />
-    )}
+    ) : null}
   </div>
 
   <div class="relative mx-auto -mt-10 max-w-screen-xl px-4">
