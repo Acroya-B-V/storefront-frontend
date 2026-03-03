@@ -26,6 +26,10 @@ dist/
 .DS_Store
 Thumbs.db
 
+# playwright
+e2e/.results/
+e2e/.report/
+
 # debug
 npm-debug.log*
 pnpm-debug.log*

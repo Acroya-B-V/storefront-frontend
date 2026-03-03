@@ -49,21 +49,23 @@ export function createStorefrontClient(options: CreateClientOptions): Storefront
   const customFetch = options.fetch ?? globalThis.fetch;
 
   async function request(method: string, path: string, requestOptions?: RequestOptions): Promise<ApiResult> {
-    const url = new URL(path, options.baseUrl);
-    const params = requestOptions?.params?.query;
-    if (params) {
-      for (const [k, v] of Object.entries(params)) {
-        if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
-      }
-    }
-
-    let resolvedPath = url.pathname;
+    // Resolve path parameters BEFORE constructing the URL.
+    // new URL() percent-encodes { } in the pathname (%7B / %7D),
+    // which would prevent the string replacement from matching.
+    let resolvedPath = path;
     const pathParams = requestOptions?.params?.path;
     if (pathParams) {
       for (const [k, v] of Object.entries(pathParams)) {
         resolvedPath = resolvedPath.replace(`{${k}}`, String(v));
       }
-      url.pathname = resolvedPath;
+    }
+
+    const url = new URL(resolvedPath, options.baseUrl);
+    const params = requestOptions?.params?.query;
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+      }
     }
 
     try {

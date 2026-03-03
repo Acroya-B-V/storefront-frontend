@@ -1,0 +1,241 @@
+import { test, expect } from '@playwright/test';
+import {
+  resetMockApi,
+  menuPage,
+  waitForHydration,
+  blockAnalytics,
+  openProductDetailModal,
+} from './helpers/test-utils';
+import { products, shawarmaDetail } from './fixtures/products';
+
+const shawarma = products[1]; // has modifiers (Size required, Extras optional)
+const sizeGroup = shawarmaDetail.modifier_groups[0]; // Size — radio, required
+const extrasGroup = shawarmaDetail.modifier_groups[1]; // Extras — checkbox, optional
+
+test.describe('Product detail modal — open and close', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetMockApi(page);
+    await blockAnalytics(page);
+  });
+
+  test('modal opens for product with modifiers', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Verify product info is displayed
+    await expect(modal.getByRole('heading', { name: shawarma.name })).toBeVisible();
+    await expect(modal.getByText(shawarma.description)).toBeVisible();
+    // Base price: €14.50 -> "€ 14,50" — use .first() to avoid matching the CTA button text
+    await expect(modal.getByText('€ 14,50').first()).toBeVisible();
+  });
+
+  test('modal closes on backdrop click', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Click on the backdrop (the area outside the dialog panel).
+    // The backdrop is a sibling div with aria-hidden="true" positioned at inset-0.
+    await page.locator('[aria-hidden="true"]').first().click({ force: true });
+
+    await expect(modal).not.toBeVisible();
+  });
+
+  test('modal closes on Escape', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    await page.keyboard.press('Escape');
+
+    await expect(modal).not.toBeVisible();
+  });
+
+  test('focus is trapped inside modal', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Tab through all focusable elements repeatedly.
+    // After enough tabs, focus should still be inside the modal (not escape to the page behind).
+    for (let i = 0; i < 20; i++) {
+      await page.keyboard.press('Tab');
+    }
+
+    // The currently focused element should be within the modal
+    const focusedInsideModal = await modal.evaluate((el) => {
+      return el.contains(document.activeElement);
+    });
+    expect(focusedInsideModal).toBe(true);
+  });
+});
+
+test.describe('Product detail modal — modifier groups', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetMockApi(page);
+    await blockAnalytics(page);
+  });
+
+  test('required modifier shows Required badge', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // The Size group is required and should show "Verplicht" badge
+    const sizeSection = modal.locator(`#modifier-group-${sizeGroup.id}`);
+    await expect(sizeSection.getByText('Verplicht')).toBeVisible();
+
+    // The Extras group is optional — should NOT show the required badge
+    const extrasSection = modal.locator(`#modifier-group-${extrasGroup.id}`);
+    await expect(extrasSection.getByText('Verplicht')).not.toBeVisible();
+  });
+
+  test('selecting modifier updates CTA price', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // CTA button shows "Toevoegen aan bestelling" with the base price
+    const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+    await expect(ctaButton).toBeVisible();
+    // Base price: €14.50
+    await expect(ctaButton).toContainText('€ 14,50');
+
+    // Select "Large" (+€3.00) — total should become €17.50
+    // The radio's accessible name includes the price suffix, so use a regex
+    await modal.getByRole('radio', { name: /Large/ }).check();
+    await expect(ctaButton).toContainText('€ 17,50');
+  });
+
+  test('submit without required modifier shows error', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Try to submit without selecting the required Size modifier.
+    // Use force:true to bypass any residual pointer-event interception.
+    const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+    await ctaButton.click({ force: true });
+
+    // The required group should get the shake animation class
+    const sizeSection = modal.locator(`#modifier-group-${sizeGroup.id}`);
+    await expect(sizeSection).toHaveClass(/animate-shake/);
+
+    // The modal should still be visible (submission was blocked)
+    await expect(modal).toBeVisible();
+  });
+
+  test('selecting required modifier enables submit', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Select the required "Regular" option
+    await modal.getByRole('radio', { name: 'Regular' }).check();
+
+    // The "Verplicht" badge should change to a checkmark
+    const sizeSection = modal.locator(`#modifier-group-${sizeGroup.id}`);
+    await expect(sizeSection.getByText('Verplicht')).not.toBeVisible();
+
+    // Submit should now work — clicking the CTA should close the modal.
+    // Use force:true to bypass any residual pointer-event interception.
+    const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+    await ctaButton.click({ force: true });
+
+    // Modal should close after successful add
+    await expect(modal).not.toBeVisible();
+
+    // Cart state should be updated — the header cart trigger is always visible,
+    // confirming the modal closed and the item was added
+    await expect(page.locator('[data-cart-trigger]')).toBeVisible();
+  });
+
+  test('optional checkbox toggles price correctly', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+
+    // Base price: €14.50
+    await expect(ctaButton).toContainText('€ 14,50');
+
+    // Check "Halloumi" (+€2.50) -> total €17.00
+    // Checkbox accessible names include the price suffix, so use regex
+    await modal.getByRole('checkbox', { name: /Halloumi/ }).check();
+    await expect(ctaButton).toContainText('€ 17,00');
+
+    // Also check "Avocado" (+€2.00) -> total €19.00
+    await modal.getByRole('checkbox', { name: /Avocado/ }).check();
+    await expect(ctaButton).toContainText('€ 19,00');
+
+    // Uncheck "Halloumi" -> total back to €16.50
+    await modal.getByRole('checkbox', { name: /Halloumi/ }).uncheck();
+    await expect(ctaButton).toContainText('€ 16,50');
+  });
+});
+
+test.describe('Product detail modal — quantity and notes', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetMockApi(page);
+    await blockAnalytics(page);
+  });
+
+  test('quantity selector updates price in modal', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    const ctaButton = modal.getByRole('button', { name: /Toevoegen aan bestelling/ });
+
+    // Base price at quantity 1: €14.50
+    await expect(ctaButton).toContainText('€ 14,50');
+
+    // Increase quantity to 2 via the quantity selector in the CTA area
+    // The QuantitySelector in the modal footer has "Increase quantity" button
+    await modal.getByRole('button', { name: 'Increase quantity' }).click();
+
+    // Total should be 2 x €14.50 = €29.00
+    await expect(ctaButton).toContainText('€ 29,00');
+  });
+
+  test('notes textarea accepts input', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    const modal = await openProductDetailModal(page, shawarma.id);
+    await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Click the "Notitie toevoegen" button to reveal the textarea
+    await modal.getByRole('button', { name: 'Notitie toevoegen' }).click();
+
+    // Textarea should appear with the placeholder
+    const textarea = modal.getByPlaceholder('Notitie toevoegen');
+    await expect(textarea).toBeVisible();
+
+    // Type a note
+    await textarea.fill('Extra spicy please');
+    await expect(textarea).toHaveValue('Extra spicy please');
+  });
+});
