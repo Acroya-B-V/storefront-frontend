@@ -51,9 +51,11 @@ test.describe('SEO', () => {
     await page.goto(menuPage());
 
     const jsonLd = page.locator('script[type="application/ld+json"]').first();
-    await expect(jsonLd).toHaveText(/.+/);
+    await expect(jsonLd).toBeAttached();
 
     const text = await jsonLd.textContent();
+    // eslint-disable-next-line playwright/prefer-web-first-assertions -- toHaveText uses innerText which excludes <script> content
+    expect(text).toBeTruthy();
     const data = JSON.parse(text!);
     expect(data['@type']).toBe('Restaurant');
     expect(data.name).toBe('Bar Sumac');

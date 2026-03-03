@@ -59,6 +59,7 @@ export const shawarmaDetail = {
       id: 'mod-size',
       name: 'Size',
       type: 'radio' as const,
+      selection_type: 'single' as const,
       required: true,
       options: [
         { id: 'opt-regular', name: 'Regular', price: '0.00' },
@@ -69,6 +70,7 @@ export const shawarmaDetail = {
       id: 'mod-extras',
       name: 'Extras',
       type: 'checkbox' as const,
+      selection_type: 'multiple' as const,
       required: false,
       max_selections: 3,
       options: [

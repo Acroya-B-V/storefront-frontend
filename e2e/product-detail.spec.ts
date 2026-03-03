@@ -40,9 +40,10 @@ test.describe('Product detail modal — open and close', () => {
     await expect(modal).toBeVisible({ timeout: 5_000 });
 
     // Click on the backdrop (the area outside the dialog panel).
-    // The backdrop is a sibling div with aria-hidden="true" positioned at inset-0.
-    // eslint-disable-next-line playwright/no-force-option -- backdrop overlaps modal; force needed for reliable click
-    await page.locator('[aria-hidden="true"]').first().click({ force: true });
+    // On mobile the bottom sheet covers most of the viewport, so click at
+    // the very top (y=5) which is always in the backdrop area.
+    const vp = page.viewportSize()!;
+    await page.mouse.click(vp.width / 2, 5);
 
     await expect(modal).toBeHidden();
   });
@@ -65,6 +66,9 @@ test.describe('Product detail modal — open and close', () => {
 
     const modal = await openProductDetailModal(page, shawarma.id);
     await expect(modal).toBeVisible({ timeout: 5_000 });
+
+    // Focus the first interactive element inside the modal before tabbing
+    await modal.getByRole('button').first().focus();
 
     // Tab through all focusable elements repeatedly.
     // After enough tabs, focus should still be inside the modal (not escape to the page behind).

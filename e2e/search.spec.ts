@@ -68,10 +68,9 @@ test.describe('Search', () => {
     // card is visually on top. element.click() bypasses hit-testing.
     await listbox.getByText('Shawarma Bowl').evaluate((el) => (el as HTMLElement).click());
 
-    // The search overlay should close and product detail dialog should open
-    await expect(searchInput).toBeHidden();
-    const dialog = page.getByRole('dialog');
-    await expect(dialog).toBeVisible({ timeout: 5_000 });
+    // Clicking a search result navigates to the product page
+    await page.waitForURL(/\/product\//, { timeout: 5_000 });
+    await expect(page.getByRole('heading', { name: 'Shawarma Bowl' })).toBeVisible();
   });
 
   test('no results shows empty state', async ({ page }) => {
@@ -83,8 +82,8 @@ test.describe('Search', () => {
     const searchInput = page.getByRole('searchbox', { name: 'Zoeken' });
     await searchInput.fill('xyznonexistent');
 
-    // Wait for debounce + response, then check for "No results" message
-    await expect(page.getByText('No results')).toBeVisible({ timeout: 5_000 });
+    // Wait for debounce + response, then check for empty state message (Dutch: "Geen resultaten gevonden")
+    await expect(page.getByText('Geen resultaten gevonden')).toBeVisible({ timeout: 5_000 });
 
     // The listbox should not be present (no matching results)
     await expect(page.getByRole('listbox', { name: 'Zoeken' })).toBeHidden();

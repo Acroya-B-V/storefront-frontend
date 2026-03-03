@@ -121,7 +121,11 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
 
   // ── Products list ──
   if (method === 'GET' && path === '/api/v1/products/') {
-    json(res, { results: products, next: null });
+    const categoryFilter = url.searchParams.get('category');
+    const filtered = categoryFilter
+      ? products.filter((p) => p.category_id === categoryFilter)
+      : products;
+    json(res, { results: filtered, next: null });
     return;
   }
 
