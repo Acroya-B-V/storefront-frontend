@@ -6,6 +6,17 @@
  * to know about the raw API shape.
  */
 
+/**
+ * Extract the numeric product ID from a URL slug.
+ * Slugs are formatted as `{name}-{id}` (e.g. "bitterballen-42").
+ * Falls back to the full slug if no trailing number is found
+ * (handles API-provided slugs that may not contain an ID).
+ */
+export function extractIdFromSlug(slug: string): string {
+  const match = slug.match(/-(\d+)$/);
+  return match ? match[1] : slug;
+}
+
 /** Convert a string to a URL-friendly slug. */
 export function slugify(text: string): string {
   return text
@@ -94,7 +105,7 @@ export function normalizeProduct(raw: Record<string, unknown>): NormalizedProduc
   return {
     ...r,
     id: r.id,
-    slug: (r.slug as string) ?? slugify(name),
+    slug: (r.slug as string) ?? `${slugify(name)}-${r.id}`,
     name,
     image: primaryImage?.image_url ?? r.image ?? null,
     image_alt: primaryImage?.alt_text ?? null,

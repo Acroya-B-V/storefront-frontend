@@ -7,18 +7,18 @@ import StructuredData from '@/components/astro/StructuredData.astro';
 import AddToCartButton from '@/components/interactive/AddToCartButton';
 import { formatPrice, langToLocale } from '@/lib/currency';
 import { getEffectivePrice, getOriginalPrice, hasUnitDiscount, type PricedItem } from '@/lib/pricing';
-import { normalizeProduct } from '@/lib/normalize';
+import { normalizeProduct, extractIdFromSlug } from '@/lib/normalize';
 import PromoBadge from '@/components/astro/PromoBadge.astro';
 import { t } from '@/i18n';
 
 const { merchant, lang, sdk } = Astro.locals;
 const { slug } = Astro.params;
 const locale = langToLocale(lang);
+const productId = extractIdFromSlug(slug!);
 
-// Fetch product detail — the slug is passed as the {id} path parameter;
-// most REST frameworks accept either numeric ID or slug on detail endpoints.
+// Fetch product detail by numeric ID extracted from the slug
 const { data: rawDetail } = await sdk.GET(`/api/v1/products/{id}/`, {
-  params: { path: { id: String(slug) } },
+  params: { path: { id: productId } },
 });
 
 if (!rawDetail) {

@@ -1,9 +1,11 @@
 import { useStore } from '@nanostores/preact';
-import { $cart, $itemCount, $cartTotal } from '@/stores/cart';
+import { useEffect } from 'preact/hooks';
+import { $cart, $itemCount, $cartTotal, getStoredCartId, setStoredCartId } from '@/stores/cart';
 import { $isCartOpen, $isCategoryDrawerOpen } from '@/stores/ui';
 import { $merchant } from '@/stores/merchant';
 import { t } from '@/i18n';
 import { formatPrice, langToLocale } from '@/lib/currency';
+import { getClient } from '@/lib/api';
 
 interface Props {
   lang: string;
@@ -11,6 +13,19 @@ interface Props {
 
 export default function CartBar({ lang }: Props) {
   const cart = useStore($cart);
+
+  // Initialize cart from API on first mount
+  useEffect(() => {
+    if ($cart.get()) return; // already initialized
+    const cartId = getStoredCartId();
+    if (!cartId) return; // no stored cart
+    const client = getClient();
+    client.GET(`/api/v1/cart/{id}/`, {
+      params: { path: { id: cartId } },
+    }).then(({ data }) => {
+      if (data) $cart.set(data as any);
+    }).catch(() => { /* cart may have expired */ });
+  }, []);
   const itemCount = useStore($itemCount);
   const cartTotal = useStore($cartTotal);
   const isCartOpen = useStore($isCartOpen);

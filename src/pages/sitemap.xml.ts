@@ -70,7 +70,8 @@ export const GET: APIRoute = async ({ locals, url }) => {
   // Product pages
   for (const product of products) {
     const raw = product as any;
-    const productSlug = raw.slug ?? slugify(raw.title ?? raw.name ?? String(raw.id));
+    const name = raw.title ?? raw.name ?? String(raw.id);
+    const productSlug = raw.slug ?? `${slugify(name)}-${raw.id}`;
     urls.push({
       loc: `/product/${escapeXml(productSlug)}`,
       langs: languages,

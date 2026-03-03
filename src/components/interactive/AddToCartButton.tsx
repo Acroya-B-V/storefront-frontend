@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { $cart, $cartLoading } from '@/stores/cart';
+import { $cart, $cartLoading, setStoredCartId } from '@/stores/cart';
 import { $selectedProduct } from '@/stores/ui';
 import { getClient } from '@/lib/api';
 import { t } from '@/i18n';
@@ -84,7 +84,9 @@ export default function AddToCartButton({
         $cart.set(prevCart);
         console.error('Failed to add to cart:', error);
       } else if (data) {
-        $cart.set(data as typeof cart);
+        const cartData = data as typeof cart;
+        $cart.set(cartData);
+        if (cartData?.id) setStoredCartId(cartData.id);
       }
     } catch {
       $cart.set(prevCart);

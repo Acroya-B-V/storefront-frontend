@@ -6,7 +6,7 @@ import { createStorefrontClient } from './lib/sdk-stub';
 const CACHEABLE_PATTERNS = [
   /^\/[a-z]{2}\/?$/,          // menu page
   /^\/[a-z]{2}\/product\//,   // product pages
-  /^\/[a-z]{2}\/category\//,  // category pages
+  /^\/[a-z]{2}\/collection\//,  // collection pages
   /^\/[a-z]{2}\/pages\//,     // CMS pages
 ];
 
@@ -19,6 +19,11 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // Skip middleware for the 404 page to prevent rewrite loops
   if (url.pathname === '/404') {
+    return next();
+  }
+
+  // Skip middleware for static assets in public/ (images, fonts, etc.)
+  if (url.pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|woff2?|ttf|eot|css|js|json|xml|txt)$/i)) {
     return next();
   }
 

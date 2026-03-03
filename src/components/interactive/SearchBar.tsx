@@ -54,11 +54,24 @@ export default function SearchBar({ lang }: Props) {
     setLoading(true);
     try {
       const client = getClient();
+      // Try dedicated search endpoint first, fall back to filtered product list
       const { data } = await client.GET('/api/v1/products/search/', {
         params: { query: { q } },
       });
       if (data) {
         const page = data as { results: Array<Record<string, unknown>> };
+        const items = page.results ?? [];
+        if (items.length > 0 || !data) {
+          setResults(items.map(toSearchResult));
+          return;
+        }
+      }
+      // Fallback: use standard list endpoint with search filter
+      const { data: fallbackData } = await client.GET('/api/v1/products/', {
+        params: { query: { search: q } },
+      });
+      if (fallbackData) {
+        const page = fallbackData as { results: Array<Record<string, unknown>> };
         setResults((page.results ?? []).map(toSearchResult));
       }
     } finally {
@@ -74,7 +87,7 @@ export default function SearchBar({ lang }: Props) {
 
   const handleSelect = (result: SearchResult) => {
     closeSearch();
-    window.location.href = `/${lang}/product/${slugify(result.name)}`;
+    window.location.href = `/${lang}/product/${slugify(result.name)}-${result.id}`;
   };
 
   // Close on escape
