@@ -1,0 +1,23 @@
+src/components/interactive/SearchBar.tsx
+  04f34fe2d7792f73 90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "0603c2caebdaa142f18b2205c13abfb1a24e8ab5",
+  "prompts": {
+    "04f34fe2d7792f73": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "73f2d85d-b03f-43dc-9743-f30a98b7db86",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
