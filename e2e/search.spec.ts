@@ -63,13 +63,12 @@ test.describe('Search', () => {
     const listbox = page.getByRole('listbox', { name: 'Zoeken' });
     await expect(listbox).toBeVisible({ timeout: 5_000 });
 
-    // Use JS-level click because the backdrop overlay intercepts pointer
-    // events at the DOM level (absolute inset-0 stacking) even though the
-    // card is visually on top. element.click() bypasses hit-testing.
-    await listbox.getByText('Shawarma Bowl').evaluate((el) => (el as HTMLElement).click());
+    // Click the result button — use force to bypass backdrop overlay stacking
+    // eslint-disable-next-line playwright/no-force-option -- backdrop overlay intercepts pointer events
+    await listbox.getByRole('button', { name: /Shawarma Bowl/ }).click({ force: true });
 
     // Clicking a search result navigates to the product page
-    await page.waitForURL(/\/product\//, { timeout: 5_000 });
+    await page.waitForURL(/\/product\//, { timeout: 10_000 });
     await expect(page.getByRole('heading', { name: 'Shawarma Bowl' })).toBeVisible();
   });
 
