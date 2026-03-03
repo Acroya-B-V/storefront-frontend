@@ -7,7 +7,7 @@ import StructuredData from '@/components/astro/StructuredData.astro';
 import AddToCartButton from '@/components/interactive/AddToCartButton';
 import { formatPrice, langToLocale } from '@/lib/currency';
 import { getEffectivePrice, getOriginalPrice, hasUnitDiscount, type PricedItem } from '@/lib/pricing';
-import { normalizeProduct, extractIdFromSlug } from '@/lib/normalize';
+import { normalizeProduct, extractIdFromSlug, parseMetadataMap } from '@/lib/normalize';
 import PromoBadge from '@/components/astro/PromoBadge.astro';
 import { t } from '@/i18n';
 
@@ -26,6 +26,13 @@ if (!rawDetail) {
 }
 
 const product = normalizeProduct(rawDetail as Record<string, unknown>);
+
+// Extract SEO metadata from product metadata array
+const metadataMap = parseMetadataMap((rawDetail as any).metadata);
+const seoTitle = metadataMap.get('seo:meta_title') ?? null;
+const seoDescription = metadataMap.get('seo:meta_description') ?? null;
+const seoTitleIsFull = seoTitle !== null && merchant.name.length > 0 && seoTitle.includes(merchant.name);
+
 const discount = (product.discount ?? null) as PricedItem['discount'];
 const hasDiscount = discount !== null;
 const pricedItem: PricedItem = { price: product.price, discount };
@@ -62,6 +69,10 @@ if (Array.isArray(product.attribute_values)) {
   }
 }
 
+// Pre-compute SEO head props to avoid non-null assertions in template
+const headRawTitle = seoTitleIsFull ? seoTitle : undefined;
+const headTitle = seoTitleIsFull ? undefined : (seoTitle ?? product.name);
+
 const breadcrumbs = [
   { name: merchant.name, url: `/${lang}/` },
   { name: product.name, url: `/${lang}/product/${product.slug}` },
@@ -74,8 +85,9 @@ const breadcrumbs = [
     page="product"
     merchant={merchant}
     lang={lang}
-    title={product.name}
-    description={product.description ?? ''}
+    rawTitle={headRawTitle}
+    title={headTitle}
+    description={seoDescription ?? product.description ?? ''}
     canonicalUrl={`${Astro.url.origin}/${lang}/product/${product.slug}`}
     image={product.image ?? undefined}
   />

@@ -109,7 +109,7 @@ export function collectPageErrors(page: Page): string[] {
  * then waits for the Preact island to mount before clicking.
  */
 export async function addSimpleProductToCart(page: Page, productId: string) {
-  const card = page.locator(`[data-product-id="${productId}"]`);
+  const card = page.locator(`[data-product-id="${productId}"]`).first();
   await card.scrollIntoViewIfNeeded();
 
   const addButton = card.getByRole('button', { name: 'Toevoegen' });
@@ -125,7 +125,8 @@ export async function addSimpleProductToCart(page: Page, productId: string) {
 
   const responsePromise = page.waitForResponse(
     (resp) =>
-      resp.url().includes('/api/v1/cart/items/') &&
+      resp.url().includes('/items/') &&
+      resp.url().includes('/api/v1/cart/') &&
       resp.request().method() === 'POST',
   );
   await addButton.click();
@@ -150,7 +151,7 @@ export async function openCartDrawer(page: Page) {
  * client:visible — hydration may not be complete on the first click.
  */
 export async function openProductDetailModal(page: Page, productId: string) {
-  const card = page.locator(`[data-product-id="${productId}"]`);
+  const card = page.locator(`[data-product-id="${productId}"]`).first();
   await card.scrollIntoViewIfNeeded();
 
   const modal = page.getByRole('dialog');

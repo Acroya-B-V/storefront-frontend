@@ -169,8 +169,24 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     return;
   }
 
+  // ── Cart: create ──
+  if (method === 'POST' && path === '/api/v1/cart/') {
+    const state = getCartState(req);
+    json(res, state.cart, 201);
+    return;
+  }
+
+  // ── Cart: get by ID ──
+  const cartGetMatch = path.match(/^\/api\/v1\/cart\/([^/]+)\/$/);
+  if (method === 'GET' && cartGetMatch) {
+    const state = getCartState(req);
+    json(res, state.cart);
+    return;
+  }
+
   // ── Cart: add item ──
-  if (method === 'POST' && path === '/api/v1/cart/items/') {
+  const cartAddMatch = path.match(/^\/api\/v1\/cart\/([^/]+)\/items\/$/);
+  if (method === 'POST' && cartAddMatch) {
     const state = getCartState(req);
     const body = JSON.parse(await readBody(req));
     const product = products.find((p) => p.id === body.product_id);
@@ -211,10 +227,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   }
 
   // ── Cart: update quantity ──
-  const cartPatchMatch = path.match(/^\/api\/v1\/cart\/items\/([^/]+)\/$/);
+  const cartPatchMatch = path.match(/^\/api\/v1\/cart\/([^/]+)\/items\/([^/]+)\/$/);
   if (method === 'PATCH' && cartPatchMatch) {
     const state = getCartState(req);
-    const id = cartPatchMatch[1];
+    const id = cartPatchMatch[2];
     const body = JSON.parse(await readBody(req));
     const item = state.cart.line_items.find((li) => li.id === id);
     if (!item) {
@@ -228,10 +244,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   }
 
   // ── Cart: remove item ──
-  const cartDeleteMatch = path.match(/^\/api\/v1\/cart\/items\/([^/]+)\/$/);
+  const cartDeleteMatch = path.match(/^\/api\/v1\/cart\/([^/]+)\/items\/([^/]+)\/$/);
   if (method === 'DELETE' && cartDeleteMatch) {
     const state = getCartState(req);
-    const id = cartDeleteMatch[1];
+    const id = cartDeleteMatch[2];
     state.cart.line_items = state.cart.line_items.filter((li) => li.id !== id);
     recalcCart(state.cart);
     json(res, state.cart);

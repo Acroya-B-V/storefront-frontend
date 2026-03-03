@@ -27,7 +27,7 @@ test.describe('Cart — adding items', () => {
     await addSimpleProductToCart(page, falafel.id);
 
     // After adding, AddToCartButton changes from "Toevoegen" to a quantity badge
-    const card = page.locator(`[data-product-id="${falafel.id}"]`);
+    const card = page.locator(`[data-product-id="${falafel.id}"]`).first();
     await expect(card.getByRole('button', { name: /in cart/ })).toBeVisible();
   });
 
@@ -85,7 +85,8 @@ test.describe('Cart drawer — display and interaction', () => {
     // Wait for PATCH response after incrementing
     const responsePromise = page.waitForResponse(
       (resp) =>
-        resp.url().includes('/api/v1/cart/items/') &&
+        resp.url().includes('/items/') &&
+        resp.url().includes('/api/v1/cart/') &&
         resp.request().method() === 'PATCH',
     );
     await drawer.getByRole('button', { name: 'Increase quantity' }).click();
@@ -130,7 +131,8 @@ test.describe('Cart drawer — display and interaction', () => {
     // Wait for DELETE response after confirming removal
     const responsePromise = page.waitForResponse(
       (resp) =>
-        resp.url().includes('/api/v1/cart/items/') &&
+        resp.url().includes('/items/') &&
+        resp.url().includes('/api/v1/cart/') &&
         resp.request().method() === 'DELETE',
     );
     await confirmDialog.getByRole('button', { name: 'Verwijderen' }).click();

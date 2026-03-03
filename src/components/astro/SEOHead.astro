@@ -6,16 +6,20 @@ interface Props {
   merchant: MerchantConfig;
   lang: string;
   title?: string;
+  /** Pre-formatted title that bypasses the titleTemplate (e.g. from SEO metadata). */
+  rawTitle?: string;
   description?: string;
   canonicalUrl?: string;
   image?: string;
 }
 
-const { page, merchant, lang, title, description, canonicalUrl, image } = Astro.props;
+const { page, merchant, lang, title, rawTitle, description, canonicalUrl, image } = Astro.props;
 
-const pageTitle = title
-  ? merchant.seo.titleTemplate.replace('%s', title)
-  : merchant.name;
+const pageTitle = rawTitle
+  ? rawTitle
+  : title
+    ? merchant.seo.titleTemplate.replace('%s', title)
+    : merchant.name;
 const pageDescription = description ?? merchant.seo.defaultDescription;
 
 const noIndexPages = new Set(['cart', 'checkout', 'orders', 'login']);

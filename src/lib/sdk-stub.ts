@@ -1,8 +1,12 @@
 /**
- * Stub SDK client factory used until @sous/storefront-sdk is available.
- * Provides the same interface shape so TypeScript compiles and middleware works.
- * Replace with real SDK import once Gate 1 is resolved.
+ * Compatibility wrapper around @poweredbysous/storefront-sdk.
+ *
+ * The real SDK returns openapi-fetch's `{ data?, error?, response }` shape.
+ * This wrapper adapts responses to the `ApiResult` discriminated union that
+ * all consumer code already relies on, so zero call-site changes are needed.
  */
+
+import { createStorefrontClient as createRealClient } from '@poweredbysous/storefront-sdk';
 
 export interface ApiError {
   status: number;
@@ -36,61 +40,41 @@ export interface CreateClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
+/** Adapt openapi-fetch's `{ data?, error?, response }` to our `ApiResult` union. */
+function adaptResponse({ data, error, response }: any): ApiResult {
+  if (error !== undefined) {
+    return {
+      data: null,
+      error: {
+        status: response?.status ?? 0,
+        statusText: response?.statusText ?? '',
+      },
+    };
+  }
+  return { data, error: null };
+}
+
+/** Wrap an SDK call so thrown exceptions (network errors, etc.) become ApiResult. */
+function wrapCall(promise: Promise<any>): Promise<ApiResult> {
+  return promise.then(adaptResponse).catch((err: unknown) => ({
+    data: null,
+    error: err instanceof Error ? err : new Error(String(err)),
+  }));
+}
+
 export function createStorefrontClient(options: CreateClientOptions): StorefrontClient {
-  const headers: Record<string, string> = {
-    'X-Vendor-ID': options.vendorId,
-    'Accept-Language': options.language,
-    Accept: 'application/json',
-  };
-  if (options.token) {
-    headers['Authorization'] = `Bearer ${options.token}`;
-  }
-
-  const customFetch = options.fetch ?? globalThis.fetch;
-
-  async function request(method: string, path: string, requestOptions?: RequestOptions): Promise<ApiResult> {
-    // Resolve path parameters BEFORE constructing the URL.
-    // new URL() percent-encodes { } in the pathname (%7B / %7D),
-    // which would prevent the string replacement from matching.
-    let resolvedPath = path;
-    const pathParams = requestOptions?.params?.path;
-    if (pathParams) {
-      for (const [k, v] of Object.entries(pathParams)) {
-        resolvedPath = resolvedPath.replace(`{${k}}`, String(v));
-      }
-    }
-
-    const url = new URL(resolvedPath, options.baseUrl);
-    const params = requestOptions?.params?.query;
-    if (params) {
-      for (const [k, v] of Object.entries(params)) {
-        if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
-      }
-    }
-
-    try {
-      const res = await customFetch(url.toString(), {
-        method,
-        headers: {
-          ...headers,
-          ...(requestOptions?.body ? { 'Content-Type': 'application/json' } : {}),
-        },
-        body: requestOptions?.body ? JSON.stringify(requestOptions.body) : undefined,
-      });
-      if (!res.ok) {
-        return { data: null, error: { status: res.status, statusText: res.statusText } };
-      }
-      const data = await res.json();
-      return { data, error: null };
-    } catch (err) {
-      return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
-    }
-  }
+  const realClient = createRealClient({
+    baseUrl: options.baseUrl,
+    vendorId: options.vendorId,
+    language: options.language,
+    token: options.token,
+    fetch: options.fetch,
+  });
 
   return {
-    GET: (path, opts?) => request('GET', path, opts),
-    POST: (path, opts?) => request('POST', path, opts),
-    PATCH: (path, opts?) => request('PATCH', path, opts),
-    DELETE: (path, opts?) => request('DELETE', path, opts),
+    GET: (path, opts?) => wrapCall(realClient.GET(path as any, opts as any)),
+    POST: (path, opts?) => wrapCall(realClient.POST(path as any, opts as any)),
+    PATCH: (path, opts?) => wrapCall(realClient.PATCH(path as any, opts as any)),
+    DELETE: (path, opts?) => wrapCall(realClient.DELETE(path as any, opts as any)),
   };
 }

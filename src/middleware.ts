@@ -23,7 +23,11 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   }
 
   // Skip middleware for static assets in public/ (images, fonts, etc.)
-  if (url.pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|woff2?|ttf|eot|css|js|json|xml|txt)$/i)) {
+  // SEO endpoints (.xml, .txt) are excluded — they need merchant context from below.
+  if (
+    !LANG_EXEMPT_PATHS.has(url.pathname) &&
+    url.pathname.match(/\.(svg|png|jpg|jpeg|webp|gif|ico|woff2?|ttf|eot|css|js|json|xml|txt)$/i)
+  ) {
     return next();
   }
 

@@ -5,27 +5,47 @@ import MenuSection from '@/components/astro/MenuSection.astro';
 import Footer from '@/components/astro/Footer.astro';
 import SEOHead from '@/components/astro/SEOHead.astro';
 import StructuredData from '@/components/astro/StructuredData.astro';
-import { normalizeProduct, flattenCategories } from '@/lib/normalize';
+import { normalizeProduct, normalizeCollection, flattenCategories } from '@/lib/normalize';
+import type { NormalizedCategory } from '@/lib/normalize';
 
 const { merchant, lang, sdk } = Astro.locals;
 const { slug } = Astro.params;
 
-// Fetch categories to find the one matching this slug
-const categoriesResult = await sdk.GET('/api/v1/categories/');
-const rawCategories = (categoriesResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
-const categories = flattenCategories(rawCategories);
-const category = categories.find((c) => c.slug === slug);
+// Try collections first, fall back to categories
+let category: NormalizedCategory | undefined;
+let products: ReturnType<typeof normalizeProduct>[] = [];
+
+// 1. Try fetching collection by slug directly
+const collectionResult = await sdk.GET(`/api/v1/collections/{slug}/`, {
+  params: { path: { slug: slug! } },
+});
+
+if (collectionResult.data) {
+  category = normalizeCollection(collectionResult.data as Record<string, unknown>);
+  const productsResult = await sdk.GET(`/api/v1/collections/{slug}/products/`, {
+    params: { path: { slug: slug! } },
+  });
+  const rawProducts = (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+  products = rawProducts.map(normalizeProduct);
+} else {
+  // 2. Fallback: look up slug in categories
+  const categoriesResult = await sdk.GET('/api/v1/categories/');
+  const rawCategories = (categoriesResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+  const categories = flattenCategories(rawCategories);
+  category = categories.find((c) => c.slug === slug);
+
+  if (category) {
+    const productsResult = await sdk.GET('/api/v1/products/', {
+      params: { query: { category: String(category.id) } },
+    });
+    const rawProducts = (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
+    products = rawProducts.map(normalizeProduct);
+  }
+}
 
 if (!category) {
   return Astro.redirect(`/${lang}/`);
 }
-
-// Fetch products for this category
-const productsResult = await sdk.GET('/api/v1/products/', {
-  params: { query: { category: String(category.id) } },
-});
-const rawProducts = (productsResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
-const products = rawProducts.map(normalizeProduct);
 
 const breadcrumbs = [
   { name: merchant.name, url: `/${lang}/` },

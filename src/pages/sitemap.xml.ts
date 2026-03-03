@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import type { MerchantConfig } from '@/types/merchant';
-import { flattenCategories, slugify } from '@/lib/normalize';
+import { slugify } from '@/lib/normalize';
+import { fetchCollectionsOrCategories } from '@/lib/collections';
 
 function escapeXml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -18,36 +19,21 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const languages = merchant.languages;
   const defaultLang = merchant.defaultLanguage;
 
-  // Fetch products and categories — use allSettled so one failure
-  // doesn't prevent the other resource from appearing in the sitemap
-  let products: Record<string, unknown>[] = [];
-  let categories: Array<{ id: number | string; slug: string }> = [];
+  // Fetch products and collections/categories in parallel
+  const [productsResult, sectionsResult] = await Promise.all([
+    sdk.GET('/api/v1/products/'),
+    fetchCollectionsOrCategories(sdk),
+  ]);
 
-  try {
-    const [productsResult, categoriesResult] = await Promise.allSettled([
-      sdk.GET('/api/v1/products/'),
-      sdk.GET('/api/v1/categories/'),
-    ]);
-
-    if (productsResult.status === 'fulfilled') {
-      products = productsResult.value?.data?.results ?? [];
-    } else {
-      console.error('sitemap: failed to fetch products', productsResult.reason);
-    }
-
-    if (categoriesResult.status === 'fulfilled') {
-      const rawCats = categoriesResult.value?.data?.results ?? [];
-      categories = flattenCategories(rawCats);
-    } else {
-      console.error('sitemap: failed to fetch categories', categoriesResult.reason);
-    }
-  } catch (err) {
-    console.error('sitemap: unexpected error fetching data', err);
+  if (productsResult.error) {
+    console.error('sitemap: failed to fetch products', productsResult.error);
   }
 
-  // If both fetches failed, return 503 so crawlers retain the previous sitemap
-  // rather than treating a near-empty sitemap as authoritative
-  if (products.length === 0 && categories.length === 0) {
+  const products: Record<string, unknown>[] = productsResult.data?.results ?? [];
+  const collections = sectionsResult.sections;
+
+  // If both fetches returned empty, return 503 so crawlers retain the previous sitemap
+  if (products.length === 0 && collections.length === 0) {
     return new Response('Service temporarily unavailable', {
       status: 503,
       headers: { 'Retry-After': '300' },
@@ -59,8 +45,8 @@ export const GET: APIRoute = async ({ locals, url }) => {
   // Menu page (highest priority)
   urls.push({ loc: '/', langs: languages });
 
-  // Category pages
-  for (const cat of categories) {
+  // Collection pages (or category pages as fallback)
+  for (const cat of collections) {
     urls.push({
       loc: `/collection/${escapeXml(cat.slug)}`,
       langs: languages,
@@ -71,7 +57,8 @@ export const GET: APIRoute = async ({ locals, url }) => {
   for (const product of products) {
     const raw = product as any;
     const name = raw.title ?? raw.name ?? String(raw.id);
-    const productSlug = raw.slug ?? `${slugify(name)}-${raw.id}`;
+    const apiSlug = raw.slug as string | undefined;
+    const productSlug = apiSlug?.includes('--') ? apiSlug : `${slugify(apiSlug ?? name)}--${raw.id}`;
     urls.push({
       loc: `/product/${escapeXml(productSlug)}`,
       langs: languages,

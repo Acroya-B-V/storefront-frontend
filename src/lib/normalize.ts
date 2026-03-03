@@ -7,14 +7,13 @@
  */
 
 /**
- * Extract the numeric product ID from a URL slug.
- * Slugs are formatted as `{name}-{id}` (e.g. "bitterballen-42").
- * Falls back to the full slug if no trailing number is found
- * (handles API-provided slugs that may not contain an ID).
+ * Extract the product ID from a URL slug.
+ * Slugs use a `--` separator: `{name}--{id}` (e.g. "bitterballen--42", "falafel-wrap--prod-1").
+ * Falls back to the full slug if no `--` separator is found.
  */
 export function extractIdFromSlug(slug: string): string {
-  const match = slug.match(/-(\d+)$/);
-  return match ? match[1] : slug;
+  const sepIndex = slug.lastIndexOf('--');
+  return sepIndex !== -1 ? slug.slice(sepIndex + 2) : slug;
 }
 
 /** Convert a string to a URL-friendly slug. */
@@ -105,7 +104,7 @@ export function normalizeProduct(raw: Record<string, unknown>): NormalizedProduc
   return {
     ...r,
     id: r.id,
-    slug: (r.slug as string) ?? `${slugify(name)}-${r.id}`,
+    slug: r.slug?.includes('--') ? r.slug : `${slugify(r.slug ?? name)}--${r.id}`,
     name,
     image: primaryImage?.image_url ?? r.image ?? null,
     image_alt: primaryImage?.alt_text ?? null,
@@ -120,6 +119,47 @@ export function normalizeProduct(raw: Record<string, unknown>): NormalizedProduc
     tags: r.tags ?? [],
     images,
   };
+}
+
+/** Raw collection shape from the API. */
+interface RawCollection {
+  id: number;
+  title?: string;
+  name?: string;
+  slug: string;
+  description?: string;
+  image_url?: string;
+  product_count?: number;
+}
+
+/**
+ * Normalize a raw collection to the same shape as NormalizedCategory.
+ * Collections use `title` while categories use `name` — this maps both.
+ */
+export function normalizeCollection(raw: Record<string, unknown>): NormalizedCategory {
+  const r = raw as RawCollection;
+  return {
+    id: r.id,
+    name: r.title ?? r.name ?? '',
+    slug: r.slug ?? '',
+    description: r.description ?? '',
+    image_url: r.image_url ?? '',
+    product_count: r.product_count ?? 0,
+  };
+}
+
+/** Parse a metadata array of `{ key, value }` pairs into a lookup Map. */
+export function parseMetadataMap(rawMetadata: unknown): Map<string, string> {
+  const map = new Map<string, string>();
+  if (!Array.isArray(rawMetadata)) return map;
+  for (const entry of rawMetadata) {
+    if (typeof entry === 'object' && entry !== null && 'key' in entry && 'value' in entry) {
+      if (typeof entry.key === 'string' && entry.value != null) {
+        map.set(entry.key, String(entry.value));
+      }
+    }
+  }
+  return map;
 }
 
 /**
