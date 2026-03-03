@@ -87,7 +87,7 @@ export default function SearchBar({ lang }: Props) {
 
   const handleSelect = (result: SearchResult) => {
     closeSearch();
-    window.location.href = `/${lang}/product/${slugify(result.name)}-${result.id}`;
+    window.location.href = `/${lang}/product/${slugify(result.name)}--${result.id}`;
   };
 
   // Close on escape
