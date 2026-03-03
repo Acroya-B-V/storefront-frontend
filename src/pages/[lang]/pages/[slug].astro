@@ -27,34 +27,53 @@ if (!page) {
 const raw = page as Record<string, any>;
 
 /**
- * Render CMS content — handles both formats:
- * 1. HTML string: `{ content: "<p>Hello</p>" }`
- * 2. Content blocks: `{ content_blocks: [{ type: "text", body: "..." }, ...] }`
+ * Extract text from a block's content field.
+ * The API nests text inside `content: { text: "..." }`.
+ */
+function blockText(block: Record<string, any>): string {
+  const c = block.content;
+  if (typeof c === 'string') return c;
+  if (c && typeof c === 'object') return c.text ?? c.html ?? c.body ?? '';
+  return block.body ?? block.text ?? block.html ?? '';
+}
+
+/**
+ * Render CMS content blocks to HTML.
+ * Handles the API shape: `{ block_type, block_data, content: { text } }`.
  */
 function renderContentBlocks(blocks: Array<Record<string, any>>): string {
-  return blocks.map((block) => {
-    switch (block.type) {
-      case 'text':
-      case 'rich_text':
-        return block.body ?? block.content ?? block.html ?? '';
-      case 'heading':
-        const level = block.level ?? 2;
-        return `<h${level}>${block.text ?? block.content ?? ''}</h${level}>`;
-      case 'image':
-        const alt = block.alt_text ?? block.alt ?? '';
-        const caption = block.caption ?? '';
-        return `<figure><img src="${block.url ?? block.image_url ?? ''}" alt="${alt}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
-      case 'quote':
-      case 'blockquote':
-        return `<blockquote>${block.text ?? block.content ?? ''}</blockquote>`;
-      case 'html':
-      case 'raw':
-        return block.body ?? block.content ?? block.html ?? '';
-      default:
-        // Unknown block type — render body/content if present
-        return block.body ?? block.content ?? block.html ?? '';
-    }
-  }).join('\n');
+  return blocks
+    .filter((block) => block.is_visible !== false)
+    .map((block) => {
+      const type = block.block_type ?? block.type;
+      const text = blockText(block);
+
+      switch (type) {
+        case 'text':
+        case 'rich_text':
+          return `<p>${text}</p>`;
+        case 'heading': {
+          const level = block.block_data?.level ?? block.level ?? 2;
+          return `<h${level}>${text}</h${level}>`;
+        }
+        case 'image': {
+          const src = block.content?.url ?? block.content?.image_url ?? block.url ?? '';
+          const alt = block.content?.alt_text ?? block.content?.alt ?? '';
+          const caption = block.content?.caption ?? '';
+          return `<figure><img src="${src}" alt="${alt}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
+        }
+        case 'divider':
+          return '<hr />';
+        case 'quote':
+        case 'blockquote':
+          return `<blockquote>${text}</blockquote>`;
+        case 'html':
+        case 'raw':
+          return text;
+        default:
+          return text ? `<p>${text}</p>` : '';
+      }
+    }).join('\n');
 }
 
 let htmlContent = '';

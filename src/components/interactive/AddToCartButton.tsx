@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
-import { $cart, $cartLoading, setStoredCartId } from '@/stores/cart';
+import { $cart, $cartLoading, setStoredCartId, ensureCart } from '@/stores/cart';
 import { $selectedProduct } from '@/stores/ui';
 import { getClient } from '@/lib/api';
 import { t } from '@/i18n';
@@ -26,7 +26,7 @@ export default function AddToCartButton({
   const [collapsed, setCollapsed] = useState(true);
   const collapseTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const cartItem = cart?.line_items.find((item) => item.product_id === productId);
+  const cartItem = cart?.line_items.find((item) => String(item.product_id) === String(productId));
   const quantity = cartItem?.quantity ?? 0;
 
   // Auto-collapse stepper after 3 seconds of inactivity
@@ -44,17 +44,19 @@ export default function AddToCartButton({
   };
 
   const updateCartItem = async (itemId: string, newQuantity: number) => {
+    const cartId = cart?.id;
+    if (!cartId) return;
     $cartLoading.set(true);
     try {
       const client = getClient();
       if (newQuantity === 0) {
-        const { data } = await client.DELETE(`/api/v1/cart/items/{id}/`, {
-          params: { path: { id: itemId } },
+        const { data } = await client.DELETE(`/api/v1/cart/{cart_id}/items/{id}/`, {
+          params: { path: { cart_id: cartId, id: itemId } },
         });
         if (data) $cart.set(data as typeof cart);
       } else {
-        const { data } = await client.PATCH(`/api/v1/cart/items/{id}/`, {
-          params: { path: { id: itemId } },
+        const { data } = await client.PATCH(`/api/v1/cart/{cart_id}/items/{id}/`, {
+          params: { path: { cart_id: cartId, id: itemId } },
           body: { quantity: newQuantity },
         });
         if (data) $cart.set(data as typeof cart);
@@ -76,7 +78,9 @@ export default function AddToCartButton({
     const prevCart = cart;
     try {
       const client = getClient();
-      const { data, error } = await client.POST('/api/v1/cart/items/', {
+      const cartId = await ensureCart(client);
+      const { data, error } = await client.POST(`/api/v1/cart/{cart_id}/items/`, {
+        params: { path: { cart_id: cartId } },
         body: { product_id: productId, quantity: 1 },
       });
 
@@ -88,7 +92,8 @@ export default function AddToCartButton({
         $cart.set(cartData);
         if (cartData?.id) setStoredCartId(cartData.id);
       }
-    } catch {
+    } catch (err) {
+      console.error('[AddToCart] error:', err);
       $cart.set(prevCart);
     } finally {
       $cartLoading.set(false);

@@ -31,11 +31,13 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   useFocusTrap(drawerRef, !inline && isOpen, close);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+    const cartId = cart?.id;
+    if (!cartId) return;
     $cartLoading.set(true);
     try {
       const client = getClient();
-      const { data } = await client.PATCH(`/api/v1/cart/items/{id}/`, {
-        params: { path: { id: itemId } },
+      const { data } = await client.PATCH(`/api/v1/cart/{cart_id}/items/{id}/`, {
+        params: { path: { cart_id: cartId, id: itemId } },
         body: { quantity: newQuantity },
       });
       if (data) $cart.set(data as typeof cart);
@@ -47,11 +49,13 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   };
 
   const handleRemove = async (itemId: string) => {
+    const cartId = cart?.id;
+    if (!cartId) return;
     $cartLoading.set(true);
     try {
       const client = getClient();
-      const { data } = await client.DELETE(`/api/v1/cart/items/{id}/`, {
-        params: { path: { id: itemId } },
+      const { data } = await client.DELETE(`/api/v1/cart/{cart_id}/items/{id}/`, {
+        params: { path: { cart_id: cartId, id: itemId } },
       });
       if (data) $cart.set(data as typeof cart);
     } catch (err) {
@@ -93,10 +97,10 @@ export default function CartDrawer({ lang, inline = false }: Props) {
                   )}
                   <div class="flex flex-1 flex-col justify-between">
                     <div>
-                      <h3 class="text-sm font-medium text-card-foreground">{item.product_name}</h3>
-                      {item.modifiers.length > 0 && (
+                      <h3 class="text-sm font-medium text-card-foreground">{item.product_title}</h3>
+                      {item.selected_options && item.selected_options.length > 0 && (
                         <p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                          {item.modifiers.map((m) => m.name).join(', ')}
+                          {item.selected_options.map((m) => m.name).join(', ')}
                         </p>
                       )}
                     </div>
@@ -211,10 +215,10 @@ export default function CartDrawer({ lang, inline = false }: Props) {
 
                   <div class="flex flex-1 flex-col justify-between">
                     <div>
-                      <h3 class="text-sm font-medium text-card-foreground">{item.product_name}</h3>
-                      {item.modifiers.length > 0 && (
+                      <h3 class="text-sm font-medium text-card-foreground">{item.product_title}</h3>
+                      {item.selected_options && item.selected_options.length > 0 && (
                         <p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                          {item.modifiers.map((m) => m.name).join(', ')}
+                          {item.selected_options.map((m) => m.name).join(', ')}
                         </p>
                       )}
                     </div>

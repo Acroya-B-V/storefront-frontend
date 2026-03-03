@@ -1,15 +1,16 @@
 import { atom, computed } from 'nanostores';
+import type { StorefrontClient } from '@/lib/sdk-stub';
 
 export interface CartLineItem {
   id: string;
-  product_id: string;
-  product_name: string;
+  product_id: number | string;
+  product_title: string;
   product_image?: string;
   quantity: number;
   unit_price: string;
   line_total: string;
-  modifiers: Array<{
-    id: string;
+  selected_options?: Array<{
+    id: number | string;
     name: string;
     price: string;
     quantity: number;
@@ -54,4 +55,31 @@ export function setStoredCartId(cartId: string): void {
 export function clearStoredCartId(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(CART_ID_KEY);
+}
+
+/**
+ * Ensure a cart exists (fetch stored or create new).
+ * Returns the cart ID for use in API URLs.
+ */
+export async function ensureCart(client: StorefrontClient): Promise<string> {
+  const existing = $cart.get();
+  if (existing?.id) return existing.id;
+
+  const storedId = getStoredCartId();
+  if (storedId) {
+    const { data } = await client.GET(`/api/v1/cart/{id}/`, {
+      params: { path: { id: storedId } },
+    });
+    if (data) {
+      $cart.set(data as Cart);
+      return (data as Cart).id;
+    }
+  }
+
+  const { data } = await client.POST('/api/v1/cart/');
+  if (!data) throw new Error('Failed to create cart');
+  const newCart = data as Cart;
+  $cart.set(newCart);
+  setStoredCartId(newCart.id);
+  return newCart.id;
 }
