@@ -1,0 +1,23 @@
+src/stores/cart.integration.test.ts
+  e58abce968143b6d 1,9-10,14-16,107-205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "547c3e2c77adcfd02a5054e91b3ca61e19ef7c62",
+  "prompts": {
+    "e58abce968143b6d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dfc0575c-55b2-43b1-abcf-09294c200e47",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 106,
+      "total_deletions": 1,
+      "accepted_lines": 498,
+      "overriden_lines": 0
+    }
+  }
+}
