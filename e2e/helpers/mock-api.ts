@@ -74,8 +74,8 @@ function recalcCart(cart: CartFixture) {
   let total = 0;
   let count = 0;
   for (const item of cart.line_items) {
-    const modTotal = item.selected_options.reduce(
-      (s, m) => s + parseFloat(m.price) * m.quantity,
+    const modTotal = item.options.reduce(
+      (s, m) => s + parseFloat(m.price_modifier) * m.quantity,
       0,
     );
     const lineTotal = (parseFloat(item.unit_price) + modTotal) * item.quantity;
@@ -134,7 +134,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   if (method === 'GET' && path === '/api/v1/products/search/') {
     const q = (url.searchParams.get('q') ?? '').toLowerCase();
     const results = products.filter(
-      (p) => p.name.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q),
+      (p) => p.title.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q),
     );
     json(res, { results });
     return;
@@ -207,16 +207,19 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       return;
     }
 
-    const selectedOptions = (body.modifiers ?? []).map(
-      (m: { option_id: string; quantity: number }) => {
-        // Look up modifier name/price from product details
+    const options = (body.options ?? body.modifiers ?? []).map(
+      (m: { option_id: string; option_group_id?: string; quantity: number }) => {
+        // Look up modifier title/price from product details
         const detail = productDetails[product.id] as typeof shawarmaDetail | undefined;
-        const allOpts = detail?.modifier_groups?.flatMap((g) => g.options) ?? [];
+        const allGroups = detail?.modifier_groups ?? [];
+        const allOpts = allGroups.flatMap((g) => g.options) ?? [];
         const opt = allOpts.find((o) => o.id === m.option_id);
+        const group = allGroups.find((g) => g.options.some((o) => o.id === m.option_id));
         return {
-          id: m.option_id,
-          name: opt?.name ?? m.option_id,
-          price: opt?.price ?? '0.00',
+          option_id: m.option_id,
+          option_title: opt?.title ?? String(m.option_id),
+          option_group_title: group?.title ?? '',
+          price_modifier: opt?.price_modifier ?? '0.00',
           quantity: m.quantity,
         };
       },
@@ -225,12 +228,12 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     const lineItem = {
       id: `li-${state.nextLineItemId++}`,
       product_id: product.id,
-      product_title: product.name,
+      product_title: product.title,
       product_image: product.image ?? undefined,
       quantity: body.quantity ?? 1,
       unit_price: product.price,
       line_total: '0.00', // recalculated below
-      selected_options: selectedOptions,
+      options: options,
       notes: body.notes,
     };
 
