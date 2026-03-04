@@ -13,6 +13,7 @@ export interface CartFixture {
     selected_options: Array<{
       id: string;
       name: string;
+      group_name?: string;
       price: string;
       quantity: number;
     }>;
@@ -79,11 +80,42 @@ export function cartWithMultipleItems(): CartFixture {
         quantity: 1,
         unit_price: '14.50',
         line_total: '14.50',
-        selected_options: [{ id: 'opt-regular', name: 'Regular', price: '0.00', quantity: 1 }],
+        selected_options: [
+          { id: 'opt-regular', name: 'Regular', group_name: 'Size', price: '0.00', quantity: 1 },
+        ],
       },
     ],
     cart_total: '31.50',
     item_count: 3,
+  };
+}
+
+export function cartWithModifiers(): CartFixture {
+  return {
+    id: 'cart-test-001',
+    line_items: [
+      {
+        id: 'li-1',
+        product_id: 'prod-2',
+        product_title: 'Shawarma Bowl',
+        product_image: 'https://images.example.com/shawarma-bowl.jpg',
+        quantity: 1,
+        unit_price: '14.50',
+        line_total: '16.50',
+        selected_options: [
+          { id: 'opt-regular', name: 'Regular', group_name: 'Size', price: '0.00', quantity: 1 },
+          {
+            id: 'opt-cheese',
+            name: 'Extra Cheese',
+            group_name: 'Extras',
+            price: '2.00',
+            quantity: 1,
+          },
+        ],
+      },
+    ],
+    cart_total: '16.50',
+    item_count: 1,
   };
 }
 

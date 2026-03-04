@@ -213,15 +213,17 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       return;
     }
 
-    const selectedOptions = (body.modifiers ?? []).map(
-      (m: { option_id: string; quantity: number }) => {
-        // Look up modifier name/price from product details
+    const selectedOptions = (body.options ?? []).map(
+      (m: { option_id: string; option_group_id: string; quantity: number }) => {
         const detail = productDetails[product.id] as typeof shawarmaDetail | undefined;
-        const allOpts = detail?.modifier_groups?.flatMap((g) => g.options) ?? [];
-        const opt = allOpts.find((o) => o.id === m.option_id);
+        const group = detail?.modifier_groups?.find((g) =>
+          g.options.some((o) => o.id === m.option_id),
+        );
+        const opt = group?.options.find((o) => o.id === m.option_id);
         return {
           id: m.option_id,
           name: opt?.name ?? m.option_id,
+          group_name: group?.name,
           price: opt?.price ?? '0.00',
           quantity: m.quantity,
         };

@@ -12,6 +12,7 @@ export interface CartLineItem {
   selected_options?: Array<{
     id: number | string;
     name: string;
+    group_name?: string;
     price: string;
     quantity: number;
   }>;

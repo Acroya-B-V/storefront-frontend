@@ -51,9 +51,18 @@ function CartLineItem({
         <div>
           <h3 class="text-sm font-medium text-card-foreground">{item.product_title}</h3>
           {item.selected_options && item.selected_options.length > 0 && (
-            <p class="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-              {item.selected_options.map((m) => m.name).join(', ')}
-            </p>
+            <div class="mt-0.5 space-y-0.5">
+              {item.selected_options.map((opt) => (
+                <p key={String(opt.id)} class="text-xs text-muted-foreground">
+                  {opt.group_name ? `${opt.group_name}: ` : ''}
+                  {opt.name}
+                  {opt.quantity > 1 ? ` x${opt.quantity}` : ''}
+                  {parseFloat(opt.price) > 0
+                    ? ` (+${formatPrice(opt.price, currency, locale)})`
+                    : ''}
+                </p>
+              ))}
+            </div>
           )}
         </div>
         <div class="mt-1 flex items-center justify-between">
