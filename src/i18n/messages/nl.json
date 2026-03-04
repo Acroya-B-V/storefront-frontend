@@ -37,5 +37,8 @@
   "addToOrder": "Toevoegen aan bestelling",
   "hours": "Openingstijden",
   "loading": "Laden",
-  "noResults": "Geen resultaten gevonden"
+  "noResults": "Geen resultaten gevonden",
+  "addedToCart": "Toegevoegd",
+  "completeYourOrder": "Maak je bestelling compleet",
+  "done": "Klaar"
 }

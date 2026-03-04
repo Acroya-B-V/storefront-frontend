@@ -37,5 +37,8 @@
   "addToOrder": "Zur Bestellung hinzufügen",
   "hours": "Öffnungszeiten",
   "loading": "Wird geladen",
-  "noResults": "Keine Ergebnisse gefunden"
+  "noResults": "Keine Ergebnisse gefunden",
+  "addedToCart": "Hinzugefügt",
+  "completeYourOrder": "Vervollständige deine Bestellung",
+  "done": "Fertig"
 }

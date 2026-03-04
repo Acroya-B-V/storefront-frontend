@@ -7,6 +7,7 @@ import { formatPrice, langToLocale } from '@/lib/currency';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
 import QuantitySelector from './QuantitySelector';
+import CartSuggestions from './CartSuggestions';
 import { getClient } from '@/lib/api';
 
 interface Props {
@@ -151,6 +152,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
                 {formatPrice(cartTotal, currency, locale)}
               </span>
             </div>
+            <CartSuggestions lang={lang} />
             <a
               href={`/${lang}/checkout`}
               class="flex h-12 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
@@ -289,6 +291,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
                 {formatPrice(cartTotal, currency, locale)}
               </span>
             </div>
+            <CartSuggestions lang={lang} />
             <a
               href={`/${lang}/checkout`}
               class="flex h-12 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"

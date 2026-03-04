@@ -37,5 +37,8 @@
   "addToOrder": "Add to order",
   "hours": "Hours",
   "loading": "Loading",
-  "noResults": "No results found"
+  "noResults": "No results found",
+  "addedToCart": "Added to cart",
+  "completeYourOrder": "Complete your order",
+  "done": "Done"
 }
