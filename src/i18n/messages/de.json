@@ -55,5 +55,12 @@
   "toastAddedToCart": "Zum Warenkorb hinzugefügt",
   "productLoadFailed": "Produktdetails laden fehlgeschlagen.",
   "tryAgain": "Erneut versuchen",
-  "dismiss": "Schließen"
+  "dismiss": "Schließen",
+  "subtotal": "Zwischensumme",
+  "shipping": "Versandkosten",
+  "shippingFree": "Kostenlos",
+  "tax": "MwSt.",
+  "taxIncluded": "inkl. MwSt.",
+  "discount": "Rabatt",
+  "promotion": "Aktion"
 }

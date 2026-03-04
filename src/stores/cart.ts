@@ -30,6 +30,18 @@ export interface Cart {
   cart_total: string;
   cart_savings?: string;
   item_count: number;
+  subtotal?: string;
+  tax_total?: string;
+  tax_included?: boolean;
+  shipping_cost?: string;
+  discount_amount?: string;
+  promotion_discount_amount?: string;
+  applied_discount?: {
+    id: string;
+    code: string;
+    name: string;
+    discount_amount: string;
+  };
 }
 
 export const $cart = atom<Cart | null>(null);

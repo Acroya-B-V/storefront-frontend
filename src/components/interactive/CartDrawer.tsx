@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/preact';
 import { useRef } from 'preact/hooks';
-import { $cart, $cartTotal } from '@/stores/cart';
-import type { CartLineItem as CartLineItemType } from '@/stores/cart';
+import { $cart, $cartTotal, $cartLoading } from '@/stores/cart';
+import type { CartLineItem as CartLineItemType, Cart } from '@/stores/cart';
 import { $isCartOpen } from '@/stores/ui';
 import { $merchant } from '@/stores/merchant';
 import { formatPrice, langToLocale } from '@/lib/currency';
@@ -88,33 +88,99 @@ function CartLineItem({
 }
 
 interface CartFooterProps {
-  savings: string | null;
+  cart: Cart;
   cartTotal: string;
   currency: string;
   locale: string;
   lang: string;
-  /** Optional inline style for the footer wrapper (e.g. safe-area padding). */
   style?: Record<string, string>;
 }
 
-function CartFooter({ savings, cartTotal, currency, locale, lang, style }: CartFooterProps) {
+function CartFooter({ cart, cartTotal, currency, locale, lang, style }: CartFooterProps) {
+  const loading = useStore($cartLoading);
+  const subtotal = cart.subtotal;
+  const shipping = cart.shipping_cost;
+  const taxTotal = cart.tax_total;
+  const taxIncluded = cart.tax_included ?? true;
+  const discountNum = cart.discount_amount ? parseFloat(cart.discount_amount) : 0;
+  const promoNum = cart.promotion_discount_amount ? parseFloat(cart.promotion_discount_amount) : 0;
+  const shippingNum = shipping ? parseFloat(shipping) : 0;
+
+  // "You save" only for product-level savings (not code/promo discounts)
+  const hasCodeOrPromo = discountNum > 0 || promoNum > 0;
+  const savings =
+    !hasCodeOrPromo && cart.cart_savings && parseFloat(cart.cart_savings) > 0
+      ? cart.cart_savings
+      : null;
+
   return (
     <div class="border-t border-border px-4 py-3" style={style}>
+      {/* Subtotal */}
+      {subtotal && (
+        <div class="mb-1 flex items-center justify-between text-sm">
+          <span class="text-muted-foreground">{t('subtotal', lang)}</span>
+          <span class="text-card-foreground">{formatPrice(subtotal, currency, locale)}</span>
+        </div>
+      )}
+
+      {/* Shipping */}
+      {shipping && (
+        <div class="mb-1 flex items-center justify-between text-sm">
+          <span class="text-muted-foreground">{t('shipping', lang)}</span>
+          <span class="text-card-foreground">
+            {shippingNum === 0 ? t('shippingFree', lang) : formatPrice(shipping, currency, locale)}
+          </span>
+        </div>
+      )}
+
+      {/* Discount code savings */}
+      {discountNum > 0 && (
+        <div class="mb-1 flex items-center justify-between text-sm">
+          <span class="text-muted-foreground">{t('discount', lang)}</span>
+          <span class="font-medium text-destructive">
+            -{formatPrice(cart.discount_amount!, currency, locale)}
+          </span>
+        </div>
+      )}
+
+      {/* Promotion savings */}
+      {promoNum > 0 && (
+        <div class="mb-1 flex items-center justify-between text-sm">
+          <span class="text-muted-foreground">{t('promotion', lang)}</span>
+          <span class="font-medium text-destructive">
+            -{formatPrice(cart.promotion_discount_amount!, currency, locale)}
+          </span>
+        </div>
+      )}
+
+      {/* You save (product-level only -- hidden when code/promo discounts are active) */}
       {savings && (
-        <div class="mb-2 flex items-center justify-between text-sm">
+        <div class="mb-1 flex items-center justify-between text-sm">
           <span class="text-muted-foreground">{t('youSave', lang)}</span>
           <span class="font-medium text-destructive">{formatPrice(savings, currency, locale)}</span>
         </div>
       )}
-      <div class="mb-3 flex items-center justify-between">
+
+      {/* Tax */}
+      {taxTotal && (
+        <div class="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+          <span>{taxIncluded ? t('taxIncluded', lang) : t('tax', lang)}</span>
+          <span>{formatPrice(taxTotal, currency, locale)}</span>
+        </div>
+      )}
+
+      {/* Total */}
+      <div class="mb-3 flex items-center justify-between border-t border-border pt-2">
         <span class="text-sm font-medium text-card-foreground">{t('orderTotal', lang)}</span>
         <span class="text-lg font-bold text-card-foreground">
           {formatPrice(cartTotal, currency, locale)}
         </span>
       </div>
+
       <a
         href={`/${lang}/checkout`}
-        class="flex h-12 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        class={`flex h-12 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90 ${loading ? 'pointer-events-none opacity-50' : ''}`}
+        aria-disabled={loading}
       >
         {t('nextCheckout', lang)}
       </a>
@@ -179,8 +245,6 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   if (!inline && !isOpen) return null;
 
   const lineItems = cart?.line_items ?? [];
-  const savings =
-    cart?.cart_savings && parseFloat(cart.cart_savings) > 0 ? cart.cart_savings : null;
 
   // Inline mode: render directly without overlay/modal chrome
   if (inline) {
@@ -215,7 +279,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
         </div>
         {lineItems.length > 0 && (
           <CartFooter
-            savings={savings}
+            cart={cart!}
             cartTotal={cartTotal}
             currency={currency}
             locale={locale}
@@ -301,7 +365,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
         {/* Footer */}
         {lineItems.length > 0 && (
           <CartFooter
-            savings={savings}
+            cart={cart!}
             cartTotal={cartTotal}
             currency={currency}
             locale={locale}

@@ -71,7 +71,7 @@ function readBody(req: IncomingMessage): Promise<string> {
 }
 
 function recalcCart(cart: CartFixture) {
-  let total = 0;
+  let subtotal = 0;
   let count = 0;
   for (const item of cart.line_items) {
     const modTotal = item.selected_options.reduce(
@@ -80,10 +80,21 @@ function recalcCart(cart: CartFixture) {
     );
     const lineTotal = (parseFloat(item.unit_price) + modTotal) * item.quantity;
     item.line_total = lineTotal.toFixed(2);
-    total += lineTotal;
+    subtotal += lineTotal;
     count += item.quantity;
   }
-  cart.cart_total = total.toFixed(2);
+  cart.subtotal = subtotal.toFixed(2);
+  // Test approximation: 9% BTW tax-inclusive. Real backend uses per-product
+  // vat_rate and may use Stripe Tax or Avalara. This is sufficient for E2E.
+  const taxRate = 0.09;
+  cart.tax_total = ((subtotal * taxRate) / (1 + taxRate)).toFixed(2);
+  cart.tax_included = true;
+  cart.shipping_cost = cart.shipping_cost ?? '0.00';
+  const discount = parseFloat(cart.discount_amount ?? '0');
+  const promoDiscount = parseFloat(cart.promotion_discount_amount ?? '0');
+  cart.cart_total = (subtotal + parseFloat(cart.shipping_cost) - discount - promoDiscount).toFixed(
+    2,
+  );
   cart.item_count = count;
 }
 

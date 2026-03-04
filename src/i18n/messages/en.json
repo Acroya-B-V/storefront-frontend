@@ -55,5 +55,12 @@
   "toastAddedToCart": "Added to cart",
   "productLoadFailed": "Failed to load product details.",
   "tryAgain": "Try again",
-  "dismiss": "Dismiss"
+  "dismiss": "Dismiss",
+  "subtotal": "Subtotal",
+  "shipping": "Shipping",
+  "shippingFree": "Free",
+  "tax": "Tax",
+  "taxIncluded": "incl. tax",
+  "discount": "Discount",
+  "promotion": "Promotion"
 }
