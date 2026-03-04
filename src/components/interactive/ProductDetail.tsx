@@ -287,8 +287,30 @@ export default function ProductDetail({ lang }: Props) {
       });
 
       if (error) {
+        // Handle structured API errors (e.g. REQUIRED_OPTIONS_MISSING)
+        const apiBody = 'body' in error ? (error.body as Record<string, unknown>) : null;
+        const apiError = apiBody?.error as
+          | {
+              code?: string;
+              message?: string;
+              details?: { missing_groups?: Array<{ group_id: number }> };
+            }
+          | undefined;
+
+        if (apiError?.code === 'REQUIRED_OPTIONS_MISSING' && apiError.details?.missing_groups) {
+          const missingIds = apiError.details.missing_groups.map((g) => String(g.group_id));
+          if (missingIds.length > 0) {
+            setShakeGroup(missingIds[0]);
+            const el = document.getElementById(`modifier-group-${missingIds[0]}`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => setShakeGroup(null), 600);
+          }
+          showToast(apiError.message ?? t('toastAddToCartFailed', lang));
+          return;
+        }
+
         console.error('[ProductDetail] SDK error adding to cart:', error);
-        showToast(t('toastAddToCartFailed', lang));
+        showToast(apiError?.message ?? t('toastAddToCartFailed', lang));
         return;
       }
 
