@@ -1,0 +1,145 @@
+src/i18n/messages/en.json
+  818b3cc85b03eac6 40-56
+  c41afec057ee0f81 57-58
+src/pages/[lang]/index.astro
+  818b3cc85b03eac6 59
+src/lib/currency.test.ts
+  c41afec057ee0f81 2-21
+src/hooks/use-focus-trap.ts
+  818b3cc85b03eac6 10-20,26,70
+vitest.config.ts
+  818b3cc85b03eac6 17,20-23
+src/pages/[lang]/pages/[slug].astro
+  818b3cc85b03eac6 6,66-69
+src/hooks/scroll-lock.test.ts
+  818b3cc85b03eac6 4-5,8-13,17,30,54
+src/lib/sanitize.test.ts
+  818b3cc85b03eac6 2,41-43,47-48,52-53,64-65,69-71,116-175
+src/lib/normalize.test.ts
+  818b3cc85b03eac6 1-497
+src/components/interactive/QuantitySelector.tsx
+  818b3cc85b03eac6 4,41,85
+src/layouts/BaseLayout.astro
+  818b3cc85b03eac6 11,16,19,69-71
+  c41afec057ee0f81 73
+vercel.json
+  818b3cc85b03eac6 2,8-25
+astro.config.mjs
+  c41afec057ee0f81 9
+src/lib/sanitize.ts
+  818b3cc85b03eac6 1-30,33-36,39-45,47,49-50
+src/pages/[lang]/collection/[slug].astro
+  818b3cc85b03eac6 18-22
+src/lib/collections.test.ts
+  818b3cc85b03eac6 1-162
+src/components/astro/Footer.astro
+  818b3cc85b03eac6 89
+src/components/astro/ProductCard.astro
+  818b3cc85b03eac6 9,38-44,62,64-66,106
+src/lib/resolve-merchant.test.ts
+  c41afec057ee0f81 1,26-32
+src/i18n/index.test.ts
+  c41afec057ee0f81 1-49
+src/i18n/messages/de.json
+  c41afec057ee0f81 57-58
+  818b3cc85b03eac6 40-56
+src/components/interactive/AddToCartButton.tsx
+  c41afec057ee0f81 7,52-55,93
+  818b3cc85b03eac6 6,84,119
+src/stores/cart.test.ts
+  818b3cc85b03eac6 1-118,141-183
+  c41afec057ee0f81 119-140
+src/lib/normalize.ts
+  818b3cc85b03eac6 31-55,70,102
+src/lib/resolve-merchant.ts
+  c41afec057ee0f81 26-27
+src/lib/pricing.ts
+  818b3cc85b03eac6 2,55,57,59
+src/stores/cart-actions.ts
+  c41afec057ee0f81 2,4,9,15,19-20,24-26,37,39-52,56,60-61,64-66
+  818b3cc85b03eac6 1,3,5-8,10-14,16-18,21-23,27-36,38,53-55,57-59,62-63,67-72
+src/stores/cart-actions.test.ts
+  c41afec057ee0f81 1-216
+src/lib/currency.ts
+  818b3cc85b03eac6 7-8,10-16
+package.json
+  818b3cc85b03eac6 69
+src/components/interactive/SearchBar.tsx
+  c41afec057ee0f81 64
+src/pages/[lang]/cart.astro
+  818b3cc85b03eac6 14
+src/components/interactive/CartDrawer.tsx
+  c41afec057ee0f81 12,138-139,141,143,152-153,155,157
+  818b3cc85b03eac6 3-4,10,13-113,146,160,189,192-195,203,205-208,273,276-279,289-294
+src/pages/[lang]/product/[slug].astro
+  818b3cc85b03eac6 16,75-77,107,239
+src/components/astro/PromoBadge.astro
+  818b3cc85b03eac6 8,11-12
+e2e/smoke.spec.ts
+  818b3cc85b03eac6 58
+src/stores/toast.test.ts
+  c41afec057ee0f81 1-55
+src/stores/ui.ts
+  818b3cc85b03eac6 3-8,12
+src/stores/toast.ts
+  818b3cc85b03eac6 1-10,13-14,17-22
+  c41afec057ee0f81 11-12,15-16
+src/lib/api.ts
+  c41afec057ee0f81 13-14,17-20,29,32,39-40
+src/i18n/messages/nl.json
+  818b3cc85b03eac6 40-56
+  c41afec057ee0f81 57-58
+src/lib/pricing.test.ts
+  818b3cc85b03eac6 81,90,101,111
+  c41afec057ee0f81 115-118
+src/middleware.ts
+  818b3cc85b03eac6 101-102
+src/components/interactive/ProductDetail.tsx
+  818b3cc85b03eac6 10-12,15-16,22-23,29,48,53-54,62,77,81,83,106,115,117,121-122,133-136,283,332,335
+  c41afec057ee0f81 120,123-127,199-209,214,333,435,438
+src/lib/image.ts
+  818b3cc85b03eac6 1-35
+src/stores/cart.ts
+  c41afec057ee0f81 41-51,56,58-61,66,68-70,75,77-79,104,111-114,117-120
+  818b3cc85b03eac6 37,82-83,87,90-98
+src/styles/global.css
+  818b3cc85b03eac6 28-30,52-62
+src/components/interactive/Toast.tsx
+  c41afec057ee0f81 3,5-9,31
+  818b3cc85b03eac6 1-2,4,10-30,32-52
+src/components/astro/HeroSection.astro
+  818b3cc85b03eac6 3,10-12,18,20-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "f12a3f1c7ceee9275cb3b299c13163d2cbd511da",
+  "prompts": {
+    "818b3cc85b03eac6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ba4f13a-924f-40c1-87e3-58f83327f876",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 1646,
+      "total_deletions": 425,
+      "accepted_lines": 1488,
+      "overriden_lines": 0
+    },
+    "c41afec057ee0f81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "006c2fe6-a664-4576-a2fb-c786963d29c2",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 568,
+      "total_deletions": 80,
+      "accepted_lines": 529,
+      "overriden_lines": 0
+    }
+  }
+}
