@@ -32,7 +32,7 @@ interface AttributeValue {
   value_text: string;
   value_numeric: string | null;
   value_boolean: boolean | null;
-  selected_choices: Array<{ value: string }>;
+  selected_choices: Array<{ value: string; slug?: string }>;
 }
 
 interface ProductData {
@@ -345,7 +345,10 @@ export default function ProductDetail({ lang }: Props) {
                   {product.attribute_values.map((attr) => {
                     let display: string | null = null;
                     if (attr.input_type === 'multiselect' && attr.selected_choices.length > 0) {
-                      display = attr.selected_choices.map((c) => c.value).join(', ');
+                      const labels = attr.selected_choices
+                        .map((c) => c.value || c.slug?.replace(/_/g, ' ') || '')
+                        .filter(Boolean);
+                      display = labels.length > 0 ? labels.join(', ') : null;
                     } else if (attr.input_type === 'boolean' && attr.value_boolean != null) {
                       display = attr.value_boolean ? t('yes', lang) : t('no', lang);
                     } else if (attr.input_type === 'numeric' && attr.value_numeric != null) {
