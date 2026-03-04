@@ -1,0 +1,25 @@
+src/pages/[lang]/product/[slug].astro
+  d545c629d3dd72a4 87,101-104,106
+src/components/interactive/ProductDetail.tsx
+  d545c629d3dd72a4 35,348-351
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "4a3fd9d6e22a564fa6649ba72fa513bf03bc28e8",
+  "prompts": {
+    "d545c629d3dd72a4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "691042d3-6640-49a9-a058-cf4959e91213",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 5,
+      "accepted_lines": 559,
+      "overriden_lines": 0
+    }
+  }
+}
