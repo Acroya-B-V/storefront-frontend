@@ -90,6 +90,8 @@ export default function AddToCartButton({
         const cartData = data as typeof cart;
         $cart.set(cartData);
         if (cartData?.id) setStoredCartId(cartData.id);
+        // Open modal in upsell mode so suggestions are shown if available
+        $selectedProduct.set({ id: productId, name: productName, skipToUpsell: true });
       }
     } catch (err) {
       console.error('[AddToCart] error:', err);

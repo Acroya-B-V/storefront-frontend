@@ -168,6 +168,39 @@ export default function ProductDetail({ lang }: Props) {
       return;
     }
 
+    if (selectedProduct.skipToUpsell) {
+      // Product already added — only fetch suggestions for the upsell step
+      const fetchSuggestionsOnly = async () => {
+        setLoadingProduct(true);
+        try {
+          const client = getClient();
+          const { data } = await client.GET(`/api/v1/products/{id}/suggestions/`, {
+            params: { path: { id: String(selectedProduct.id) } },
+          });
+          const items = (data as Suggestion[] | null) ?? [];
+          if (items.length > 0) {
+            setProduct({
+              id: selectedProduct.id,
+              name: selectedProduct.name,
+              price: '0',
+            });
+            setSuggestions(items);
+            setStep('upsell');
+          } else {
+            showToast(t('toastAddedToCart', lang), 'success');
+            close();
+          }
+        } catch {
+          showToast(t('toastAddedToCart', lang), 'success');
+          close();
+        } finally {
+          setLoadingProduct(false);
+        }
+      };
+      fetchSuggestionsOnly();
+      return;
+    }
+
     fetchProductById(String(selectedProduct.id));
   }, [selectedProduct]);
 
