@@ -1,11 +1,14 @@
 ---
 import type { MerchantConfig } from '@/types/merchant';
+import { getMerchantDescription } from '@/types/merchant';
 
 interface Props {
   merchant: MerchantConfig;
+  lang: string;
 }
 
-const { merchant } = Astro.props;
+const { merchant, lang } = Astro.props;
+const description = getMerchantDescription(merchant, lang);
 ---
 
 <section class="relative">
@@ -47,7 +50,7 @@ const { merchant } = Astro.props;
           {merchant.name}
         </h1>
         <p class="mt-0.5 text-sm text-muted-foreground">
-          {merchant.description}
+          {description}
         </p>
       </div>
     </div>
