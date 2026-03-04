@@ -1,0 +1,27 @@
+e2e/helpers/mock-api.ts
+  c41afec057ee0f81 162-167
+e2e/product-detail.spec.ts
+  c41afec057ee0f81 222
+e2e/cart.spec.ts
+  c41afec057ee0f81 31,92,110,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.7",
+  "base_commit_sha": "b142700dae70087625fc32dc842b780e7b580a18",
+  "prompts": {
+    "c41afec057ee0f81": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "006c2fe6-a664-4576-a2fb-c786963d29c2",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 5,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
