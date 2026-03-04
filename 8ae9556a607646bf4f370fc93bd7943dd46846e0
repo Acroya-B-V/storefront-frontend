@@ -1,0 +1,33 @@
+e2e/cart.spec.ts
+  d545c629d3dd72a4 41,70
+e2e/helpers/mock-api.ts
+  d545c629d3dd72a4 77-78,137,210-212,214-215,217,219-222,231,236
+e2e/menu.spec.ts
+  d545c629d3dd72a4 37
+e2e/product-detail.spec.ts
+  d545c629d3dd72a4 29
+e2e/fixtures/cart.ts
+  d545c629d3dd72a4 13-17,53,73,83
+e2e/fixtures/products.ts
+  d545c629d3dd72a4 12,22,33,43,60,65-66,71,77-78,85
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "8ae9556a607646bf4f370fc93bd7943dd46846e0",
+  "prompts": {
+    "d545c629d3dd72a4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "691042d3-6640-49a9-a058-cf4959e91213",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 18,
+      "total_deletions": 15,
+      "accepted_lines": 587,
+      "overriden_lines": 0
+    }
+  }
+}
