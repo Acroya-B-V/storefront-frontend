@@ -11,6 +11,8 @@ import { createStorefrontClient as createRealClient } from '@poweredbysous/store
 export interface ApiError {
   status: number;
   statusText: string;
+  /** Parsed JSON body from the API error response (e.g. `{ code, message, details }`). */
+  body?: unknown;
 }
 
 export type ApiResult<T = unknown> =
@@ -55,6 +57,7 @@ function adaptResponse({ data, error, response }: RawSdkResponse): ApiResult {
       error: {
         status: response?.status ?? 0,
         statusText: response?.statusText ?? '',
+        body: error,
       },
     };
   }
