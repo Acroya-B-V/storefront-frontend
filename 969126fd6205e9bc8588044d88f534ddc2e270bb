@@ -1,0 +1,39 @@
+src/i18n/messages/de.json
+  9c00098c844830a3 65-70
+src/components/interactive/CartDrawer.tsx
+  9c00098c844830a3 2-3,12,14,209-210,214-230,286-288,300-301,373-375,387-388
+src/components/interactive/PromoBanner.tsx
+  9c00098c844830a3 1-20
+src/lib/sdk-stub.ts
+  9c00098c844830a3 26
+src/i18n/messages/nl.json
+  9c00098c844830a3 65-70
+src/stores/cart.ts
+  9c00098c844830a3 54-65
+e2e/helpers/mock-api.ts
+  9c00098c844830a3 290-323
+src/i18n/messages/en.json
+  9c00098c844830a3 65-70
+src/stores/cart-actions.ts
+  9c00098c844830a3 2-3,53-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "969126fd6205e9bc8588044d88f534ddc2e270bb",
+  "prompts": {
+    "9c00098c844830a3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9bfbb100-ed07-4ed0-80d7-e5d417e3384c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 175,
+      "total_deletions": 34,
+      "accepted_lines": 1377,
+      "overriden_lines": 0
+    }
+  }
+}
