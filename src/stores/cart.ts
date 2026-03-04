@@ -135,11 +135,15 @@ async function _doEnsureCart(client: StorefrontClient): Promise<string> {
   return newCart.id;
 }
 
+export type AddSuggestionResult = 'added' | 'requires_options' | 'error';
+
 /** Add a suggested item to cart (quantity 1, no modifiers). Shared by both upsell surfaces. */
-export async function addSuggestionToCart(productId: string | number): Promise<boolean> {
+export async function addSuggestionToCart(
+  productId: string | number,
+): Promise<AddSuggestionResult> {
   const client = getClient();
   const cartId = await ensureCart(client);
-  const { data } = await client.POST(`/api/v1/cart/{cart_id}/items/`, {
+  const { data, error } = await client.POST(`/api/v1/cart/{cart_id}/items/`, {
     params: { path: { cart_id: cartId } },
     body: { product_id: productId, quantity: 1 },
   });
@@ -147,7 +151,10 @@ export async function addSuggestionToCart(productId: string | number): Promise<b
     const cartData = data as Cart;
     $cart.set(cartData);
     if (cartData.id) setStoredCartId(cartData.id);
-    return true;
+    return 'added';
   }
-  return false;
+  if (error && 'status' in error && error.status === 400) {
+    return 'requires_options';
+  }
+  return 'error';
 }

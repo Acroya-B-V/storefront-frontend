@@ -504,8 +504,12 @@ export default function ProductDetail({ lang }: Props) {
                               <button
                                 type="button"
                                 onClick={async () => {
-                                  const ok = await addSuggestionToCart(s.id);
-                                  if (ok) setAddedSuggestions((prev) => new Set([...prev, s.id]));
+                                  const result = await addSuggestionToCart(s.id);
+                                  if (result === 'added') {
+                                    setAddedSuggestions((prev) => new Set([...prev, s.id]));
+                                  } else if (result === 'requires_options') {
+                                    $selectedProduct.set({ id: String(s.id), name: s.title });
+                                  }
                                 }}
                                 class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90 before:absolute before:inset-[-4px]"
                                 aria-label={`${t('addToCart', lang)} ${s.title}`}
@@ -702,8 +706,12 @@ export default function ProductDetail({ lang }: Props) {
                               type="button"
                               disabled={addedSuggestions.has(s.id)}
                               onClick={async () => {
-                                const ok = await addSuggestionToCart(s.id);
-                                if (ok) setAddedSuggestions((prev) => new Set([...prev, s.id]));
+                                const result = await addSuggestionToCart(s.id);
+                                if (result === 'added') {
+                                  setAddedSuggestions((prev) => new Set([...prev, s.id]));
+                                } else if (result === 'requires_options') {
+                                  $selectedProduct.set({ id: String(s.id), name: s.title });
+                                }
                               }}
                               class="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground before:absolute before:inset-[-4px]"
                               aria-label={`${t('addToCart', lang)} ${s.title}`}

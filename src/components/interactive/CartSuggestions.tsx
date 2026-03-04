@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
 import { $cart, addSuggestionToCart, type Suggestion } from '@/stores/cart';
 import { $merchant } from '@/stores/merchant';
+import { $selectedProduct, $isCartOpen } from '@/stores/ui';
 import { formatPrice, langToLocale } from '@/lib/currency';
 import { getClient } from '@/lib/api';
 import { t } from '@/i18n';
@@ -78,8 +79,13 @@ export default function CartSuggestions({ lang }: Props) {
             <button
               type="button"
               onClick={async () => {
-                const ok = await addSuggestionToCart(s.id);
-                if (ok) setAddedIds((prev) => new Set([...prev, s.id]));
+                const result = await addSuggestionToCart(s.id);
+                if (result === 'added') {
+                  setAddedIds((prev) => new Set([...prev, s.id]));
+                } else if (result === 'requires_options') {
+                  $isCartOpen.set(false);
+                  $selectedProduct.set({ id: String(s.id), name: s.title });
+                }
               }}
               class="mt-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
               aria-label={`${t('addToCart', lang)} ${s.title}`}

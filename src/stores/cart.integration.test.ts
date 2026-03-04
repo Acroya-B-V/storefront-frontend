@@ -198,7 +198,7 @@ describe('addSuggestionToCart', () => {
     vi.mocked(getClient).mockReturnValue(mockClient as never);
 
     const result = await addSuggestionToCart(3);
-    expect(result).toBe(true);
+    expect(result).toBe('added');
     expect($cart.get()).toEqual(cartWithItem);
     expect(mockClient.POST).toHaveBeenCalledWith('/api/v1/cart/{cart_id}/items/', {
       params: { path: { cart_id: 'cart-123' } },
@@ -206,14 +206,34 @@ describe('addSuggestionToCart', () => {
     });
   });
 
-  it('returns false when API call fails', async () => {
+  it('returns requires_options when API returns 400', async () => {
     $cart.set({ id: 'cart-123', line_items: [], cart_total: '0.00', item_count: 0 });
 
-    const mockClient = { GET: vi.fn(), POST: vi.fn().mockResolvedValue({ data: null }) };
+    const mockClient = {
+      GET: vi.fn(),
+      POST: vi.fn().mockResolvedValue({
+        data: null,
+        error: { status: 400, statusText: 'Bad Request' },
+      }),
+    };
     const { getClient } = await import('@/lib/api');
     vi.mocked(getClient).mockReturnValue(mockClient as never);
 
     const result = await addSuggestionToCart(99);
-    expect(result).toBe(false);
+    expect(result).toBe('requires_options');
+  });
+
+  it('returns error when API call fails with non-400', async () => {
+    $cart.set({ id: 'cart-123', line_items: [], cart_total: '0.00', item_count: 0 });
+
+    const mockClient = {
+      GET: vi.fn(),
+      POST: vi.fn().mockResolvedValue({ data: null, error: null }),
+    };
+    const { getClient } = await import('@/lib/api');
+    vi.mocked(getClient).mockReturnValue(mockClient as never);
+
+    const result = await addSuggestionToCart(99);
+    expect(result).toBe('error');
   });
 });
