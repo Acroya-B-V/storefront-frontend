@@ -143,7 +143,9 @@ describe('normalizeProduct', () => {
   });
 
   it('generates slug from name when slug field is absent', () => {
-    const product = normalizeProduct(makeRawProduct({ slug: undefined, id: 5, title: 'Kaassoufflé' }));
+    const product = normalizeProduct(
+      makeRawProduct({ slug: undefined, id: 5, title: 'Kaassoufflé' }),
+    );
     expect(product.slug).toBe('kaassouffle--5');
   });
 
@@ -215,9 +217,7 @@ describe('normalizeProduct', () => {
   });
 
   it('defaults description and intro to null when absent', () => {
-    const product = normalizeProduct(
-      makeRawProduct({ description: undefined, intro: undefined }),
-    );
+    const product = normalizeProduct(makeRawProduct({ description: undefined, intro: undefined }));
     expect(product.description).toBeNull();
     expect(product.intro).toBeNull();
   });
@@ -400,9 +400,7 @@ describe('flattenCategories', () => {
         id: 2,
         name: 'Food',
         slug: 'food',
-        children: [
-          { id: 3, name: 'Burgers', slug: 'burgers', product_count: 3 },
-        ],
+        children: [{ id: 3, name: 'Burgers', slug: 'burgers', product_count: 3 }],
       },
     ];
     const result = flattenCategories(categories as Record<string, unknown>[]);

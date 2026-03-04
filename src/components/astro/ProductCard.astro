@@ -103,7 +103,11 @@ const imgAttrs = product.image
             {product.name}
           </a>
         </h3>
-        {product.discount && <PromoBadge item={pricedItem} currency={currency} locale={locale} lang={lang} />}
+        {
+          product.discount && (
+            <PromoBadge item={pricedItem} currency={currency} locale={locale} lang={lang} />
+          )
+        }
       </div>
       {
         product.description && (

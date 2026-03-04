@@ -109,8 +109,7 @@ describe('sanitizeHtml', () => {
   });
 
   it('handles multiple dangerous elements', () => {
-    const input =
-      '<p>Safe</p><script>bad1</script><p>Also safe</p><iframe src="evil"></iframe>';
+    const input = '<p>Safe</p><script>bad1</script><p>Also safe</p><iframe src="evil"></iframe>';
     expect(sanitizeHtml(input)).toBe('<p>Safe</p><p>Also safe</p>');
   });
 

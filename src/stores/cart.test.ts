@@ -125,7 +125,9 @@ describe('ensureCart', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const client = makeClient({
-      GET: vi.fn().mockResolvedValue({ data: null, error: { status: 404, statusText: 'Not Found' } }),
+      GET: vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { status: 404, statusText: 'Not Found' } }),
       POST: vi.fn().mockResolvedValue({ data: newCart, error: null }),
     });
 

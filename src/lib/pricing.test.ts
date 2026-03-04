@@ -78,7 +78,12 @@ describe('hasUnitDiscount', () => {
 describe('getDiscountLabel', () => {
   it('returns percentage label', () => {
     expect(
-      getDiscountLabel(makeItem({ discount: { type: 'percentage', value: 15 } }), 'EUR', 'nl-NL', 'en'),
+      getDiscountLabel(
+        makeItem({ discount: { type: 'percentage', value: 15 } }),
+        'EUR',
+        'nl-NL',
+        'en',
+      ),
     ).toBe('-15%');
   });
 

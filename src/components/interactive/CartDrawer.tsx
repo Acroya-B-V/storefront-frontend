@@ -25,7 +25,14 @@ interface CartLineItemProps {
   onRemove: (itemId: string) => void;
 }
 
-function CartLineItem({ item, currency, locale, lang, onUpdateQuantity, onRemove }: CartLineItemProps) {
+function CartLineItem({
+  item,
+  currency,
+  locale,
+  lang,
+  onUpdateQuantity,
+  onRemove,
+}: CartLineItemProps) {
   return (
     <li class="flex gap-3 py-3">
       {item.product_image && (
@@ -87,9 +94,7 @@ function CartFooter({ savings, cartTotal, currency, locale, lang, style }: CartF
       {savings && (
         <div class="mb-2 flex items-center justify-between text-sm">
           <span class="text-muted-foreground">{t('youSave', lang)}</span>
-          <span class="font-medium text-destructive">
-            {formatPrice(savings, currency, locale)}
-          </span>
+          <span class="font-medium text-destructive">{formatPrice(savings, currency, locale)}</span>
         </div>
       )}
       <div class="mb-3 flex items-center justify-between">

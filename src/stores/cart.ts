@@ -41,7 +41,8 @@ export const $cartTotal = computed($cart, (cart) => cart?.cart_total ?? '0.00');
 /** Extract a human-readable detail string from an SDK error (ApiError or Error). */
 export function errorDetail(error: unknown): string {
   if (!error || typeof error !== 'object') return 'Unknown error';
-  if ('message' in error && typeof (error as Error).message === 'string') return (error as Error).message;
+  if ('message' in error && typeof (error as Error).message === 'string')
+    return (error as Error).message;
   if ('statusText' in error) {
     const e = error as { status: number; statusText: string };
     return `${e.status} ${e.statusText}`;

@@ -236,7 +236,12 @@ const breadcrumbs = [
           </h1>
           {
             hasDiscount && (
-              <PromoBadge item={pricedItem} currency={merchant.currency} locale={locale} lang={lang} />
+              <PromoBadge
+                item={pricedItem}
+                currency={merchant.currency}
+                locale={locale}
+                lang={lang}
+              />
             )
           }
         </div>

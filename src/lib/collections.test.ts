@@ -22,7 +22,13 @@ describe('fetchCollectionsOrCategories', () => {
       GET: vi.fn().mockResolvedValue({
         data: {
           results: [
-            { id: 1, title: 'Starters', slug: 'starters', description: 'Appetizers', product_count: 3 },
+            {
+              id: 1,
+              title: 'Starters',
+              slug: 'starters',
+              description: 'Appetizers',
+              product_count: 3,
+            },
             { id: 2, title: 'Mains', slug: 'mains', description: 'Main courses', product_count: 5 },
           ],
         },
@@ -43,7 +49,14 @@ describe('fetchCollectionsOrCategories', () => {
       GET: vi.fn().mockResolvedValue({
         data: {
           results: [
-            { id: 10, title: 'Drinks', slug: 'drinks', description: 'Beverages', image_url: '/img.jpg', product_count: 7 },
+            {
+              id: 10,
+              title: 'Drinks',
+              slug: 'drinks',
+              description: 'Beverages',
+              image_url: '/img.jpg',
+              product_count: 7,
+            },
           ],
         },
         error: null,
@@ -65,12 +78,19 @@ describe('fetchCollectionsOrCategories', () => {
 
   it('falls back to categories when collections returns empty results', async () => {
     const sdk = makeSdk({
-      GET: vi.fn()
+      GET: vi
+        .fn()
         .mockResolvedValueOnce({ data: { results: [] }, error: null }) // collections: empty
         .mockResolvedValueOnce({
           data: {
             results: [
-              { id: 1, name: 'Appetizers', slug: 'appetizers', description: 'Starters', product_count: 4 },
+              {
+                id: 1,
+                name: 'Appetizers',
+                slug: 'appetizers',
+                description: 'Starters',
+                product_count: 4,
+              },
             ],
           },
           error: null,
@@ -89,13 +109,12 @@ describe('fetchCollectionsOrCategories', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const sdk = makeSdk({
-      GET: vi.fn()
+      GET: vi
+        .fn()
         .mockResolvedValueOnce({ data: null, error: { status: 500, statusText: 'Server Error' } }) // collections: error
         .mockResolvedValueOnce({
           data: {
-            results: [
-              { id: 5, name: 'Salads', slug: 'salads', description: '', product_count: 2 },
-            ],
+            results: [{ id: 5, name: 'Salads', slug: 'salads', description: '', product_count: 2 }],
           },
           error: null,
         }), // categories
@@ -115,7 +134,8 @@ describe('fetchCollectionsOrCategories', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const sdk = makeSdk({
-      GET: vi.fn()
+      GET: vi
+        .fn()
         .mockResolvedValueOnce({ data: null, error: { status: 500, statusText: 'Server Error' } }) // collections
         .mockResolvedValueOnce({ data: null, error: { status: 500, statusText: 'Server Error' } }), // categories
     });
@@ -131,7 +151,8 @@ describe('fetchCollectionsOrCategories', () => {
 
   it('flattens hierarchical categories in the fallback path', async () => {
     const sdk = makeSdk({
-      GET: vi.fn()
+      GET: vi
+        .fn()
         .mockResolvedValueOnce({ data: { results: [] }, error: null }) // collections: empty
         .mockResolvedValueOnce({
           data: {

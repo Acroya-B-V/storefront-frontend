@@ -45,7 +45,12 @@ export function hasUnitDiscount(item: PricedItem): boolean {
   return item.discount.type === 'percentage' || item.discount.type === 'fixed';
 }
 
-export function getDiscountLabel(item: PricedItem, currency: string, locale: string, lang: string): string {
+export function getDiscountLabel(
+  item: PricedItem,
+  currency: string,
+  locale: string,
+  lang: string,
+): string {
   if (!item.discount) return '';
 
   switch (item.discount.type) {

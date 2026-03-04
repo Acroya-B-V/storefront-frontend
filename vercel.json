@@ -1,9 +1,7 @@
 {
   "framework": "astro",
   "images": {
-    "remotePatterns": [
-      { "protocol": "https", "hostname": "**" }
-    ]
+    "remotePatterns": [{ "protocol": "https", "hostname": "**" }]
   },
   "headers": [
     {
