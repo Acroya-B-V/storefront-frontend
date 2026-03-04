@@ -19,7 +19,6 @@ describe('t (translation lookup)', () => {
   });
 
   it('returns the key itself for a missing key', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(t('nonexistent-key' as any, 'en')).toBe('nonexistent-key');
   });
 });

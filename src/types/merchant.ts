@@ -49,6 +49,9 @@ export interface MerchantConfig {
   hours: MerchantHours[];
   social: Record<string, string>;
   website?: string;
+  features?: {
+    upsells?: boolean;
+  };
   seo: {
     titleTemplate: string;
     defaultDescription: string;
