@@ -1,0 +1,25 @@
+src/stores/comms.ts
+  5e33d33d26ce2884 1-64
+src/stores/comms.test.ts
+  5e33d33d26ce2884 1-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "d56436b01931ae4f575598a5c5671b7c10c19c9c",
+  "prompts": {
+    "5e33d33d26ce2884": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1deae4ac-f750-4be1-b9e7-4f93be802d75",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 1846,
+      "total_deletions": 0,
+      "accepted_lines": 1846,
+      "overriden_lines": 0
+    }
+  }
+}
