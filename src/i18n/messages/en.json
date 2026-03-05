@@ -58,5 +58,6 @@
   "toastAddedToCart": "Added to cart",
   "productLoadFailed": "Failed to load product details.",
   "tryAgain": "Try again",
-  "dismiss": "Dismiss"
+  "dismiss": "Dismiss",
+  "dismissBanner": "Dismiss notification"
 }

@@ -58,5 +58,6 @@
   "toastAddedToCart": "Zum Warenkorb hinzugefügt",
   "productLoadFailed": "Produktdetails laden fehlgeschlagen.",
   "tryAgain": "Erneut versuchen",
-  "dismiss": "Schließen"
+  "dismiss": "Schließen",
+  "dismissBanner": "Benachrichtigung schließen"
 }
