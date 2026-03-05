@@ -47,6 +47,11 @@ export const EVENTS = {
   // Group Orders
   GROUP_ORDER_CREATED: 'group_order_created',
   GROUP_ORDER_JOINED: 'group_order_joined',
+
+  // Comms
+  COMMS_IMPRESSION: 'comms_impression',
+  COMMS_CLICK: 'comms_click',
+  COMMS_DISMISS: 'comms_dismiss',
 } as const;
 
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
