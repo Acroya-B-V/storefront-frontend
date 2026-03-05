@@ -102,6 +102,18 @@ function recalcCart(cart: CartFixture) {
     2,
   );
   cart.item_count = count;
+
+  // Auto-apply promotions: Buy 2 Falafel Wraps get 1 free
+  const falafelItem = cart.line_items.find((li) => li.product_id === 'prod-1');
+  if (falafelItem && falafelItem.quantity >= 2) {
+    cart.promotion = {
+      id: 1,
+      name: 'Koop 2 Falafel Wraps, krijg 1 gratis!',
+      discount_amount: parseFloat(falafelItem.unit_price).toFixed(2),
+    };
+  } else {
+    cart.promotion = null;
+  }
 }
 
 // ── Product detail lookup ────────────────────────────────────────

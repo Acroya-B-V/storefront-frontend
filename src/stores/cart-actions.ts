@@ -1,6 +1,7 @@
 import { getClient } from '@/lib/api';
 import { $cart, $cartLoading, $eligiblePromotions, errorDetail } from '@/stores/cart';
 import type { Cart, EligiblePromotion } from '@/stores/cart';
+import { normalizeCart } from '@/lib/normalize';
 import type { StorefrontClient } from '@/lib/sdk-stub';
 import type { MessageKey } from '@/i18n';
 
@@ -25,8 +26,9 @@ export async function updateCartItemQuantity(
     if (error || !data) {
       throw new Error(`Failed to update cart item: ${errorDetail(error)}`);
     }
-    $cart.set(data as Cart);
-    return data as Cart;
+    const cart = normalizeCart(data as Record<string, unknown>);
+    $cart.set(cart);
+    return cart;
   } finally {
     $cartLoading.set(false);
   }
@@ -83,6 +85,16 @@ export const DISCOUNT_ERROR_MAP: Record<string, MessageKey> = {
   'Minimum order amount not met': 'discountMinOrder',
 };
 
+/** Error thrown when a discount code is rejected by the API. */
+export class DiscountError extends Error {
+  readonly apiDetail: string;
+  constructor(apiDetail: string) {
+    super(apiDetail);
+    this.name = 'DiscountError';
+    this.apiDetail = apiDetail;
+  }
+}
+
 export async function applyDiscountCode(
   cartId: string,
   code: string,
@@ -96,13 +108,11 @@ export async function applyDiscountCode(
       body: { code },
     });
     if (error || !data) {
-      const detail = errorDetail(error);
-      const err = new Error(detail);
-      (err as Error & { apiDetail?: string }).apiDetail = detail;
-      throw err;
+      throw new DiscountError(errorDetail(error));
     }
-    $cart.set(data as Cart);
-    return data as Cart;
+    const cart = normalizeCart(data as Record<string, unknown>);
+    $cart.set(cart);
+    return cart;
   } finally {
     $cartLoading.set(false);
   }
@@ -118,8 +128,9 @@ export async function removeDiscountCode(cartId: string, client?: StorefrontClie
     if (error || !data) {
       throw new Error(`Failed to remove discount: ${errorDetail(error)}`);
     }
-    $cart.set(data as Cart);
-    return data as Cart;
+    const cart = normalizeCart(data as Record<string, unknown>);
+    $cart.set(cart);
+    return cart;
   } finally {
     $cartLoading.set(false);
   }
@@ -139,8 +150,9 @@ export async function removeCartItem(
     if (error || !data) {
       throw new Error(`Failed to remove cart item: ${errorDetail(error)}`);
     }
-    $cart.set(data as Cart);
-    return data as Cart;
+    const cart = normalizeCart(data as Record<string, unknown>);
+    $cart.set(cart);
+    return cart;
   } finally {
     $cartLoading.set(false);
   }

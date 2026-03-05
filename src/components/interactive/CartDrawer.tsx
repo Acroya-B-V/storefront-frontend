@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/preact';
-import { useRef, useEffect } from 'preact/hooks';
+import { useRef, useEffect, useCallback } from 'preact/hooks';
 import { $cart, $cartTotal, $cartLoading, $eligiblePromotions } from '@/stores/cart';
 import type { CartLineItem as CartLineItemType, Cart } from '@/stores/cart';
 import { $isCartOpen } from '@/stores/ui';
@@ -106,7 +106,11 @@ function CartFooter({ cart, cartTotal, currency, locale, lang, style }: CartFoot
   const taxTotal = cart.tax_total;
   const taxIncluded = cart.tax_included ?? true;
   const discountNum = cart.discount_amount ? parseFloat(cart.discount_amount) : 0;
-  const promoNum = cart.promotion_discount_amount ? parseFloat(cart.promotion_discount_amount) : 0;
+  const promoNum = cart.promotion?.discount_amount
+    ? parseFloat(cart.promotion.discount_amount)
+    : cart.promotion_discount_amount
+      ? parseFloat(cart.promotion_discount_amount)
+      : 0;
   const shippingNum = shipping ? parseFloat(shipping) : 0;
 
   // "You save" only for product-level savings (not code/promo discounts)
@@ -151,9 +155,14 @@ function CartFooter({ cart, cartTotal, currency, locale, lang, style }: CartFoot
       {/* Promotion savings */}
       {promoNum > 0 && (
         <div class="mb-1 flex items-center justify-between text-sm">
-          <span class="text-muted-foreground">{t('promotion', lang)}</span>
+          <span class="text-muted-foreground">{cart.promotion?.name ?? t('promotion', lang)}</span>
           <span class="font-medium text-destructive">
-            -{formatPrice(cart.promotion_discount_amount!, currency, locale)}
+            -
+            {formatPrice(
+              cart.promotion?.discount_amount ?? cart.promotion_discount_amount!,
+              currency,
+              locale,
+            )}
           </span>
         </div>
       )}
@@ -215,9 +224,19 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   const currency = merchant?.currency ?? 'EUR';
   const locale = langToLocale(lang);
 
+  // Stable fingerprint of cart contents — catches product swaps at same price/count
+  const cartFingerprint =
+    cart?.line_items.map((li) => `${li.product_id}:${li.quantity}`).join(',') ?? '';
+
   // Check promotion eligibility when cart changes (debounced + cancellable)
   useEffect(() => {
     if (!cart || cart.line_items.length === 0) {
+      $eligiblePromotions.set([]);
+      return;
+    }
+
+    // Backend already applied a promotion — no need to check eligibility
+    if (cart.promotion) {
       $eligiblePromotions.set([]);
       return;
     }
@@ -231,9 +250,9 @@ export default function CartDrawer({ lang, inline = false }: Props) {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [cart?.line_items.length, cart?.cart_total]);
+  }, [cartFingerprint, cart?.promotion?.id]);
 
-  const close = () => $isCartOpen.set(false);
+  const close = useCallback(() => $isCartOpen.set(false), []);
 
   // Skip focus trap when inline — the page itself handles focus
   useFocusTrap(drawerRef, !inline && isOpen, close);
@@ -288,7 +307,13 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             </div>
           ) : (
             <>
-              {lineItems.length > 0 && <PromoBanner promotions={eligiblePromotions} lang={lang} />}
+              {lineItems.length > 0 && (
+                <PromoBanner
+                  promotion={cart?.promotion}
+                  eligiblePromotions={eligiblePromotions}
+                  lang={lang}
+                />
+              )}
               <ul class="divide-y divide-border">
                 {lineItems.map((item) => (
                   <CartLineItem
@@ -375,7 +400,13 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             </div>
           ) : (
             <>
-              {lineItems.length > 0 && <PromoBanner promotions={eligiblePromotions} lang={lang} />}
+              {lineItems.length > 0 && (
+                <PromoBanner
+                  promotion={cart?.promotion}
+                  eligiblePromotions={eligiblePromotions}
+                  lang={lang}
+                />
+              )}
               <ul class="divide-y divide-border">
                 {lineItems.map((item) => (
                   <CartLineItem

@@ -39,6 +39,11 @@ export interface CartFixture {
     name: string;
     discount_amount: string;
   };
+  promotion?: {
+    id: number;
+    name: string;
+    discount_amount: string;
+  } | null;
 }
 
 export function emptyCart(): CartFixture {

@@ -53,6 +53,11 @@ export interface Cart {
     name: string;
     discount_amount: string;
   };
+  promotion?: {
+    id: number;
+    name: string;
+    discount_amount: string;
+  } | null;
 }
 
 export const $cart = atom<Cart | null>(null);
@@ -176,7 +181,7 @@ export async function addSuggestionToCart(
     body: { product_id: productId, quantity: 1 },
   });
   if (data) {
-    const cartData = data as Cart;
+    const cartData = normalizeCart(data as Record<string, unknown>);
     $cart.set(cartData);
     if (cartData.id) setStoredCartId(cartData.id);
     return 'added';

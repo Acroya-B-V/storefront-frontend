@@ -1,6 +1,11 @@
 import { useState } from 'preact/hooks';
 import { t } from '@/i18n';
-import { applyDiscountCode, removeDiscountCode, DISCOUNT_ERROR_MAP } from '@/stores/cart-actions';
+import {
+  applyDiscountCode,
+  removeDiscountCode,
+  DISCOUNT_ERROR_MAP,
+  DiscountError,
+} from '@/stores/cart-actions';
 import { showToast } from '@/stores/toast';
 import type { Cart } from '@/stores/cart';
 
@@ -23,7 +28,7 @@ export default function DiscountCodeInput({ cart, lang }: Props) {
       setCode('');
       showToast(t('discountApplied', lang), 'success');
     } catch (err) {
-      const detail = (err as Error & { apiDetail?: string }).apiDetail ?? '';
+      const detail = err instanceof DiscountError ? err.apiDetail : '';
       const i18nKey = DISCOUNT_ERROR_MAP[detail] ?? 'discountInvalid';
       showToast(t(i18nKey, lang));
     } finally {

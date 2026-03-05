@@ -403,4 +403,23 @@ test.describe('Cart — discount codes', () => {
     // Toast should show invalid code message (Dutch) — rendered outside drawer via portal
     await expect(page.getByText('Ongeldige kortingscode')).toBeVisible({ timeout: 5_000 });
   });
+
+  test('shows error for expired discount code', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    await addSimpleProductToCart(page, falafel.id);
+    const drawer = await openCartDrawer(page);
+
+    const input = drawer.getByLabel('Kortingscode');
+    await input.fill('EXPIRED');
+
+    const applyResponse = page.waitForResponse(
+      (resp) => resp.url().includes('/apply-discount/') && resp.request().method() === 'POST',
+    );
+    await drawer.getByRole('button', { name: 'Toepassen' }).click();
+    await applyResponse;
+
+    await expect(page.getByText('Deze kortingscode is verlopen')).toBeVisible({ timeout: 5_000 });
+  });
 });
