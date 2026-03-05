@@ -14,6 +14,8 @@ export interface MerchantTheme {
   accentForeground: string;
   destructive: string;
   destructiveForeground: string;
+  warning?: string;
+  warningForeground?: string;
   border: string;
   input: string;
   ring: string;
