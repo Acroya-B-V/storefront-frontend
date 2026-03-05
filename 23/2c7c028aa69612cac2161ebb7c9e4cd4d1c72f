@@ -1,0 +1,27 @@
+e2e/fixtures/comms.ts
+  5e33d33d26ce2884 1-84
+e2e/comms.spec.ts
+  5e33d33d26ce2884 1-79
+e2e/helpers/mock-api.ts
+  5e33d33d26ce2884 18,312-324
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "232c7c028aa69612cac2161ebb7c9e4cd4d1c72f",
+  "prompts": {
+    "5e33d33d26ce2884": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1deae4ac-f750-4be1-b9e7-4f93be802d75",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 177,
+      "total_deletions": 0,
+      "accepted_lines": 1801,
+      "overriden_lines": 0
+    }
+  }
+}
