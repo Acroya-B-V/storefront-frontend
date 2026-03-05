@@ -9,7 +9,7 @@ export const categories = [
 export const products = [
   {
     id: 'prod-1',
-    name: 'Falafel Wrap',
+    title: 'Falafel Wrap',
     slug: 'falafel-wrap',
     price: '8.50',
     description: 'Crispy falafel with tahini, vegetables, and fresh herbs.',
@@ -19,7 +19,7 @@ export const products = [
   },
   {
     id: 'prod-2',
-    name: 'Shawarma Bowl',
+    title: 'Shawarma Bowl',
     slug: 'shawarma-bowl',
     price: '14.50',
     description: 'Slow-roasted chicken shawarma with rice, hummus, and garlic sauce.',
@@ -30,7 +30,7 @@ export const products = [
   },
   {
     id: 'prod-3',
-    name: 'Mint Lemonade',
+    title: 'Mint Lemonade',
     slug: 'mint-lemonade',
     price: '4.50',
     description: 'Fresh mint and lemon blended with ice.',
@@ -40,7 +40,7 @@ export const products = [
   },
   {
     id: 'prod-4',
-    name: 'Baklava',
+    title: 'Baklava',
     slug: 'baklava',
     price: '6.00',
     description: 'Layers of phyllo pastry with pistachios and honey syrup.',
@@ -57,25 +57,25 @@ export const shawarmaDetail = {
   modifier_groups: [
     {
       id: 'mod-size',
-      name: 'Size',
+      title: 'Size',
       type: 'radio' as const,
       selection_type: 'single' as const,
       required: true,
       options: [
-        { id: 'opt-regular', name: 'Regular', price: '0.00' },
-        { id: 'opt-large', name: 'Large', price: '3.00' },
+        { id: 'opt-regular', title: 'Regular', price_modifier: '0.00' },
+        { id: 'opt-large', title: 'Large', price_modifier: '3.00' },
       ],
     },
     {
       id: 'mod-extras',
-      name: 'Extras',
+      title: 'Extras',
       type: 'checkbox' as const,
       selection_type: 'multiple' as const,
       required: false,
       max_selections: 3,
       options: [
-        { id: 'opt-halloumi', name: 'Halloumi', price: '2.50' },
-        { id: 'opt-avocado', name: 'Avocado', price: '2.00' },
+        { id: 'opt-halloumi', title: 'Halloumi', price_modifier: '2.50' },
+        { id: 'opt-avocado', title: 'Avocado', price_modifier: '2.00' },
       ],
     },
   ],
