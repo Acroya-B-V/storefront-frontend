@@ -78,5 +78,6 @@
   "discountApplied": "Rabatt angewendet",
   "discountInvalid": "Ungültiger Rabattcode",
   "discountExpired": "Dieser Rabattcode ist abgelaufen",
-  "discountMinOrder": "Mindestbestellwert nicht erreicht"
+  "discountMinOrder": "Mindestbestellwert nicht erreicht",
+  "dismissBanner": "Benachrichtigung schließen"
 }

@@ -78,5 +78,6 @@
   "discountApplied": "Korting toegepast",
   "discountInvalid": "Ongeldige kortingscode",
   "discountExpired": "Deze kortingscode is verlopen",
-  "discountMinOrder": "Minimaal bestelbedrag niet bereikt"
+  "discountMinOrder": "Minimaal bestelbedrag niet bereikt",
+  "dismissBanner": "Melding sluiten"
 }

@@ -78,5 +78,6 @@
   "discountApplied": "Discount applied",
   "discountInvalid": "Invalid discount code",
   "discountExpired": "This discount code has expired",
-  "discountMinOrder": "Minimum order amount not met"
+  "discountMinOrder": "Minimum order amount not met",
+  "dismissBanner": "Dismiss notification"
 }

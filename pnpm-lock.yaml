@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  svgo: '>=4.0.1'
+  tar: '>=7.5.10'
+
 importers:
 
   .:

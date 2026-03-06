@@ -13,8 +13,6 @@ interface Props {
 }
 
 export default function CartBar({ lang }: Props) {
-  const cart = useStore($cart);
-
   // Initialize cart from API on first mount
   useEffect(() => {
     if ($cart.get()) return; // already initialized
@@ -42,7 +40,7 @@ export default function CartBar({ lang }: Props) {
   const locale = langToLocale(lang);
 
   // Hide when: no items, cart drawer open, or category drawer open
-  if (!cart || itemCount === 0 || isCartOpen || isCategoryDrawerOpen) {
+  if (itemCount === 0 || isCartOpen || isCategoryDrawerOpen) {
     return null;
   }
 
