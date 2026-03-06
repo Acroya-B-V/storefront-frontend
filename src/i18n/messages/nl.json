@@ -58,5 +58,6 @@
   "toastAddedToCart": "Toegevoegd aan winkelwagen",
   "productLoadFailed": "Product laden mislukt.",
   "tryAgain": "Opnieuw proberen",
-  "dismiss": "Sluiten"
+  "dismiss": "Sluiten",
+  "dismissBanner": "Melding sluiten"
 }

@@ -17,6 +17,17 @@ const PII_FIELDS = new Set([
   'street',
   'house_number',
   'city',
+  'zip_code',
+  'postcode',
+  'zipcode',
+  'date_of_birth',
+  'dob',
+  'birthdate',
+  'ip_address',
+  'ip',
+  'iban',
+  'bank_account',
+  'order_notes',
 ]);
 
 export function stripPII(props: Record<string, unknown>, depth = 0): Record<string, unknown> {

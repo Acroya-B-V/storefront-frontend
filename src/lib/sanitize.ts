@@ -27,7 +27,7 @@ const ALLOWED_TAGS = [
   'td',
 ];
 
-const ALLOWED_ATTR = ['href', 'src', 'alt', 'width', 'height', 'class', 'id'];
+const ALLOWED_ATTR = ['href', 'src', 'alt', 'width', 'height', 'class'];
 
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
