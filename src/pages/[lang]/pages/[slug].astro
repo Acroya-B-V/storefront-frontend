@@ -55,11 +55,11 @@ function renderContentBlocks(blocks: Array<Record<string, unknown>>): string {
       switch (type) {
         case 'text':
         case 'rich_text':
-          return `<p>${text}</p>`;
+          return `<p>${escapeHtml(text)}</p>`;
         case 'heading': {
           const bd = block.block_data as Record<string, unknown> | undefined;
-          const level = bd?.level ?? block.level ?? 2;
-          return `<h${level}>${text}</h${level}>`;
+          const level = Math.min(6, Math.max(1, Number(bd?.level ?? block.level ?? 2))) || 2;
+          return `<h${level}>${escapeHtml(text)}</h${level}>`;
         }
         case 'image': {
           const ct = block.content as Record<string, unknown> | undefined;
@@ -72,12 +72,12 @@ function renderContentBlocks(blocks: Array<Record<string, unknown>>): string {
           return '<hr />';
         case 'quote':
         case 'blockquote':
-          return `<blockquote>${text}</blockquote>`;
+          return `<blockquote>${escapeHtml(text)}</blockquote>`;
         case 'html':
         case 'raw':
           return text;
         default:
-          return text ? `<p>${text}</p>` : '';
+          return text ? `<p>${escapeHtml(text)}</p>` : '';
       }
     })
     .join('\n');

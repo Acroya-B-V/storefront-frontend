@@ -1,27 +1,13 @@
-import { useStore } from '@nanostores/preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useStore } from '@nanostores/preact';
 import { $modalMessages } from '@/stores/comms';
-import type { CommsTheme, SurfaceEntry } from '@/stores/comms';
+import type { SurfaceEntry } from '@/stores/comms';
 import { $isCartOpen, $selectedProduct } from '@/stores/ui';
+import { MODAL_THEME_CLASSES, colorStyle } from '@/lib/comms-theme';
+import { safeUrl } from '@/lib/safe-url';
 import { dismissMessage } from '@/lib/comms';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
-
-const MODAL_THEME_CLASSES: Record<CommsTheme, string> = {
-  info: 'bg-card text-card-foreground border-muted',
-  success: 'bg-card text-card-foreground border-primary/30',
-  warning: 'bg-card text-card-foreground border-warning/30',
-  urgent: 'bg-card text-card-foreground border-destructive/30',
-  promotional: 'bg-card text-card-foreground border-accent/30',
-};
-
-function colorStyle(custom: Record<string, string>): Record<string, string> | undefined {
-  if (!custom.bg && !custom.text) return undefined;
-  const style: Record<string, string> = {};
-  if (custom.bg && /^#[0-9a-fA-F]{3,8}$/.test(custom.bg)) style.backgroundColor = custom.bg;
-  if (custom.text && /^#[0-9a-fA-F]{3,8}$/.test(custom.text)) style.color = custom.text;
-  return Object.keys(style).length > 0 ? style : undefined;
-}
 
 interface Props {
   lang: string;
@@ -34,8 +20,6 @@ const SESSION_KEY = 'sous:comms:modal_shown';
 
 export default function CommsModal({ lang, onImpression, onClick, onDismiss }: Props) {
   const entries = useStore($modalMessages);
-  const cartOpen = useStore($isCartOpen);
-  const selectedProduct = useStore($selectedProduct);
   const [isOpen, setIsOpen] = useState(false);
   const [activeEntry, setActiveEntry] = useState<SurfaceEntry | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -53,7 +37,8 @@ export default function CommsModal({ lang, onImpression, onClick, onDismiss }: P
   // Try to show modal via requestIdleCallback when entries become available
   useEffect(() => {
     if (entries.length === 0) return;
-    if (cartOpen || selectedProduct !== null) return;
+    // Check overlay state via .get() to avoid subscribing
+    if ($isCartOpen.get() || $selectedProduct.get() !== null) return;
     if (typeof window !== 'undefined' && sessionStorage.getItem(SESSION_KEY)) return;
 
     const cb = () => {
@@ -83,14 +68,14 @@ export default function CommsModal({ lang, onImpression, onClick, onDismiss }: P
         clearTimeout(handle);
       }
     };
-  }, [entries.length > 0, cartOpen, selectedProduct]);
+  }, [entries.length]);
 
   // Fire impression when modal opens
   useEffect(() => {
     if (isOpen && activeEntry && onImpression) {
       onImpression(activeEntry.message.id, activeEntry.content.id);
     }
-  }, [isOpen, activeEntry?.content.id]);
+  }, [isOpen, activeEntry?.content.id, onImpression]);
 
   if (!isOpen || !activeEntry) return null;
 
@@ -115,7 +100,7 @@ export default function CommsModal({ lang, onImpression, onClick, onDismiss }: P
         <div class="flex flex-col gap-2">
           {content.cta_label && content.cta_url && (
             <a
-              href={content.cta_url}
+              href={safeUrl(content.cta_url)}
               class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               onClick={() => onClick?.(message.id, content.id)}
             >

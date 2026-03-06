@@ -310,13 +310,13 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   }
 
   // ── Comms: active messages ──
-  if (method === 'GET' && path.startsWith('/api/v1/merchant-comms/widget/active/')) {
+  if (method === 'GET' && path.startsWith('/api/v1/merchant-comms/storefront/active/')) {
     json(res, allSurfaceMessages());
     return;
   }
 
   // ── Comms: events ingest (fire-and-forget) ──
-  if (method === 'POST' && path === '/api/v1/merchant-comms/widget/events/') {
+  if (method === 'POST' && path === '/api/v1/merchant-comms/storefront/events/') {
     await readBody(req); // consume body
     json(res, { status: 'ok' }, 202);
     return;

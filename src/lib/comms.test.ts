@@ -167,7 +167,7 @@ describe('createCommsBatcher', () => {
   }
 
   it('queues events and flushes after 5s', () => {
-    const batcher = createCommsBatcher('https://api.test');
+    const batcher = createCommsBatcher('https://api.test', 'vendor-1');
     batcher.track(makeEvent('1'));
     batcher.track(makeEvent('2'));
 
@@ -180,17 +180,17 @@ describe('createCommsBatcher', () => {
   });
 
   it('sends batched events in correct format', () => {
-    const batcher = createCommsBatcher('https://api.test');
+    const batcher = createCommsBatcher('https://api.test', 'vendor-1');
     batcher.track(makeEvent('1'));
     batcher.track(makeEvent('2'));
 
     vi.advanceTimersByTime(5000);
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://api.test/api/v1/merchant-comms/widget/events/',
+      'https://api.test/api/v1/merchant-comms/storefront/events/',
       expect.objectContaining({
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Vendor-ID': 'vendor-1' },
         body: JSON.stringify({ events: [makeEvent('1'), makeEvent('2')] }),
       }),
     );
@@ -198,7 +198,7 @@ describe('createCommsBatcher', () => {
   });
 
   it('does not flush when queue empty', () => {
-    const batcher = createCommsBatcher('https://api.test');
+    const batcher = createCommsBatcher('https://api.test', 'vendor-1');
 
     vi.advanceTimersByTime(5000);
 
@@ -207,7 +207,7 @@ describe('createCommsBatcher', () => {
   });
 
   it('caps batch at 50 events (remainder sent next flush)', () => {
-    const batcher = createCommsBatcher('https://api.test');
+    const batcher = createCommsBatcher('https://api.test', 'vendor-1');
 
     for (let i = 0; i < 60; i++) {
       batcher.track(makeEvent(String(i)));
@@ -231,7 +231,7 @@ describe('createCommsBatcher', () => {
   });
 
   it('destroy flushes remaining and clears interval', () => {
-    const batcher = createCommsBatcher('https://api.test');
+    const batcher = createCommsBatcher('https://api.test', 'vendor-1');
     batcher.track(makeEvent('final'));
 
     batcher.destroy();

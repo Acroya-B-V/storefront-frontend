@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { $commsMessages, $dismissedMessages, $toastMessages } from '@/stores/comms';
 import type { CommsMessage } from '@/stores/comms';
 import { loadDismissedState, createCommsBatcher } from '@/lib/comms';
+import { $merchant } from '@/stores/merchant';
 import { showToast } from '@/stores/toast';
 import { capture, EVENTS } from '@/analytics';
 import TopBanner from './TopBanner';
@@ -16,11 +17,12 @@ interface Props {
 function getSubjectKey(): string {
   if (typeof window === 'undefined') return 'ssr';
   try {
+    // Use sessionStorage to avoid persistent tracking without consent (GDPR)
     const key = 'sous:comms:subject';
-    let id = localStorage.getItem(key);
+    let id = sessionStorage.getItem(key);
     if (!id) {
       id = crypto.randomUUID();
-      localStorage.setItem(key, id);
+      sessionStorage.setItem(key, id);
     }
     return id;
   } catch {
@@ -38,7 +40,8 @@ export default function MerchantComms({ lang, messages }: Props) {
     $dismissedMessages.set(loadDismissedState());
 
     // Create analytics batcher
-    const batcher = createCommsBatcher(import.meta.env.PUBLIC_API_BASE_URL || '');
+    const vendorId = $merchant.get()?.merchantId ?? '';
+    const batcher = createCommsBatcher(import.meta.env.PUBLIC_API_BASE_URL || '', vendorId);
     batcherRef.current = batcher;
 
     // Feed toast-surface messages into the toast system
@@ -54,7 +57,7 @@ export default function MerchantComms({ lang, messages }: Props) {
     };
   }, []);
 
-  const subjectKey = getSubjectKey();
+  const subjectKey = useMemo(() => getSubjectKey(), []);
 
   const onImpression = (messageId: string, contentId: string) => {
     const key = `${messageId}:${contentId}`;

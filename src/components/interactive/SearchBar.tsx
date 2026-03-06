@@ -5,6 +5,7 @@ import { formatPrice, langToLocale } from '@/lib/currency';
 import { t } from '@/i18n';
 import { getClient } from '@/lib/api';
 import { slugify } from '@/lib/normalize';
+import { optimizedImageUrl } from '@/lib/image';
 
 interface SearchResult {
   id: string | number;
@@ -192,7 +193,7 @@ export default function SearchBar({ lang }: Props) {
                     {result.image && (
                       <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
                         <img
-                          src={result.image}
+                          src={optimizedImageUrl(result.image, { width: 80 })}
                           alt=""
                           class="h-full w-full object-cover"
                           width="40"

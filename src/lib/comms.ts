@@ -124,7 +124,10 @@ const MAX_BATCH_SIZE = 50;
  * Create a fire-and-forget event batcher that POSTs queued comms events to
  * the backend every 5 seconds.
  */
-export function createCommsBatcher(apiBaseUrl: string): {
+export function createCommsBatcher(
+  apiBaseUrl: string,
+  vendorId: string,
+): {
   track: (event: CommsEvent) => void;
   flush: () => void;
   destroy: () => void;
@@ -134,11 +137,11 @@ export function createCommsBatcher(apiBaseUrl: string): {
   function flush(): void {
     if (queue.length === 0) return;
     const batch = queue.splice(0, MAX_BATCH_SIZE);
-    const url = `${apiBaseUrl}/api/v1/merchant-comms/widget/events/`;
+    const url = `${apiBaseUrl}/api/v1/merchant-comms/storefront/events/`;
     try {
       fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Vendor-ID': vendorId },
         body: JSON.stringify({ events: batch }),
       }).catch(() => {
         /* fire-and-forget */

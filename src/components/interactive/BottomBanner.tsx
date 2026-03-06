@@ -1,25 +1,10 @@
 import { useStore } from '@nanostores/preact';
 import { useEffect } from 'preact/hooks';
 import { $bottomBannerMessages } from '@/stores/comms';
-import type { CommsTheme } from '@/stores/comms';
+import { BANNER_THEME_CLASSES, colorStyle } from '@/lib/comms-theme';
+import { safeUrl } from '@/lib/safe-url';
 import { dismissMessage } from '@/lib/comms';
 import { t } from '@/i18n';
-
-const THEME_CLASSES: Record<CommsTheme, string> = {
-  info: 'bg-muted text-muted-foreground',
-  success: 'bg-primary/10 text-primary',
-  warning: 'bg-warning/10 text-warning',
-  urgent: 'bg-destructive/10 text-destructive',
-  promotional: 'bg-accent text-accent-foreground',
-};
-
-function colorStyle(custom: Record<string, string>): Record<string, string> | undefined {
-  if (!custom.bg && !custom.text) return undefined;
-  const style: Record<string, string> = {};
-  if (custom.bg && /^#[0-9a-fA-F]{3,8}$/.test(custom.bg)) style.backgroundColor = custom.bg;
-  if (custom.text && /^#[0-9a-fA-F]{3,8}$/.test(custom.text)) style.color = custom.text;
-  return Object.keys(style).length > 0 ? style : undefined;
-}
 
 interface Props {
   lang: string;
@@ -36,7 +21,7 @@ export default function BottomBanner({ lang, onImpression, onClick, onDismiss }:
     if (entry && onImpression) {
       onImpression(entry.message.id, entry.content.id);
     }
-  }, [entry?.message.id, entry?.content.id]);
+  }, [entry?.message.id, entry?.content.id, onImpression]);
 
   if (!entry) return null;
 
@@ -46,7 +31,7 @@ export default function BottomBanner({ lang, onImpression, onClick, onDismiss }:
     <div
       role="status"
       data-comms-banner="bottom"
-      class={`fixed bottom-0 left-0 right-0 z-30 animate-in slide-in-from-bottom px-4 py-3 ${THEME_CLASSES[content.theme]}`}
+      class={`fixed bottom-0 left-0 right-0 z-30 animate-in slide-in-from-bottom px-4 py-3 ${BANNER_THEME_CLASSES[content.theme]}`}
       style={colorStyle(content.custom_colors)}
     >
       <div class="mx-auto flex max-w-5xl items-center justify-between gap-3">
@@ -55,7 +40,7 @@ export default function BottomBanner({ lang, onImpression, onClick, onDismiss }:
           {content.body && <span class="opacity-80">{content.body}</span>}
           {content.cta_label && content.cta_url && (
             <a
-              href={content.cta_url}
+              href={safeUrl(content.cta_url)}
               class="underline underline-offset-2 font-medium"
               onClick={() => onClick?.(message.id, content.id)}
             >

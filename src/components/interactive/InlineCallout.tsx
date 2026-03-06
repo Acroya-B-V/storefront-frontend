@@ -1,23 +1,9 @@
 import { useEffect, useRef } from 'preact/hooks';
-import type { CommsTheme, SurfaceEntry } from '@/stores/comms';
+import type { SurfaceEntry } from '@/stores/comms';
+import { CALLOUT_THEME_CLASSES, colorStyle } from '@/lib/comms-theme';
+import { safeUrl } from '@/lib/safe-url';
 import { dismissMessage } from '@/lib/comms';
 import { t } from '@/i18n';
-
-const THEME_CLASSES: Record<CommsTheme, string> = {
-  info: 'bg-muted text-muted-foreground border-muted',
-  success: 'bg-primary/10 text-primary border-primary/30',
-  warning: 'bg-warning/10 text-warning border-warning/30',
-  urgent: 'bg-destructive/10 text-destructive border-destructive/30',
-  promotional: 'bg-accent text-accent-foreground border-accent/30',
-};
-
-function colorStyle(custom: Record<string, string>): Record<string, string> | undefined {
-  if (!custom.bg && !custom.text) return undefined;
-  const style: Record<string, string> = {};
-  if (custom.bg && /^#[0-9a-fA-F]{3,8}$/.test(custom.bg)) style.backgroundColor = custom.bg;
-  if (custom.text && /^#[0-9a-fA-F]{3,8}$/.test(custom.text)) style.color = custom.text;
-  return Object.keys(style).length > 0 ? style : undefined;
-}
 
 interface Props {
   lang: string;
@@ -39,7 +25,7 @@ export default function InlineCallout({ lang, entries, onImpression, onClick, on
         onImpression(entry.message.id, entry.content.id);
       }
     }
-  }, [entries]);
+  }, [entries, onImpression]);
 
   if (entries.length === 0) return null;
 
@@ -50,7 +36,7 @@ export default function InlineCallout({ lang, entries, onImpression, onClick, on
           key={content.id}
           role="status"
           data-comms-callout={content.surface}
-          class={`rounded-lg border p-4 ${THEME_CLASSES[content.theme]}`}
+          class={`rounded-lg border p-4 ${CALLOUT_THEME_CLASSES[content.theme]}`}
           style={colorStyle(content.custom_colors)}
         >
           <div class="flex items-start justify-between gap-3">
@@ -59,7 +45,7 @@ export default function InlineCallout({ lang, entries, onImpression, onClick, on
               {content.body && <p class="mt-1 opacity-80">{content.body}</p>}
               {content.cta_label && content.cta_url && (
                 <a
-                  href={content.cta_url}
+                  href={safeUrl(content.cta_url)}
                   class="mt-2 inline-block underline underline-offset-2 font-medium"
                   onClick={() => onClick?.(message.id, content.id)}
                 >

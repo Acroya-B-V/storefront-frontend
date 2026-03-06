@@ -26,14 +26,19 @@ const merchantJSON = merchant ? JSON.stringify(merchant) : '';
 const langValue = lang ?? 'en';
 
 let commsMessages: CommsMessage[] = [];
-if (Astro.locals.sdk) {
-  try {
-    const { data } = await Astro.locals.sdk.GET('/api/v1/merchant-comms/widget/active/', {
-      params: { query: { surfaces: 'top_banner,bottom_banner,modal,toast' } },
-    });
-    if (data) commsMessages = data as CommsMessage[];
-  } catch {
-    // Silent degradation — no banners is better than a broken page
+{
+  const sdk = Astro.locals.sdk;
+  if (sdk) {
+    try {
+      const { data } = await sdk.GET('/api/v1/merchant-comms/storefront/active/');
+      if (data) {
+        commsMessages = Array.isArray(data)
+          ? data
+          : (((data as Record<string, unknown>).results as CommsMessage[]) ?? []);
+      }
+    } catch {
+      // Silent degradation — no banners is better than a broken page
+    }
   }
 }
 ---
@@ -73,13 +78,14 @@ if (Astro.locals.sdk) {
     {
       merchantJSON && (
         <script define:vars={{ merchantJSON, langValue }}>
-          window.__MERCHANT__ = JSON.parse(merchantJSON); window.__LANG__ = langValue;
+          window.__MERCHANT__ = Object.freeze(JSON.parse(merchantJSON)); window.__LANG__ =
+          langValue;
         </script>
       )
     }
-    <slot />
-
     <MerchantComms client:idle lang={langValue} messages={commsMessages} />
+
+    <slot />
 
     {/* Shared islands: cart, product detail modal, search */}
     <CartBar client:idle lang={langValue} />

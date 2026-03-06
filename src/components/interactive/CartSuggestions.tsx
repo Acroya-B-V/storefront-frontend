@@ -6,6 +6,7 @@ import { $selectedProduct, $isCartOpen } from '@/stores/ui';
 import { formatPrice, langToLocale } from '@/lib/currency';
 import { getClient } from '@/lib/api';
 import { t } from '@/i18n';
+import { optimizedImageUrl } from '@/lib/image';
 
 interface Props {
   lang: string;
@@ -42,7 +43,12 @@ export default function CartSuggestions({ lang }: Props) {
       }
     };
     fetchSuggestions();
-  }, [cart?.id, cart?.item_count]);
+  }, [
+    cart?.id,
+    JSON.stringify(
+      cart?.line_items?.map((i: { product_id: string | number }) => i.product_id).sort(),
+    ),
+  ]);
 
   const visible = suggestions.filter((s) => !addedIds.has(s.id));
   if (visible.length === 0) return null;
@@ -61,7 +67,7 @@ export default function CartSuggestions({ lang }: Props) {
             {s.image_url ? (
               <div class="mb-1.5 h-14 w-14 overflow-hidden rounded bg-card-image">
                 <img
-                  src={s.image_url}
+                  src={optimizedImageUrl(s.image_url, { width: 112 })}
                   alt=""
                   class="h-full w-full object-cover"
                   width="56"
