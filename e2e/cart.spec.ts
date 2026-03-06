@@ -227,6 +227,14 @@ test.describe('Cart — modifier display', () => {
     await page.getByRole('button', { name: /toevoegen aan bestelling/i }).click();
     await responsePromise;
 
+    // Dismiss the upsell dialog that appears after adding a modifier product
+    const upsellDialog = page.getByRole('dialog').filter({ hasText: 'Toegevoegd' });
+    await upsellDialog.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {});
+    if (await upsellDialog.isVisible()) {
+      await page.keyboard.press('Escape');
+      await upsellDialog.waitFor({ state: 'hidden', timeout: 3_000 }).catch(() => {});
+    }
+
     const drawer = await openCartDrawer(page);
     await expect(drawer).toBeVisible({ timeout: 5_000 });
 

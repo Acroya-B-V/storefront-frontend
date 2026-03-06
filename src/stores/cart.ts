@@ -83,11 +83,19 @@ export const $eligiblePromotions = atom<EligiblePromotion[]>([]);
 /** Extract a human-readable detail string from an SDK error (ApiError or Error). */
 export function errorDetail(error: unknown): string {
   if (!error || typeof error !== 'object') return 'Unknown error';
+  const e = error as Record<string, unknown>;
+  // SDK ApiError wraps the response body: { status, statusText, body: { detail: "..." } }
+  if (e.body && typeof e.body === 'object') {
+    const body = e.body as Record<string, unknown>;
+    if (typeof body.detail === 'string') return body.detail;
+  }
+  // Raw DRF-style response body: { detail: "..." }
+  if (typeof e.detail === 'string') return e.detail;
   if ('message' in error && typeof (error as Error).message === 'string')
     return (error as Error).message;
   if ('statusText' in error) {
-    const e = error as { status: number; statusText: string };
-    return `${e.status} ${e.statusText}`;
+    const err = error as { status: number; statusText: string };
+    return `${err.status} ${err.statusText}`;
   }
   return 'Unknown error';
 }
