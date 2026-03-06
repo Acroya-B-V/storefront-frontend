@@ -1,0 +1,25 @@
+package.json
+  844e741a979e639f 61-65
+playwright.config.ts
+  844e741a979e639f 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "5e4d9400f9ed43d7138e4b656e763b06835e0fd3",
+  "prompts": {
+    "844e741a979e639f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7d620e7d-ea78-4e09-ae36-b509ef3b300c",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 2,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
