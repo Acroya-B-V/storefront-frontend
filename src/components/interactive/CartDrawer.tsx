@@ -96,27 +96,23 @@ interface CartFooterProps {
   currency: string;
   locale: string;
   lang: string;
+  loading: boolean;
   style?: Record<string, string>;
 }
 
-function CartFooter({ cart, cartTotal, currency, locale, lang, style }: CartFooterProps) {
-  const loading = useStore($cartLoading);
+function CartFooter({ cart, cartTotal, currency, locale, lang, loading, style }: CartFooterProps) {
   const subtotal = cart.subtotal;
   const shipping = cart.shipping_cost;
   const taxTotal = cart.tax_total;
   const taxIncluded = cart.tax_included ?? true;
   const discountNum = cart.discount_amount ? parseFloat(cart.discount_amount) : 0;
-  const promoNum = cart.promotion?.discount_amount
-    ? parseFloat(cart.promotion.discount_amount)
-    : cart.promotion_discount_amount
-      ? parseFloat(cart.promotion_discount_amount)
-      : 0;
+  const promoNum = cart.promotion_discount_amount ? parseFloat(cart.promotion_discount_amount) : 0;
   const shippingNum = shipping ? parseFloat(shipping) : 0;
 
   // "You save" only for product-level savings (not code/promo discounts)
-  const hasCodeOrPromo = discountNum > 0 || promoNum > 0;
+  const hasDiscounts = discountNum > 0 || promoNum > 0;
   const savings =
-    !hasCodeOrPromo && cart.cart_savings && parseFloat(cart.cart_savings) > 0
+    !hasDiscounts && cart.cart_savings && parseFloat(cart.cart_savings) > 0
       ? cart.cart_savings
       : null;
 
@@ -155,14 +151,9 @@ function CartFooter({ cart, cartTotal, currency, locale, lang, style }: CartFoot
       {/* Promotion savings */}
       {promoNum > 0 && (
         <div class="mb-1 flex items-center justify-between text-sm">
-          <span class="text-muted-foreground">{cart.promotion?.name ?? t('promotion', lang)}</span>
+          <span class="text-muted-foreground">{t('promotion', lang)}</span>
           <span class="font-medium text-destructive">
-            -
-            {formatPrice(
-              cart.promotion?.discount_amount ?? cart.promotion_discount_amount!,
-              currency,
-              locale,
-            )}
+            -{formatPrice(cart.promotion_discount_amount!, currency, locale)}
           </span>
         </div>
       )}
@@ -219,6 +210,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   const merchant = useStore($merchant);
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  const loading = useStore($cartLoading);
   const eligiblePromotions = useStore($eligiblePromotions);
 
   const currency = merchant?.currency ?? 'EUR';
@@ -294,7 +286,9 @@ export default function CartDrawer({ lang, inline = false }: Props) {
   if (inline) {
     return (
       <div ref={drawerRef}>
-        <div class="px-4 py-3">
+        <div
+          class={`px-4 py-3 transition-opacity duration-150 ${loading ? 'pointer-events-none opacity-50' : ''}`}
+        >
           {lineItems.length === 0 ? (
             <div class="py-8 text-center">
               <p class="text-sm text-muted-foreground">{t('emptyCart', lang)}</p>
@@ -337,6 +331,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             currency={currency}
             locale={locale}
             lang={lang}
+            loading={loading}
           />
         )}
       </div>
@@ -386,7 +381,10 @@ export default function CartDrawer({ lang, inline = false }: Props) {
         </div>
 
         {/* Body */}
-        <div class="overflow-y-auto px-4 py-3" style={{ maxHeight: 'calc(85vh - 140px)' }}>
+        <div
+          class={`overflow-y-auto px-4 py-3 transition-opacity duration-150 ${loading ? 'pointer-events-none opacity-50' : ''}`}
+          style={{ maxHeight: 'calc(85vh - 140px)' }}
+        >
           {lineItems.length === 0 ? (
             <div class="py-8 text-center">
               <p class="text-sm text-muted-foreground">{t('emptyCart', lang)}</p>
@@ -432,6 +430,7 @@ export default function CartDrawer({ lang, inline = false }: Props) {
             currency={currency}
             locale={locale}
             lang={lang}
+            loading={loading}
             style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
           />
         )}

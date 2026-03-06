@@ -277,13 +277,20 @@ export function normalizeCart(raw: Record<string, unknown>): Cart {
     cart_total: r.cart_total as string,
     cart_savings: r.cart_savings as string | undefined,
     item_count: r.item_count as number,
-    subtotal: r.subtotal as string | undefined,
+    subtotal: (r.subtotal ??
+      (lineItems.length > 0
+        ? lineItems
+            .reduce((sum, li) => sum + parseFloat((li.line_total as string) ?? '0'), 0)
+            .toFixed(2)
+        : undefined)) as string | undefined,
     tax_total: r.tax_total as string | undefined,
-    tax_included: r.tax_included as boolean | undefined,
+    tax_included: (r.tax_included ?? r.tax_estimated) as boolean | undefined,
     shipping_cost: r.shipping_cost as string | undefined,
-    discount_amount: r.discount_amount as string | undefined,
-    promotion_discount_amount: r.promotion_discount_amount as string | undefined,
-    applied_discount: r.applied_discount as Cart['applied_discount'],
+    discount_amount: (r.discount_amount ??
+      (r.discount as Record<string, unknown> | undefined)?.discount_amount) as string | undefined,
+    promotion_discount_amount: (r.promotion_discount_amount ??
+      (r.promotion as Record<string, unknown> | undefined)?.discount_amount) as string | undefined,
+    applied_discount: (r.applied_discount ?? r.discount) as Cart['applied_discount'],
     promotion: r.promotion as Cart['promotion'],
   };
 }

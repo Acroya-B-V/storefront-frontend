@@ -208,6 +208,34 @@ describe('normalizeCart', () => {
     expect(cart.discount_amount).toBe('0.85');
   });
 
+  it('maps "discount" field to applied_discount and extracts nested amounts', () => {
+    const apiResponse = {
+      id: 'cart-1',
+      line_items: [],
+      cart_total: '49.05',
+      item_count: 2,
+      discount: {
+        code: 'WELKOM10',
+        name: 'Welkom korting',
+        discount_amount: '10.95',
+      },
+      promotion: {
+        id: 1,
+        name: 'Buy 2 get 1 free',
+        discount_amount: '49.50',
+      },
+    };
+
+    const cart = normalizeCart(apiResponse);
+    expect(cart.applied_discount).toEqual({
+      code: 'WELKOM10',
+      name: 'Welkom korting',
+      discount_amount: '10.95',
+    });
+    expect(cart.discount_amount).toBe('10.95');
+    expect(cart.promotion_discount_amount).toBe('49.50');
+  });
+
   it('passes through tax and shipping fields', () => {
     const apiResponse = {
       id: 'cart-1',
