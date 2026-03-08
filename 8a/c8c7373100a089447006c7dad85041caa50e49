@@ -1,0 +1,23 @@
+src/components/astro/HeroSection.astro
+  0bbaa7408bd77114 16-32,35-37,47,56-59,62,67-68,76-81,85-88,101-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "8ac8c7373100a089447006c7dad85041caa50e49",
+  "prompts": {
+    "0bbaa7408bd77114": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4af36f00-8a5c-4c91-b8f6-527112f3a778",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 37,
+      "total_deletions": 52,
+      "accepted_lines": 960,
+      "overriden_lines": 0
+    }
+  }
+}
