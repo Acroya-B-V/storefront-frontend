@@ -13,10 +13,28 @@ const description = getMerchantDescription(merchant, lang);
 const heroAttrs = merchant.heroImage
   ? responsiveImage(merchant.heroImage, [640, 960, 1280, 1920], '100vw', 80)
   : null;
+
+// Compute "Open until" from current day's hours
+const now = new Date();
+const dayIndex = now.getDay(); // 0=Sun
+const dayAbbrs = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const todayAbbr = dayAbbrs[dayIndex];
+const todayHours = merchant.hours.find((h) => {
+  const parts = h.days.split('-');
+  if (parts.length === 2) {
+    const startIdx = dayAbbrs.indexOf(parts[0]);
+    const endIdx = dayAbbrs.indexOf(parts[1]);
+    if (startIdx <= endIdx) return dayIndex >= startIdx && dayIndex <= endIdx;
+    return dayIndex >= startIdx || dayIndex <= endIdx;
+  }
+  return h.days.includes(todayAbbr);
+});
+const closeTime = todayHours?.close ?? null;
 ---
 
-<section class="relative">
-  <div class="aspect-[21/9] w-full overflow-hidden bg-card-image sm:aspect-[3/1]">
+<section class="relative bg-card">
+  {/* Hero image — fixed height */}
+  <div class="relative h-40 w-full overflow-hidden sm:h-56">
     {
       heroAttrs ? (
         <img
@@ -26,7 +44,7 @@ const heroAttrs = merchant.heroImage
           alt={merchant.name}
           class="h-full w-full object-cover"
           width="1200"
-          height="400"
+          height="224"
           loading="eager"
           decoding="async"
           fetchpriority="high"
@@ -35,34 +53,39 @@ const heroAttrs = merchant.heroImage
     }
   </div>
 
-  <div class="relative mx-auto -mt-10 max-w-screen-xl px-4">
-    <div class="flex items-end gap-4">
+  {/* Merchant info — stacked vertically */}
+  <div class="relative mx-auto max-w-[1160px] px-4 sm:px-6 lg:px-8">
+    {/* Logo card — overlapping the hero image */}
+    <div class="-mt-10 sm:-mt-12">
       {
         merchant.logo && (
-          <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border-4 border-background bg-card shadow-md">
+          <div class="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border-4 border-card bg-card shadow-sm sm:h-24 sm:w-24">
             <img
               src={merchant.logo}
               alt=""
               class="h-full w-full object-contain p-2"
-              width="80"
-              height="80"
+              width="96"
+              height="96"
               loading="eager"
             />
           </div>
         )
       }
-      <div class="pb-1">
-        <h1 class="font-heading text-2xl font-bold text-foreground sm:text-3xl">
-          {merchant.name}
-        </h1>
-        <p class="mt-0.5 text-sm text-muted-foreground">
-          {description}
-        </p>
-      </div>
     </div>
 
-    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-      <span class="inline-flex items-center gap-1">
+    {/* Name + description */}
+    <div class="mt-3">
+      <h1 class="text-lg font-bold leading-tight text-foreground sm:text-xl">
+        {merchant.name}
+      </h1>
+      <p class="mt-1 max-w-md text-[13px] leading-relaxed text-muted-foreground sm:text-sm">
+        {description}
+      </p>
+    </div>
+
+    {/* Meta: location + hours */}
+    <div class="mt-3 flex items-center gap-4 pb-4 text-muted-foreground sm:pb-5">
+      <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="14"
@@ -73,16 +96,15 @@ const heroAttrs = merchant.heroImage
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          ><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle
-            cx="12"
-            cy="10"
-            r="3"></circle></svg
         >
-        {merchant.contact.address}
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        {merchant.contact.address.split(',').pop()?.trim() ?? merchant.contact.address}
       </span>
       {
-        merchant.hours[0] && (
-          <span class="inline-flex items-center gap-1">
+        closeTime && (
+          <span class="flex items-center gap-1.5 text-xs sm:text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -94,12 +116,10 @@ const heroAttrs = merchant.heroImage
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <>
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </>
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
             </svg>
-            {merchant.hours[0].open} – {merchant.hours[0].close}
+            Open until {closeTime}
           </span>
         )
       }
