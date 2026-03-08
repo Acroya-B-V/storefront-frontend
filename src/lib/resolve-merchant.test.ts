@@ -10,8 +10,15 @@ describe('resolveMerchantSlug', () => {
     expect(resolveMerchantSlug('bar-sumac.poweredbysous.localhost:4321')).toBe('bar-sumac');
   });
 
-  it('extracts slug from Vercel preview, stripping branch', () => {
-    expect(resolveMerchantSlug('bar-sumac--feat-xyz.vercel.app')).toBe('bar-sumac');
+  it('falls back to DEFAULT_MERCHANT for Vercel hostnames', () => {
+    expect(resolveMerchantSlug('storefront-frontend-sous.vercel.app', '{}', 'bar-sumac')).toBe(
+      'bar-sumac',
+    );
+  });
+
+  it('resolves Vercel hostname via CUSTOM_DOMAINS', () => {
+    const customDomains = '{"bar-sumac--feat-xyz.vercel.app":"bar-sumac"}';
+    expect(resolveMerchantSlug('bar-sumac--feat-xyz.vercel.app', customDomains)).toBe('bar-sumac');
   });
 
   it('looks up custom domain from env map', () => {

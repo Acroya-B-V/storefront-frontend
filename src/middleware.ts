@@ -17,7 +17,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { request, locals, redirect } = context;
   const url = new URL(request.url);
 
-  // Skip middleware for the 404 page to prevent rewrite loops
+  // Skip middleware for the 404 page
   if (url.pathname === '/404') {
     return next();
   }
@@ -32,11 +32,13 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   }
 
   // 1. Resolve merchant from hostname
-  const slug = resolveMerchantSlug(
-    url.hostname,
-    import.meta.env.CUSTOM_DOMAINS,
-    import.meta.env.DEFAULT_MERCHANT,
-  );
+  // Use process.env for server-only vars — import.meta.env only includes
+  // PUBLIC_* vars at runtime on Vercel's serverless functions.
+  // Vercel's internal proxy sets hostname to "localhost" — use x-forwarded-host.
+  const hostname = request.headers.get('x-forwarded-host') ?? url.hostname;
+  const customDomains = process.env.CUSTOM_DOMAINS ?? import.meta.env.CUSTOM_DOMAINS;
+  const defaultMerchant = process.env.DEFAULT_MERCHANT ?? import.meta.env.DEFAULT_MERCHANT;
+  const slug = resolveMerchantSlug(hostname, customDomains, defaultMerchant);
   const merchant = loadMerchantConfig(slug);
 
   if (!merchant) {
@@ -48,7 +50,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     locals.merchant = merchant;
     locals.lang = merchant.defaultLanguage;
     locals.sdk = createStorefrontClient({
-      baseUrl: import.meta.env.API_BASE_URL,
+      baseUrl: process.env.API_BASE_URL ?? import.meta.env.API_BASE_URL,
       vendorId: merchant.merchantId,
       language: merchant.defaultLanguage,
     });
@@ -70,7 +72,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // 3. Create SDK client
   const sdk = createStorefrontClient({
-    baseUrl: import.meta.env.API_BASE_URL,
+    baseUrl: process.env.API_BASE_URL ?? import.meta.env.API_BASE_URL,
     vendorId: merchant.merchantId,
     language: lang,
   });
