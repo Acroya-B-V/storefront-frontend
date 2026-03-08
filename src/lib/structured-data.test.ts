@@ -8,7 +8,7 @@ interface JsonLd extends Record<string, unknown> {
 
 const merchant = {
   slug: 'bar-sumac',
-  merchantId: 'BAR_SUMAC_01',
+  merchantId: 'F9GJG923RBKMZYS',
   name: 'Bar Sumac',
   description: 'Mediterranean-inspired kitchen',
   logo: '/merchants/bar-sumac/logo.svg',
