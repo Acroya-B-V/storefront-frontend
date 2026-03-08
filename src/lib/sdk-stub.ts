@@ -76,10 +76,15 @@ function createSigningFetch(
 ): typeof globalThis.fetch {
   return async (input, init?) => {
     const method = (init?.method ?? 'GET').toUpperCase();
-    if (WRITE_METHODS.has(method) && init?.body != null) {
-      const bodyStr = typeof init.body === 'string' ? init.body : JSON.stringify(init.body);
+    if (WRITE_METHODS.has(method)) {
+      const bodyStr =
+        init?.body == null
+          ? ''
+          : typeof init.body === 'string'
+            ? init.body
+            : JSON.stringify(init.body);
       const signature = await computeHmac(bodyStr, secret);
-      const headers = new Headers(init.headers);
+      const headers = new Headers(init?.headers);
       headers.set('X-Vendor-Signature', signature);
       return baseFetch(input, { ...init, headers });
     }
