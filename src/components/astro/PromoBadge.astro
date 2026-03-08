@@ -6,15 +6,23 @@ interface Props {
   currency: string;
   locale: string;
   lang: string;
+  overlay?: boolean;
 }
 
-const { item, currency, locale, lang } = Astro.props;
+const { item, currency, locale, lang, overlay = false } = Astro.props;
 const label = getDiscountLabel(item, currency, locale, lang);
 ---
 
 {
   label && (
-    <span class="inline-flex items-center rounded-sm bg-destructive px-1.5 py-0.5 text-xs font-medium text-destructive-foreground">
+    <span
+      class:list={[
+        'inline-flex items-center justify-center font-semibold leading-none whitespace-nowrap',
+        overlay
+          ? 'absolute top-1.5 left-1.5 z-10 rounded-full bg-destructive px-2.5 py-1 text-[12px] text-white sm:top-2 sm:left-2'
+          : 'rounded-sm bg-destructive px-1.5 py-0.5 text-xs font-medium text-destructive-foreground',
+      ]}
+    >
       {label}
     </span>
   )
