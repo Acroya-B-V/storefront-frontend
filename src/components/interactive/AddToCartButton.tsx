@@ -123,11 +123,11 @@ export default function AddToCartButton({
         type="button"
         onClick={handleAdd}
         disabled={loading}
-        class="group relative inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+        class="group relative inline-flex h-9 items-center justify-center rounded-[10px] bg-accent px-3 text-xs font-medium text-accent-foreground transition-colors hover:bg-accent/90 disabled:opacity-50"
       >
         {t('addToCart', lang)}
         {quantity > 0 && (
-          <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground group-hover:animate-badge-bounce">
+          <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground group-hover:animate-badge-bounce">
             {quantity}
           </span>
         )}
@@ -141,7 +141,7 @@ export default function AddToCartButton({
       <button
         type="button"
         onClick={resetCollapseTimer}
-        class="inline-flex h-9 min-w-9 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground"
+        class="inline-flex h-9 min-w-9 items-center justify-center rounded-[10px] bg-accent text-sm font-semibold text-accent-foreground"
         aria-label={`${quantity} ${t('inCartTapToAdjust', lang)}`}
       >
         {quantity}
@@ -178,8 +178,23 @@ export default function AddToCartButton({
       type="button"
       onClick={handleAdd}
       disabled={loading}
-      class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+      class="group/btn inline-flex h-10 items-center justify-center rounded-[10px] border border-accent bg-accent px-4 text-xs font-semibold text-accent-foreground transition-all duration-300 hover:bg-accent/90 disabled:opacity-50 sm:h-9"
     >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="mr-1"
+      >
+        <path d="M5 12h14" />
+        <path d="M12 5v14" />
+      </svg>
       {t('addToCart', lang)}
     </button>
   );
