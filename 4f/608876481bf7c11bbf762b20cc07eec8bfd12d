@@ -1,0 +1,23 @@
+src/components/interactive/AddToCartButton.tsx
+  0bbaa7408bd77114 126,130,144,181,183-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.8",
+  "base_commit_sha": "4f608876481bf7c11bbf762b20cc07eec8bfd12d",
+  "prompts": {
+    "0bbaa7408bd77114": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4af36f00-8a5c-4c91-b8f6-527112f3a778",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 73,
+      "total_deletions": 50,
+      "accepted_lines": 963,
+      "overriden_lines": 0
+    }
+  }
+}
