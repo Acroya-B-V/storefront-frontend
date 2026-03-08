@@ -1,0 +1,52 @@
+{
+  "slug": "demo-restaurant",
+  "merchantId": "DEMO_REST_01",
+  "name": "Demo Restaurant",
+  "description": "Mediterranean-inspired kitchen serving seasonal mezze, grilled meats, and natural wines.",
+  "logo": "/merchants/demo-restaurant/logo.svg",
+  "heroImage": "/merchants/demo-restaurant/hero.jpg",
+  "favicon": "/merchants/demo-restaurant/favicon.ico",
+  "languages": ["nl", "en"],
+  "defaultLanguage": "nl",
+  "currency": "EUR",
+  "theme": {
+    "background": "0 0% 100%",
+    "foreground": "0 0% 3.9%",
+    "card": "0 0% 100%",
+    "cardForeground": "0 0% 3.9%",
+    "cardImage": "40 10% 91%",
+    "primary": "0 0% 9%",
+    "primaryForeground": "0 0% 98%",
+    "secondary": "0 0% 96.1%",
+    "secondaryForeground": "0 0% 9%",
+    "muted": "0 0% 96.1%",
+    "mutedForeground": "0 0% 45.1%",
+    "accent": "0 0% 96.1%",
+    "accentForeground": "0 0% 9%",
+    "destructive": "0 84.2% 60.2%",
+    "destructiveForeground": "0 0% 98%",
+    "border": "0 0% 89.8%",
+    "input": "0 0% 89.8%",
+    "ring": "0 0% 3.9%",
+    "radius": "0.5rem",
+    "fontHeading": "DM Sans",
+    "fontBody": "Inter"
+  },
+  "layout": "grid",
+  "contact": {
+    "phone": "+31 20 123 4567",
+    "email": "info@demo-restaurant.nl",
+    "address": "Keizersgracht 123, 1015 Amsterdam"
+  },
+  "hours": [
+    { "days": "Mon-Fri", "open": "11:00", "close": "22:00" },
+    { "days": "Sat-Sun", "open": "10:00", "close": "23:00" }
+  ],
+  "social": {
+    "instagram": "https://instagram.com/demo-restaurant"
+  },
+  "seo": {
+    "titleTemplate": "%s | Demo Restaurant",
+    "defaultDescription": "Bestel online bij Demo Restaurant — Mediterraans eten in Amsterdam"
+  }
+}
