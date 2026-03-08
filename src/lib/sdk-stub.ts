@@ -75,14 +75,20 @@ function createSigningFetch(
   secret: string,
 ): typeof globalThis.fetch {
   return async (input, init?) => {
-    const method = (init?.method ?? 'GET').toUpperCase();
+    // Resolve method from init, or from a Request object passed as input.
+    // openapi-fetch passes a Request as the first arg; the SDK's authFetch
+    // forwards it with only { headers } in init (no method).
+    const method = (
+      init?.method ?? (input instanceof Request ? input.method : 'GET')
+    ).toUpperCase();
     if (WRITE_METHODS.has(method)) {
-      const bodyStr =
-        init?.body == null
-          ? ''
-          : typeof init.body === 'string'
-            ? init.body
-            : JSON.stringify(init.body);
+      // Resolve body: prefer init.body, then clone+read the Request body.
+      let bodyStr = '';
+      if (init?.body != null) {
+        bodyStr = typeof init.body === 'string' ? init.body : JSON.stringify(init.body);
+      } else if (input instanceof Request && input.body) {
+        bodyStr = await input.clone().text();
+      }
       const signature = await computeHmac(bodyStr, secret);
       const headers = new Headers(init?.headers);
       headers.set('X-Vendor-Signature', signature);
