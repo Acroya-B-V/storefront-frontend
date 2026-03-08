@@ -25,7 +25,7 @@ const sectionProducts = await Promise.all(
             params: { path: { slug: section.slug } },
           })
         : await sdk.GET('/api/v1/products/', {
-            params: { query: { category: String(section.id) } },
+            params: { query: section.id ? { category: String(section.id) } : {} },
           });
 
     if (result.error) {

@@ -32,5 +32,19 @@ export async function fetchCollectionsOrCategories(sdk: StorefrontClient): Promi
   }
   const rawCategories =
     (categoriesResult.data as { results: Array<Record<string, unknown>> } | null)?.results ?? [];
-  return { sections: flattenCategories(rawCategories), source: 'categories' };
+  const flatCats = flattenCategories(rawCategories);
+
+  if (flatCats.length > 0) {
+    return { sections: flatCats, source: 'categories' };
+  }
+
+  // Final fallback: no collections or categories — create a single "Menu" section
+  // so products still display. The menu page fetches products per section; with
+  // source='categories' and id=0 it will use /api/v1/products/ without a filter.
+  return {
+    sections: [
+      { id: 0, name: 'Menu', slug: 'menu', description: '', image_url: '', product_count: 0 },
+    ],
+    source: 'categories',
+  };
 }
