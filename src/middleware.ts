@@ -79,12 +79,11 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   }
 
   // 3. Create SDK client
-  const hmacSecret = (process.env.HMAC_SECRET ?? import.meta.env.HMAC_SECRET ?? '').trim();
   const sdk = createStorefrontClient({
     baseUrl: process.env.API_BASE_URL ?? import.meta.env.API_BASE_URL,
     vendorId: merchant.merchantId,
     language: lang,
-    hmacSecret: hmacSecret || undefined,
+    hmacSecret: merchant.hmacSecret || undefined,
   });
 
   // 4. Inject into locals

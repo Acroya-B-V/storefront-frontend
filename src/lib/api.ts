@@ -20,12 +20,11 @@ export function getClient(): StorefrontClient {
     if (!merchant) {
       throw new Error('getClient() called before merchant store was initialized');
     }
-    const hmacSecret = (import.meta.env.PUBLIC_HMAC_SECRET ?? '').trim();
     client = createStorefrontClient({
       baseUrl: import.meta.env.PUBLIC_API_BASE_URL,
       vendorId: merchant.merchantId,
       language: currentLang,
-      hmacSecret: hmacSecret || undefined,
+      hmacSecret: merchant.hmacSecret || undefined,
     });
     clientLang = currentLang;
   }
