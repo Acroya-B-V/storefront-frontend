@@ -33,6 +33,7 @@ export default function SearchBar({ lang }: Props) {
   const merchant = useStore($merchant);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [isFallback, setIsFallback] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,11 +46,13 @@ export default function SearchBar({ lang }: Props) {
     setIsOpen(false);
     setQuery('');
     setResults([]);
+    setIsFallback(false);
   };
 
   const search = useCallback(async (q: string) => {
     if (q.length < 2) {
       setResults([]);
+      setIsFallback(false);
       return;
     }
     setLoading(true);
@@ -64,16 +67,18 @@ export default function SearchBar({ lang }: Props) {
         const items = page.results ?? [];
         if (items.length > 0) {
           setResults(items.map(toSearchResult));
+          setIsFallback(false);
           return;
         }
       }
-      // Fallback: use standard list endpoint with search filter
+      // Fallback: show popular products when search has no matches
       const { data: fallbackData } = await client.GET('/api/v1/products/', {
         params: { query: { search: q } },
       });
       if (fallbackData) {
         const page = fallbackData as { results: Array<Record<string, unknown>> };
         setResults((page.results ?? []).map(toSearchResult));
+        setIsFallback(true);
       }
     } finally {
       setLoading(false);
@@ -182,36 +187,50 @@ export default function SearchBar({ lang }: Props) {
           </div>
 
           {results.length > 0 && (
-            <ul class="max-h-64 overflow-y-auto py-1" role="listbox" aria-label={t('search', lang)}>
-              {results.map((result) => (
-                <li key={result.id} role="option" aria-selected="false">
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(result)}
-                    class="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent"
-                  >
-                    {result.image && (
-                      <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
-                        <img
-                          src={optimizedImageUrl(result.image, { width: 80 })}
-                          alt=""
-                          class="h-full w-full object-cover"
-                          width="40"
-                          height="40"
-                          loading="lazy"
-                        />
+            <div>
+              {isFallback && (
+                <div class="border-b border-border px-3 py-3">
+                  <p class="text-sm font-medium text-muted-foreground">
+                    {t('noResultsFor', lang, { query })}
+                  </p>
+                  <p class="mt-0.5 text-xs text-muted-foreground/70">{t('youMightLike', lang)}</p>
+                </div>
+              )}
+              <ul
+                class="max-h-64 overflow-y-auto py-1"
+                role="listbox"
+                aria-label={t('search', lang)}
+              >
+                {results.map((result) => (
+                  <li key={result.id} role="option" aria-selected="false">
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(result)}
+                      class="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent"
+                    >
+                      {result.image && (
+                        <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
+                          <img
+                            src={optimizedImageUrl(result.image, { width: 80 })}
+                            alt=""
+                            class="h-full w-full object-cover"
+                            width="40"
+                            height="40"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                      <div class="flex-1">
+                        <span class="text-sm font-medium text-card-foreground">{result.name}</span>
                       </div>
-                    )}
-                    <div class="flex-1">
-                      <span class="text-sm font-medium text-card-foreground">{result.name}</span>
-                    </div>
-                    <span class="text-sm text-muted-foreground">
-                      {formatPrice(result.price, currency, locale)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+                      <span class="text-sm text-muted-foreground">
+                        {formatPrice(result.price, currency, locale)}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {query.length >= 2 && results.length === 0 && !loading && (
