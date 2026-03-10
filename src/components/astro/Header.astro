@@ -2,6 +2,7 @@
 import type { MerchantConfig } from '@/types/merchant';
 import { t } from '@/i18n';
 import CartBadge from '@/components/interactive/CartBadge';
+import { AddressBar } from '@/components/interactive/AddressBar';
 
 interface Props {
   merchant: MerchantConfig;
@@ -23,6 +24,8 @@ const { merchant, lang } = Astro.props;
       }
       <span class="font-heading text-lg font-semibold">{merchant.name}</span>
     </a>
+
+    <AddressBar client:idle lang={lang} />
 
     <nav class="flex items-center gap-2">
       <button
