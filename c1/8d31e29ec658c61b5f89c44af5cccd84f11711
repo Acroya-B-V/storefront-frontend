@@ -1,0 +1,27 @@
+src/components/interactive/ShippingEstimate.test.tsx
+  c60b2abb423b2d10 1-92
+src/components/interactive/ShippingEstimate.tsx
+  c60b2abb423b2d10 1-110
+src/components/interactive/CartDrawer.tsx
+  c60b2abb423b2d10 17,132-136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "c18d31e29ec658c61b5f89c44af5cccd84f11711",
+  "prompts": {
+    "c60b2abb423b2d10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "886378c5-2fbb-464e-8998-3466bf4f30f6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 208,
+      "total_deletions": 2,
+      "accepted_lines": 2793,
+      "overriden_lines": 0
+    }
+  }
+}
