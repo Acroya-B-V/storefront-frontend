@@ -1,0 +1,37 @@
+src/components/interactive/AddressBar.tsx
+  c60b2abb423b2d10 163-164
+src/stores/address.ts
+  c60b2abb423b2d10 19,43,49
+src/components/interactive/ShippingEstimate.tsx
+  c60b2abb423b2d10 73,97
+src/stores/address-actions.test.ts
+  c60b2abb423b2d10 237-262
+src/components/interactive/DeliveryBanner.tsx
+  c60b2abb423b2d10 16
+src/components/interactive/FulfillmentOverlay.tsx
+  c60b2abb423b2d10 61,66-68,130-134,142-143,153-154,169
+src/stores/address-actions.ts
+  c60b2abb423b2d10 14-15,64-65,67,97-101,126-128,136-138,140-141
+src/components/interactive/FulfillmentOverlay.test.tsx
+  c60b2abb423b2d10 81,96,99,109-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "e96e6f1f9785f6c762e409750ca6fdd54a18d3ca",
+  "prompts": {
+    "c60b2abb423b2d10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "886378c5-2fbb-464e-8998-3466bf4f30f6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 86,
+      "total_deletions": 23,
+      "accepted_lines": 2663,
+      "overriden_lines": 0
+    }
+  }
+}
