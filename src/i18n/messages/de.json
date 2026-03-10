@@ -38,6 +38,8 @@
   "hours": "Öffnungszeiten",
   "loading": "Wird geladen",
   "noResults": "Keine Ergebnisse gefunden",
+  "noResultsFor": "Keine Ergebnisse für \"{query}\"",
+  "youMightLike": "Das könnte dir auch gefallen",
   "addedToCart": "Hinzugefügt",
   "completeYourOrder": "Vervollständige deine Bestellung",
   "done": "Fertig",

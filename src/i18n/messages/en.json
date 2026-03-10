@@ -38,6 +38,8 @@
   "hours": "Hours",
   "loading": "Loading",
   "noResults": "No results found",
+  "noResultsFor": "No results for \"{query}\"",
+  "youMightLike": "You might also like",
   "addedToCart": "Added to cart",
   "completeYourOrder": "Complete your order",
   "done": "Done",

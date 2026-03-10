@@ -38,6 +38,8 @@
   "hours": "Openingstijden",
   "loading": "Laden",
   "noResults": "Geen resultaten gevonden",
+  "noResultsFor": "Geen resultaten voor \"{query}\"",
+  "youMightLike": "Misschien vind je dit leuk",
   "addedToCart": "Toegevoegd",
   "completeYourOrder": "Maak je bestelling compleet",
   "done": "Klaar",
