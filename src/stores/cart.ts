@@ -45,6 +45,7 @@ export interface Cart {
   tax_total?: string;
   tax_included?: boolean;
   shipping_cost?: string;
+  shipping_estimate?: ShippingEstimate;
   discount_amount?: string;
   promotion_discount_amount?: string;
   applied_discount?: {
@@ -58,6 +59,20 @@ export interface Cart {
     name: string;
     discount_amount: string;
   } | null;
+}
+
+export interface ShippingEstimateGroup {
+  provider_name: string;
+  fulfillment_type: string;
+  status: 'quoted' | 'calculated' | 'pending' | 'unavailable';
+  estimated_cost: string | null;
+  items: string[];
+}
+
+export interface ShippingEstimate {
+  groups: ShippingEstimateGroup[];
+  total_shipping: string | null;
+  ships_in_parts: boolean;
 }
 
 export const $cart = atom<Cart | null>(null);

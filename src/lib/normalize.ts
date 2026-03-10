@@ -292,5 +292,6 @@ export function normalizeCart(raw: Record<string, unknown>): Cart {
       (r.promotion as Record<string, unknown> | undefined)?.discount_amount) as string | undefined,
     applied_discount: (r.applied_discount ?? r.discount) as Cart['applied_discount'],
     promotion: r.promotion as Cart['promotion'],
+    shipping_estimate: r.shipping_estimate as Cart['shipping_estimate'],
   };
 }
