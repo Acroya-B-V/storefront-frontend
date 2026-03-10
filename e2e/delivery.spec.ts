@@ -69,8 +69,7 @@ test.describe('AddressBar — postcode entry', () => {
     const banner = page.getByRole('status');
     await expect(banner.getByText('1015AB')).toBeVisible({ timeout: 5_000 });
 
-    // Click "Wijzigen" to expand, then "Wissen" to clear
-    await page.getByRole('button', { name: 'Wijzigen' }).click();
+    // Click the clear (X) button next to the postcode
     await page.getByRole('button', { name: 'Wissen' }).click();
 
     // The "Voer postcode in" button should reappear
