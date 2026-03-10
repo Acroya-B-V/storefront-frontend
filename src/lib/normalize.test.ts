@@ -225,6 +225,32 @@ describe('normalizeProduct', () => {
 });
 
 // ---------------------------------------------------------------------------
+// normalizeProduct fulfillment fields
+// ---------------------------------------------------------------------------
+describe('normalizeProduct fulfillment fields', () => {
+  it('extracts available_fulfillment_types and pickup_only', () => {
+    const raw = {
+      id: 42,
+      title: 'Bitterballen',
+      price: '8.50',
+      available_fulfillment_types: ['local_delivery', 'pickup'],
+      pickup_only: false,
+    };
+
+    const product = normalizeProduct(raw);
+    expect(product.availableFulfillmentTypes).toEqual(['local_delivery', 'pickup']);
+    expect(product.pickupOnly).toBe(false);
+  });
+
+  it('defaults fulfillment fields when absent', () => {
+    const raw = { id: 1, title: 'Falafel' };
+    const product = normalizeProduct(raw);
+    expect(product.availableFulfillmentTypes).toEqual([]);
+    expect(product.pickupOnly).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // extractIdFromSlug
 // ---------------------------------------------------------------------------
 describe('extractIdFromSlug', () => {

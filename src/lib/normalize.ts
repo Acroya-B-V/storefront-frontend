@@ -71,6 +71,8 @@ export interface NormalizedProduct {
   sold_out: boolean;
   modifier_groups: ModifierGroup[];
   tags: string[];
+  availableFulfillmentTypes: string[];
+  pickupOnly: boolean;
   images: Array<{ image_url: string; alt_text: string; position: number }>;
   /** Pass-through for any fields we don't explicitly map. */
   [key: string]: unknown;
@@ -146,6 +148,9 @@ export function normalizeProduct(raw: Record<string, unknown>): NormalizedProduc
     sold_out: r.sold_out ?? false,
     modifier_groups: r.modifier_groups ?? [],
     tags: r.tags ?? [],
+    availableFulfillmentTypes:
+      ((r as Record<string, unknown>).available_fulfillment_types as string[]) ?? [],
+    pickupOnly: (r as Record<string, unknown>).pickup_only === true,
     images,
   };
 }
