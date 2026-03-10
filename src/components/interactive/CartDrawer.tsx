@@ -14,6 +14,7 @@ import { setCartItemQuantity, checkPromotionEligibility } from '@/stores/cart-ac
 import { showToast } from '@/stores/toast';
 import PromoBanner from './PromoBanner';
 import DiscountCodeInput from './DiscountCodeInput';
+import { ShippingEstimate } from './ShippingEstimate';
 
 /* ------------------------------------------------------------------ */
 /*  Shared sub-components (used by both inline and drawer modes)      */
@@ -128,8 +129,11 @@ function CartFooter({ cart, cartTotal, currency, locale, lang, loading, style }:
         </div>
       )}
 
-      {/* Shipping */}
-      {shipping && (
+      {/* Shipping estimate (rich breakdown) */}
+      <ShippingEstimate lang={lang} currency={currency} shippingEstimate={cart.shipping_estimate} />
+
+      {/* Shipping (legacy fallback when no shipping_estimate) */}
+      {!cart.shipping_estimate && shipping && (
         <div class="mb-1 flex items-center justify-between text-sm">
           <span class="text-muted-foreground">{t('shipping', lang)}</span>
           <span class="text-card-foreground">
