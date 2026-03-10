@@ -1,0 +1,27 @@
+src/stores/address.ts
+  c60b2abb423b2d10 1-48
+src/stores/address.test.ts
+  c60b2abb423b2d10 1-81
+src/types/address.ts
+  c60b2abb423b2d10 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "6b9b2ece16497c6249ad40896e9d7e1e9f0afc0a",
+  "prompts": {
+    "c60b2abb423b2d10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "886378c5-2fbb-464e-8998-3466bf4f30f6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 3412,
+      "total_deletions": 649,
+      "accepted_lines": 2755,
+      "overriden_lines": 0
+    }
+  }
+}
