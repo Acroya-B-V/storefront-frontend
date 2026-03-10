@@ -58,9 +58,14 @@ export function applyFulfillmentToDOM(
     const badgeSlot = card.querySelector<HTMLElement>('[data-fulfillment-badge]');
 
     if (!fulfillment) {
-      if (shouldHideProduct(coords, [])) {
-        card.classList.add('hidden');
-      }
+      // Product not in API response (e.g. paginated out) — leave visible, clear badge
+      if (badgeSlot) badgeSlot.replaceChildren();
+      continue;
+    }
+
+    // Hide products explicitly marked as unavailable (empty fulfillment types)
+    if (shouldHideProduct(coords, fulfillment.availableFulfillmentTypes)) {
+      card.classList.add('hidden');
       if (badgeSlot) badgeSlot.replaceChildren();
       continue;
     }
@@ -122,13 +127,21 @@ export function FulfillmentOverlay({ lang }: Props) {
       return;
     }
 
-    fetchAndApplyFulfillment(coords, lang);
+    let stale = false;
+    fetchAndApplyFulfillment(coords, lang, () => stale);
+    return () => {
+      stale = true;
+    };
   }, [coords, lang]);
 
   return null;
 }
 
-async function fetchAndApplyFulfillment(coords: AddressCoords, lang: string): Promise<void> {
+async function fetchAndApplyFulfillment(
+  coords: AddressCoords,
+  lang: string,
+  isStale: () => boolean = () => false,
+): Promise<void> {
   try {
     const client = getClient();
     const { data } = await client.GET('/api/v1/products/', {
@@ -136,6 +149,8 @@ async function fetchAndApplyFulfillment(coords: AddressCoords, lang: string): Pr
         query: { latitude: coords.latitude, longitude: coords.longitude },
       },
     });
+
+    if (isStale()) return;
 
     const r = data as Record<string, unknown>;
     if (!r || !Array.isArray(r.results)) return;
@@ -151,6 +166,7 @@ async function fetchAndApplyFulfillment(coords: AddressCoords, lang: string): Pr
 
     applyFulfillmentToDOM(fulfillmentMap, coords, lang);
   } catch {
+    if (isStale()) return;
     clearAllBadges();
     showAllProducts();
   }

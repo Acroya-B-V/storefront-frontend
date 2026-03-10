@@ -13,7 +13,7 @@ export function DeliveryBanner({ lang }: Props) {
   if (!coords || !eligibility) return null;
 
   const dispatchExpand = () => {
-    window.dispatchEvent(new CustomEvent('address-bar:expand'));
+    document.dispatchEvent(new CustomEvent('address-bar:expand'));
   };
 
   // Delivery unavailable

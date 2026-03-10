@@ -78,7 +78,7 @@ describe('applyFulfillmentToDOM', () => {
     expect(badge?.textContent).toContain('Pickup only');
   });
 
-  it('hides products not in fulfillment map', () => {
+  it('leaves products not in fulfillment map visible (safe for pagination)', () => {
     setupDOM(`
       <div data-menu-section>
         <article data-product-id="99">
@@ -93,10 +93,10 @@ describe('applyFulfillmentToDOM', () => {
     applyFulfillmentToDOM(fulfillmentMap, coords, 'en');
 
     const card = document.querySelector('[data-product-id="99"]');
-    expect(card?.classList.contains('hidden')).toBe(true);
+    expect(card?.classList.contains('hidden')).toBe(false);
   });
 
-  it('hides empty menu sections', () => {
+  it('hides empty menu sections when all products are unavailable', () => {
     setupDOM(`
       <div data-menu-section>
         <article data-product-id="99">
@@ -106,7 +106,11 @@ describe('applyFulfillmentToDOM', () => {
     `);
 
     const coords = { postalCode: '1015', country: 'NL', latitude: 52.37, longitude: 4.89 };
-    applyFulfillmentToDOM(new Map(), coords, 'en');
+    // Product explicitly in the map with no fulfillment types → hidden
+    const fulfillmentMap = new Map([
+      ['99', { productId: '99', availableFulfillmentTypes: [] as string[], pickupOnly: false }],
+    ]);
+    applyFulfillmentToDOM(fulfillmentMap, coords, 'en');
 
     const section = document.querySelector('[data-menu-section]');
     expect(section?.classList.contains('hidden')).toBe(true);

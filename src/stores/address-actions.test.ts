@@ -234,4 +234,30 @@ describe('clearAddress', () => {
     expect($addressEligibility.get()).toBeNull();
     expect(localStorage.getItem('sous_address')).toBeNull();
   });
+
+  it('clears stale shipping_estimate from cart', () => {
+    $cart.set({
+      id: 'cart-1',
+      line_items: [],
+      cart_total: '0.00',
+      item_count: 0,
+      shipping_estimate: {
+        groups: [
+          {
+            provider_name: 'PostNL',
+            fulfillment_type: 'local_delivery',
+            status: 'quoted',
+            estimated_cost: '4.95',
+            items: [],
+          },
+        ],
+        total_shipping: '4.95',
+        ships_in_parts: false,
+      },
+    });
+
+    clearAddress();
+
+    expect($cart.get()?.shipping_estimate).toBeUndefined();
+  });
 });

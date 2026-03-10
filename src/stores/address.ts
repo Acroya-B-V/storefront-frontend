@@ -16,6 +16,7 @@ export function isAddressExpired(storedAt: number): boolean {
 }
 
 export function getStoredAddress(): StoredAddress | null {
+  if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -39,10 +40,12 @@ export function getStoredAddress(): StoredAddress | null {
 }
 
 export function setStoredAddress(coords: AddressCoords): void {
+  if (typeof window === 'undefined') return;
   const stored: StoredAddress = { ...coords, storedAt: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
 }
 
 export function clearStoredAddress(): void {
+  if (typeof window === 'undefined') return;
   localStorage.removeItem(STORAGE_KEY);
 }

@@ -70,6 +70,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
         type="button"
         onClick={() => setExpanded(!expanded)}
         class="flex w-full items-center justify-between"
+        aria-expanded={isExpanded}
       >
         <span class="text-muted-foreground">{t('shippingEstimate', lang)}</span>
         <span class="flex items-center gap-1 text-card-foreground">
@@ -93,7 +94,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
         <div class="mt-1 space-y-0.5 pl-2 border-l-2 border-border">
           {groups.map((group) => (
             <div
-              key={group.provider_name}
+              key={`${group.provider_name}-${group.fulfillment_type}`}
               class="flex items-center justify-between text-xs text-muted-foreground"
             >
               <span>{group.provider_name}</span>

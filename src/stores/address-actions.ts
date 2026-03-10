@@ -10,10 +10,10 @@ import { getClient } from '@/lib/api';
 import { normalizeCart } from '@/lib/normalize';
 import type { AddressCoords, AddressEligibility } from '@/types/address';
 
-export async function onAddressChange(input: {
-  postalCode: string;
-  country: string;
-}): Promise<{ success: boolean; error?: string }> {
+export async function onAddressChange(
+  input: { postalCode: string; country: string },
+  options: { skipCoordsSet?: boolean } = {},
+): Promise<{ success: boolean; error?: string }> {
   try {
     const client = getClient();
     const { data, error } = await client.POST('/api/v1/fulfillment/address-check/', {
@@ -61,8 +61,10 @@ export async function onAddressChange(input: {
           : undefined,
     };
 
-    // 1. Set stores
-    $addressCoords.set(coords);
+    // 1. Set stores (skip coords if already set by caller, e.g. hydration from cache)
+    if (!options.skipCoordsSet) {
+      $addressCoords.set(coords);
+    }
     $addressEligibility.set(eligibility);
 
     // 2. Persist coords to localStorage
@@ -92,6 +94,11 @@ export function clearAddress(): void {
   $addressCoords.set(null);
   $addressEligibility.set(null);
   clearStoredAddress();
+  // Clear stale shipping estimate from cart so CartDrawer doesn't show outdated data
+  const cart = $cart.get();
+  if (cart?.shipping_estimate) {
+    $cart.set({ ...cart, shipping_estimate: undefined });
+  }
 }
 
 /** Uses normalizeCart() to maintain boundary normalization invariant */
@@ -116,7 +123,9 @@ export async function hydrateAddressFromStorage(): Promise<void> {
   const stored = getStoredAddress();
   if (!stored) return;
 
-  // Set coords immediately (stable data, OK to use from cache)
+  // Set cached coords immediately so the UI shows the postcode right away.
+  // onAddressChange will overwrite with identical coords (same postal code),
+  // but we accept the single extra store update to avoid a blank-then-populated flash.
   $addressCoords.set({
     postalCode: stored.postalCode,
     country: stored.country,
@@ -124,11 +133,13 @@ export async function hydrateAddressFromStorage(): Promise<void> {
     longitude: stored.longitude,
   });
 
-  // Re-fetch volatile eligibility data in background
-  await onAddressChange({
-    postalCode: stored.postalCode,
-    country: stored.country,
-  });
+  // Re-fetch volatile eligibility data in background.
+  // Pass skipCoordsSet to avoid a redundant $addressCoords.set that would
+  // trigger downstream effects (FulfillmentOverlay) a second time.
+  await onAddressChange(
+    { postalCode: stored.postalCode, country: stored.country },
+    { skipCoordsSet: true },
+  );
 }
 
 // ── Inline Analytics ───────────────────────────────────────────

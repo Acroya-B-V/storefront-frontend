@@ -160,6 +160,8 @@ export function AddressBar({ lang }: Props) {
         onInput={(e) => setPostcode((e.target as HTMLInputElement).value)}
         placeholder={t('enterPostcode', lang)}
         aria-label={t('enterPostcode', lang)}
+        maxLength={10}
+        autoComplete="postal-code"
         class="w-24 rounded border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
         disabled={loading}
         onKeyDown={handleKeyDown}
