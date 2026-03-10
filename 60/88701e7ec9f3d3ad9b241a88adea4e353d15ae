@@ -1,0 +1,27 @@
+src/components/interactive/AddressBar.test.tsx
+  c60b2abb423b2d10 1-59
+src/components/interactive/AddressBar.tsx
+  c60b2abb423b2d10 1-178
+src/components/astro/Header.astro
+  c60b2abb423b2d10 5,28-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "6088701e7ec9f3d3ad9b241a88adea4e353d15ae",
+  "prompts": {
+    "c60b2abb423b2d10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "886378c5-2fbb-464e-8998-3466bf4f30f6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 242,
+      "total_deletions": 2,
+      "accepted_lines": 2825,
+      "overriden_lines": 0
+    }
+  }
+}
