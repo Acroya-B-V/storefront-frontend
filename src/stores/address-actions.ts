@@ -5,7 +5,7 @@ import {
   clearStoredAddress,
   getStoredAddress,
 } from './address';
-import { $cart, getStoredCartId } from './cart';
+import { $cart, getStoredCartId, errorDetail } from './cart';
 import { getClient } from '@/lib/api';
 import { normalizeCart } from '@/lib/normalize';
 import type { AddressCoords, AddressEligibility } from '@/types/address';
@@ -21,7 +21,7 @@ export async function onAddressChange(input: {
     });
 
     if (error || !data) {
-      return { success: false, error: error?.message ?? 'unknown' };
+      return { success: false, error: errorDetail(error) };
     }
 
     const r = data as Record<string, unknown>;
