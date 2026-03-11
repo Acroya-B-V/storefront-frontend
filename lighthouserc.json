@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": ["${LHCI_TARGET_URL:-http://localhost:4321}/nl/"],
+      "url": ["${LHCI_TARGET_URL}/nl/"],
       "numberOfRuns": 3,
       "settings": {
         "preset": "perf",

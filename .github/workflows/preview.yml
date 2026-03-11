@@ -31,7 +31,14 @@ jobs:
         with: { node-version: 20, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
+      # Run smoke tests against local dev server + mock API (same as regular
+      # E2E) rather than the live Vercel preview. The preview has no test data,
+      # so functional assertions like "Bar Sumac" would fail. Lighthouse CI
+      # handles live preview validation (perf + accessibility).
       - run: pnpm exec playwright test e2e/smoke.spec.ts --project=desktop
         env:
           CI: 'true'
-          BASE_URL: ${{ github.event.deployment_status.target_url }}
+          API_BASE_URL: http://localhost:4322
+          PUBLIC_API_BASE_URL: http://localhost:4322
+          DEFAULT_MERCHANT: bar-sumac
+          CUSTOM_DOMAINS: '{}'
