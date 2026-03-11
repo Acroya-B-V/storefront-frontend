@@ -108,7 +108,11 @@ async function refreshCartWithCoords(cartId: string, coords: AddressCoords): Pro
     const { data } = await client.GET('/api/v1/cart/{cart_id}/', {
       params: {
         path: { cart_id: cartId },
-        query: { latitude: coords.latitude, longitude: coords.longitude },
+        query: {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          postal_code: coords.postalCode,
+        },
       },
     });
     if (data) {

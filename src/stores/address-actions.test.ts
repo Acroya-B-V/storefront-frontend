@@ -163,7 +163,7 @@ describe('onAddressChange', () => {
       '/api/v1/cart/{cart_id}/',
       expect.objectContaining({
         params: expect.objectContaining({
-          query: { latitude: 52.3702, longitude: 4.8952 },
+          query: { latitude: 52.3702, longitude: 4.8952, postal_code: '1015 BS' },
         }),
       }),
     );
