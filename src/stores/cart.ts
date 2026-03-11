@@ -118,7 +118,7 @@ export function errorDetail(error: unknown): string {
 
 /** Carry forward the previous shipping_estimate when a mutation response lacks one. */
 export function mergeShippingEstimate(newCart: Cart, prevCart: Cart | null): Cart {
-  if (newCart.shipping_estimate || !prevCart?.shipping_estimate) return newCart;
+  if (newCart.shipping_estimate !== undefined || !prevCart?.shipping_estimate) return newCart;
   return { ...newCart, shipping_estimate: prevCart.shipping_estimate };
 }
 

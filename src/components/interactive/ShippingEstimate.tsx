@@ -74,7 +74,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
       >
         <span class="text-muted-foreground">{t('shippingEstimate', lang)}</span>
         <span class="flex items-center gap-1 text-card-foreground">
-          {allPending || !total_shipping
+          {allPending || total_shipping == null
             ? t('shippingAtCheckout', lang)
             : formatPrice(total_shipping, currency, locale)}
           {!ships_in_parts && (
