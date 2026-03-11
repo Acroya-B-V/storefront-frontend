@@ -58,7 +58,8 @@ export function applyFulfillmentToDOM(
     const badgeSlot = card.querySelector<HTMLElement>('[data-fulfillment-badge]');
 
     if (!fulfillment) {
-      // Product not in API response (e.g. paginated out) — leave visible, clear badge
+      // Product absent from API response — backend excludes unavailable products
+      card.classList.add('hidden');
       if (badgeSlot) badgeSlot.replaceChildren();
       continue;
     }
@@ -146,7 +147,7 @@ async function fetchAndApplyFulfillment(
     const client = getClient();
     const { data } = await client.GET('/api/v1/products/', {
       params: {
-        query: { latitude: coords.latitude, longitude: coords.longitude },
+        query: { latitude: coords.latitude, longitude: coords.longitude, page_size: 200 },
       },
     });
 

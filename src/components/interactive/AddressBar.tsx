@@ -4,6 +4,10 @@ import { $addressCoords } from '@/stores/address';
 import { onAddressChange, clearAddress, hydrateAddressFromStorage } from '@/stores/address-actions';
 import { t } from '@/i18n';
 
+// Run once at module load — decoupled from component lifecycle to avoid
+// remount loops where store updates trigger Astro island re-hydration.
+hydrateAddressFromStorage();
+
 interface Props {
   lang: string;
 }
@@ -21,11 +25,6 @@ export function AddressBar({ lang }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    hydrateAddressFromStorage();
-  }, []);
 
   // Listen for expand events from DeliveryBanner / ShippingEstimate
   useEffect(() => {
