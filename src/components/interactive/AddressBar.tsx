@@ -136,59 +136,66 @@ export function AddressBar({ lang }: Props) {
   // Compact state: no address
   if (!expanded) {
     return (
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleExpand}
-        class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') handleExpand();
+        }}
+        class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
         aria-expanded="false"
         aria-label={t('enterPostcode', lang)}
       >
         {pinIcon}
         <span>{t('enterPostcode', lang)}</span>
-      </button>
+      </div>
     );
   }
 
   // Expanded state: input mode
   return (
-    <form onSubmit={handleSubmit} class="flex items-center gap-1.5">
+    <div class="flex items-center gap-1.5">
       <span class="text-muted-foreground">{pinIcon}</span>
-      <input
-        ref={inputRef}
-        type="text"
-        value={postcode}
-        onInput={(e) => setPostcode((e.target as HTMLInputElement).value)}
-        placeholder={t('enterPostcode', lang)}
-        aria-label={t('enterPostcode', lang)}
-        maxLength={10}
-        autoComplete="postal-code"
-        class="w-24 rounded border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-        disabled={loading}
-        onKeyDown={handleKeyDown}
-      />
-      <button
-        type="submit"
-        disabled={loading || !postcode.trim()}
-        class="rounded bg-primary px-2.5 py-1 text-sm font-medium text-primary-foreground disabled:opacity-50"
-      >
-        {loading ? (
-          <svg
-            class="h-4 w-4 animate-spin"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
-          </svg>
-        ) : (
-          t('checkAddress', lang)
+      <form onSubmit={handleSubmit} class="flex items-center gap-1.5">
+        <input
+          ref={inputRef}
+          type="text"
+          value={postcode}
+          onInput={(e) => setPostcode((e.target as HTMLInputElement).value)}
+          placeholder={t('enterPostcode', lang)}
+          aria-label={t('enterPostcode', lang)}
+          maxLength={10}
+          autoComplete="postal-code"
+          class="w-24 rounded border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          disabled={loading}
+          onKeyDown={handleKeyDown}
+        />
+        <button
+          type="submit"
+          disabled={loading || !postcode.trim()}
+          class="rounded bg-primary px-2.5 py-1 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        >
+          {loading ? (
+            <svg
+              class="h-4 w-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" />
+            </svg>
+          ) : (
+            t('checkAddress', lang)
+          )}
+        </button>
+        {error && (
+          <span role="alert" class="text-xs text-destructive whitespace-nowrap">
+            {error}
+          </span>
         )}
-      </button>
-      {error && (
-        <span role="alert" class="text-xs text-destructive whitespace-nowrap">
-          {error}
-        </span>
-      )}
-    </form>
+      </form>
+    </div>
   );
 }

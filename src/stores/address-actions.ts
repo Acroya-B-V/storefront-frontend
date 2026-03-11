@@ -119,19 +119,28 @@ async function refreshCartWithCoords(cartId: string, coords: AddressCoords): Pro
   }
 }
 
-// Guard against multiple hydration calls (component remount in dev, strict mode, etc.)
-let _hydratePromise: Promise<void> | null = null;
+// Guard against multiple hydration calls. Uses a window flag so the guard
+// survives Vite HMR (module-level variables reset on hot reload).
+const HYDRATE_KEY = '__sous_address_hydrated__';
 
 export function hydrateAddressFromStorage(): Promise<void> {
-  if (_hydratePromise) return _hydratePromise;
-
-  _hydratePromise = _doHydrate();
-  return _hydratePromise;
+  if (
+    typeof window !== 'undefined' &&
+    (window as unknown as Record<string, unknown>)[HYDRATE_KEY]
+  ) {
+    return Promise.resolve();
+  }
+  if (typeof window !== 'undefined') {
+    (window as unknown as Record<string, unknown>)[HYDRATE_KEY] = true;
+  }
+  return _doHydrate();
 }
 
 /** @internal Reset hydration guard — only for tests */
 export function _resetHydrateGuard(): void {
-  _hydratePromise = null;
+  if (typeof window !== 'undefined') {
+    delete (window as unknown as Record<string, unknown>)[HYDRATE_KEY];
+  }
 }
 
 async function _doHydrate(): Promise<void> {
