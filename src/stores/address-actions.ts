@@ -119,13 +119,26 @@ async function refreshCartWithCoords(cartId: string, coords: AddressCoords): Pro
   }
 }
 
-export async function hydrateAddressFromStorage(): Promise<void> {
+// Guard against multiple hydration calls (component remount in dev, strict mode, etc.)
+let _hydratePromise: Promise<void> | null = null;
+
+export function hydrateAddressFromStorage(): Promise<void> {
+  if (_hydratePromise) return _hydratePromise;
+
+  _hydratePromise = _doHydrate();
+  return _hydratePromise;
+}
+
+/** @internal Reset hydration guard — only for tests */
+export function _resetHydrateGuard(): void {
+  _hydratePromise = null;
+}
+
+async function _doHydrate(): Promise<void> {
   const stored = getStoredAddress();
   if (!stored) return;
 
   // Set cached coords immediately so the UI shows the postcode right away.
-  // onAddressChange will overwrite with identical coords (same postal code),
-  // but we accept the single extra store update to avoid a blank-then-populated flash.
   $addressCoords.set({
     postalCode: stored.postalCode,
     country: stored.country,

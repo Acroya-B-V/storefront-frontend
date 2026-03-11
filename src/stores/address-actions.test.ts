@@ -10,7 +10,7 @@ vi.mock('@/lib/api', () => ({
 }));
 
 // Must import after mock setup
-const { onAddressChange, clearAddress, hydrateAddressFromStorage } =
+const { onAddressChange, clearAddress, hydrateAddressFromStorage, _resetHydrateGuard } =
   await import('./address-actions');
 
 describe('onAddressChange', () => {
@@ -176,6 +176,7 @@ describe('hydrateAddressFromStorage', () => {
     $addressEligibility.set(null);
     localStorage.clear();
     mockPOST.mockReset();
+    _resetHydrateGuard();
   });
 
   it('sets coords from cache before API call resolves', async () => {
