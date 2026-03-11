@@ -1,0 +1,38 @@
+src/components/interactive/FulfillmentOverlay.tsx
+  deff22980a62bb2f 61-62,150
+src/components/interactive/AddressBar.tsx
+  c60b2abb423b2d10 7-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "f9932e68f5a71ccf87f6ce712754c8c718672156",
+  "prompts": {
+    "c60b2abb423b2d10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "886378c5-2fbb-464e-8998-3466bf4f30f6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 5,
+      "accepted_lines": 2589,
+      "overriden_lines": 0
+    },
+    "deff22980a62bb2f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1d8e298e-12a0-4b98-b636-3de6587c19cf",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 2,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
