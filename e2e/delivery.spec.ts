@@ -9,11 +9,24 @@ import {
   openCartDrawer,
 } from './helpers/test-utils';
 
+/** Dismiss the comms modal if it appears (e.g. "Welcome!" promo). */
+async function dismissCommsModal(page: Page) {
+  const dismiss = page.getByText('Melding sluiten');
+  try {
+    await dismiss.waitFor({ state: 'visible', timeout: 2_000 });
+    await dismiss.click();
+    await dismiss.waitFor({ state: 'hidden', timeout: 2_000 });
+  } catch {
+    // Modal didn't appear — that's fine
+  }
+}
+
 /**
  * Submit a postcode via the AddressBar component.
  * Clicks the compact button to expand, types the postcode, and submits.
  */
 async function enterPostcode(page: Page, postcode: string) {
+  await dismissCommsModal(page);
   // Click the compact "Voer postcode in" button to expand the input form
   const addressButton = page.getByRole('button', { name: 'Voer postcode in' });
   await addressButton.waitFor({ state: 'visible', timeout: 5_000 });
@@ -146,6 +159,7 @@ test.describe('ShippingEstimate — cart drawer', () => {
   test('shows shipping estimate in cart after address is set', async ({ page }) => {
     await page.goto(menuPage());
     await waitForHydration(page);
+    await dismissCommsModal(page);
 
     // Add a product to the cart first
     await addSimpleProductToCart(page, 'prod-1');
@@ -170,9 +184,37 @@ test.describe('ShippingEstimate — cart drawer', () => {
     await expect(drawer.getByText('€ 4,95')).toBeVisible();
   });
 
+  test('shows free shipping label when shipping cost is zero', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+    await dismissCommsModal(page);
+
+    // Add a product to the cart first
+    await addSimpleProductToCart(page, 'prod-1');
+
+    // Enter postcode in the free-shipping zone
+    await enterPostcode(page, '2000AB');
+
+    // Wait for the products refetch with coordinates
+    await page.waitForResponse(
+      (resp) =>
+        resp.url().includes('/api/v1/products/') &&
+        resp.url().includes('latitude=') &&
+        resp.request().method() === 'GET',
+    );
+
+    // Open the cart drawer
+    const drawer = await openCartDrawer(page);
+    await expect(drawer).toBeVisible({ timeout: 5_000 });
+
+    // Shipping estimate should show "Gratis" (Dutch for Free), not "€ 0,00"
+    await expect(drawer.getByText('Gratis')).toBeVisible({ timeout: 5_000 });
+  });
+
   test('shows prompt to enter postcode when no address is set', async ({ page }) => {
     await page.goto(menuPage());
     await waitForHydration(page);
+    await dismissCommsModal(page);
 
     // Add a product to the cart
     await addSimpleProductToCart(page, 'prod-1');
@@ -185,5 +227,38 @@ test.describe('ShippingEstimate — cart drawer', () => {
     await expect(drawer.getByText('Voer je postcode in voor verzendkosten')).toBeVisible({
       timeout: 5_000,
     });
+  });
+});
+
+test.describe('Address persistence — across navigation', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetMockApi(page);
+    await blockAnalytics(page);
+  });
+
+  test('address survives page navigation via localStorage hydration', async ({ page }) => {
+    await page.goto(menuPage());
+    await waitForHydration(page);
+
+    // Set a valid address
+    await enterPostcode(page, '1015AB');
+    const banner = page.getByRole('status');
+    await expect(banner.getByText('1015AB')).toBeVisible({ timeout: 5_000 });
+
+    // Navigate away and back — localStorage should persist the address.
+    // Set up response listener BEFORE navigation so we catch the early
+    // hydration call to address-check that fires at module load.
+    const hydrationResponse = page.waitForResponse(
+      (resp) => resp.url().includes('/api/v1/fulfillment/address-check/'),
+      { timeout: 10_000 },
+    );
+    await page.goto(menuPage());
+    await waitForHydration(page);
+    await hydrationResponse;
+    await dismissCommsModal(page);
+
+    // DeliveryBanner should rehydrate with the stored address
+    const restoredBanner = page.getByRole('status');
+    await expect(restoredBanner.getByText('Bezorgen naar 1015AB')).toBeVisible({ timeout: 5_000 });
   });
 });

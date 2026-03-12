@@ -168,6 +168,20 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       return;
     }
 
+    // Valid, in delivery zone with free shipping: starts with "2000"
+    if (postalCode.startsWith('2000')) {
+      json(res, {
+        latitude: 52.16,
+        longitude: 4.49,
+        available_fulfillment_types: ['local_delivery', 'pickup'],
+        available_shipping_providers: [{ id: 1, name: 'PostNL', type: 'postal' }],
+        pickup_locations: [{ id: 3, name: 'Leiden Centraal', distance_km: 0.8 }],
+        delivery_unavailable: false,
+        near_delivery_zone: false,
+      });
+      return;
+    }
+
     // Valid but out of area: starts with "9999"
     if (postalCode.startsWith('9999')) {
       json(res, {
@@ -315,6 +329,9 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     const lng = url.searchParams.get('longitude');
 
     if (lat && lng && state.cart.line_items.length > 0) {
+      // Free shipping for coordinates near Leiden (lat ~52.16)
+      const isFreeShipping = Math.abs(parseFloat(lat) - 52.16) < 0.1;
+      const shippingCost = isFreeShipping ? '0.00' : '4.95';
       const cartWithShipping = {
         ...state.cart,
         shipping_estimate: {
@@ -323,11 +340,11 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
               provider_name: 'PostNL',
               fulfillment_type: 'local_delivery',
               status: 'quoted',
-              estimated_cost: '4.95',
+              estimated_cost: shippingCost,
               items: state.cart.line_items.map((li) => li.product_id),
             },
           ],
-          total_shipping: '4.95',
+          total_shipping: shippingCost,
           ships_in_parts: false,
         },
       };
