@@ -78,11 +78,11 @@ describe('applyFulfillmentToDOM', () => {
     expect(badge?.textContent).toContain('Pickup only');
   });
 
-  it('hides products not in fulfillment map (backend excludes unavailable)', () => {
+  it('shows products not in fulfillment map without badge (may be beyond page_size)', () => {
     setupDOM(`
       <div data-menu-section>
-        <article data-product-id="99">
-          <span data-fulfillment-badge></span>
+        <article data-product-id="99" class="hidden">
+          <span data-fulfillment-badge><span>Old badge</span></span>
         </article>
       </div>
     `);
@@ -93,10 +93,12 @@ describe('applyFulfillmentToDOM', () => {
     applyFulfillmentToDOM(fulfillmentMap, coords, 'en');
 
     const card = document.querySelector('[data-product-id="99"]');
-    expect(card?.classList.contains('hidden')).toBe(true);
+    expect(card?.classList.contains('hidden')).toBe(false);
+    const badge = card?.querySelector('[data-fulfillment-badge]');
+    expect(badge?.children.length).toBe(0);
   });
 
-  it('hides empty menu sections when all products are unavailable', () => {
+  it('hides menu sections when all products have empty fulfillment types', () => {
     setupDOM(`
       <div data-menu-section>
         <article data-product-id="99">

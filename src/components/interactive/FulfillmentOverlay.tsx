@@ -58,8 +58,9 @@ export function applyFulfillmentToDOM(
     const badgeSlot = card.querySelector<HTMLElement>('[data-fulfillment-badge]');
 
     if (!fulfillment) {
-      // Product absent from API response — backend excludes unavailable products
-      card.classList.add('hidden');
+      // Product absent from API response — may be beyond page_size or not yet indexed.
+      // Show without badge rather than hiding, to avoid removing purchasable items.
+      card.classList.remove('hidden');
       if (badgeSlot) badgeSlot.replaceChildren();
       continue;
     }
@@ -155,6 +156,12 @@ async function fetchAndApplyFulfillment(
 
     const r = data as Record<string, unknown>;
     if (!r || !Array.isArray(r.results)) return;
+
+    if (r.next != null) {
+      console.warn(
+        'FulfillmentOverlay: product response is paginated — some products may lack badges.',
+      );
+    }
 
     const fulfillmentMap = new Map<string, ProductFulfillment>();
     for (const product of r.results as Array<Record<string, unknown>>) {

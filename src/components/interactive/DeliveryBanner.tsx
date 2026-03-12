@@ -31,7 +31,7 @@ export function DeliveryBanner({ lang }: Props) {
     const pickupMessage = pickup
       ? t('pickupAvailableAt', lang, {
           name: pickup.name,
-          distance: pickup.distance_km,
+          distance: pickup.distance_km.toFixed(1),
         })
       : null;
 

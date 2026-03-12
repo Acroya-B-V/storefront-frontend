@@ -11,6 +11,10 @@ interface Props {
   shippingEstimate: ShippingEstimateType | null | undefined;
 }
 
+function formatShippingCost(cost: string, currency: string, locale: string, lang: string): string {
+  return parseFloat(cost) === 0 ? t('shippingFree', lang) : formatPrice(cost, currency, locale);
+}
+
 export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
   const coords = useStore($addressCoords);
   const locale = langToLocale(lang);
@@ -57,7 +61,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
             ? t('shippingAtCheckout', lang)
             : group.status === 'unavailable'
               ? t('shippingUnavailable', lang)
-              : formatPrice(group.estimated_cost, currency, locale)}
+              : formatShippingCost(group.estimated_cost, currency, locale, lang)}
         </span>
       </div>
     );
@@ -76,7 +80,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
         <span class="flex items-center gap-1 text-card-foreground">
           {allPending || total_shipping == null
             ? t('shippingAtCheckout', lang)
-            : formatPrice(total_shipping, currency, locale)}
+            : formatShippingCost(total_shipping, currency, locale, lang)}
           {!ships_in_parts && (
             <svg
               class={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -92,9 +96,9 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
       </button>
       {isExpanded && (
         <div class="mt-1 space-y-0.5 pl-2 border-l-2 border-border">
-          {groups.map((group) => (
+          {groups.map((group, i) => (
             <div
-              key={`${group.provider_name}-${group.fulfillment_type}`}
+              key={`${group.provider_name}-${group.fulfillment_type}-${i}`}
               class="flex items-center justify-between text-xs text-muted-foreground"
             >
               <span>{group.provider_name}</span>
@@ -103,7 +107,7 @@ export function ShippingEstimate({ lang, currency, shippingEstimate }: Props) {
                   ? t('shippingAtCheckout', lang)
                   : group.status === 'unavailable'
                     ? t('shippingUnavailable', lang)
-                    : formatPrice(group.estimated_cost, currency, locale)}
+                    : formatShippingCost(group.estimated_cost, currency, locale, lang)}
               </span>
             </div>
           ))}

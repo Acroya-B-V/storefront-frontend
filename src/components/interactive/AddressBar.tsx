@@ -136,20 +136,16 @@ export function AddressBar({ lang }: Props) {
   // Compact state: no address
   if (!expanded) {
     return (
-      <div
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         onClick={handleExpand}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') handleExpand();
-        }}
         class="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground cursor-pointer"
         aria-expanded="false"
         aria-label={t('enterPostcode', lang)}
       >
         {pinIcon}
         <span>{t('enterPostcode', lang)}</span>
-      </div>
+      </button>
     );
   }
 

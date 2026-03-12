@@ -41,7 +41,10 @@ export async function onAddressChange(
     const pickupLocations = Array.isArray(r.pickup_locations)
       ? r.pickup_locations.filter(
           (l: unknown): l is { id: number; name: string; distance_km: number } =>
-            !!l && typeof l === 'object' && 'name' in l,
+            !!l &&
+            typeof l === 'object' &&
+            'name' in l &&
+            typeof (l as Record<string, unknown>).distance_km === 'number',
         )
       : [];
 
@@ -85,7 +88,8 @@ export async function onAddressChange(
     }
 
     return { success: true };
-  } catch {
+  } catch (err) {
+    console.error('onAddressChange failed:', err);
     return { success: false, error: 'network' };
   }
 }
@@ -118,8 +122,9 @@ async function refreshCartWithCoords(cartId: string, coords: AddressCoords): Pro
     if (data) {
       $cart.set(normalizeCart(data as Record<string, unknown>));
     }
-  } catch {
+  } catch (err) {
     // Cart refresh failure is non-blocking — estimate just won't show
+    console.warn('refreshCartWithCoords failed (non-blocking):', err);
   }
 }
 
