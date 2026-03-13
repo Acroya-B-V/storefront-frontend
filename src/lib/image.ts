@@ -56,9 +56,14 @@ export function adaptForConnection(
 }
 
 export function optimizedImageUrl(src: string, opts: ImageOptions): string {
-  if (!src || import.meta.env.DEV) return src;
+  if (!src) return src;
   const { width, quality = 75 } = opts;
   const adapted = adaptForConnection(width, quality);
+  if (import.meta.env.DEV) {
+    // Astro's built-in image service (sharp) — works in local dev
+    return `/_image?href=${encodeURIComponent(src)}&w=${adapted.width}&q=${adapted.quality}&f=webp`;
+  }
+  // Vercel Image Optimization — works in production
   return `/_vercel/image?url=${encodeURIComponent(src)}&w=${adapted.width}&q=${adapted.quality}`;
 }
 
@@ -74,7 +79,7 @@ export function responsiveImage(
   sizes: string,
   quality?: number,
 ): ResponsiveImageAttrs {
-  if (!src || import.meta.env.DEV) {
+  if (!src) {
     return { src, srcset: '', sizes };
   }
   const srcset = widths

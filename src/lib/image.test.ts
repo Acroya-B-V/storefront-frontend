@@ -17,12 +17,23 @@ describe('optimizedImageUrl', () => {
     expect(optimizedImageUrl('', { width: 300 })).toBe('');
   });
 
-  // In dev mode (test env), optimizedImageUrl returns the raw URL.
-  // Production URL generation is tested indirectly via adaptForConnection.
-  it('returns a string for valid src', () => {
+  // In dev/test mode, uses Astro's /_image endpoint
+  it('generates Astro image URL in dev mode', () => {
     const url = optimizedImageUrl('https://cdn.example.com/img.jpg', { width: 300 });
-    expect(typeof url).toBe('string');
-    expect(url.length).toBeGreaterThan(0);
+    expect(url).toContain('/_image?');
+    expect(url).toContain('w=300');
+    expect(url).toContain('q=75');
+    expect(url).toContain('f=webp');
+  });
+
+  it('uses custom quality', () => {
+    const url = optimizedImageUrl('https://cdn.example.com/img.jpg', { width: 300, quality: 50 });
+    expect(url).toContain('q=50');
+  });
+
+  it('encodes src URL', () => {
+    const url = optimizedImageUrl('https://cdn.example.com/img.jpg', { width: 300 });
+    expect(url).toContain(encodeURIComponent('https://cdn.example.com/img.jpg'));
   });
 });
 
@@ -95,11 +106,19 @@ describe('isSlowConnection', () => {
 });
 
 describe('responsiveImage', () => {
-  it('returns raw src with empty srcset in dev mode', () => {
+  it('generates srcset with multiple widths', () => {
     const result = responsiveImage('https://cdn.example.com/img.jpg', [300, 600, 900], '100vw');
+    expect(result.srcset).toContain('300w');
+    expect(result.srcset).toContain('600w');
+    expect(result.srcset).toContain('900w');
     expect(result.sizes).toBe('100vw');
-    // In dev, srcset is empty and src is the raw URL
-    expect(result.src).toBe('https://cdn.example.com/img.jpg');
+    // Fallback src uses last (largest) width
+    expect(result.src).toContain('w=900');
+  });
+
+  it('returns empty srcset for empty src', () => {
+    const result = responsiveImage('', [300, 600], '100vw');
+    expect(result.src).toBe('');
     expect(result.srcset).toBe('');
   });
 });
