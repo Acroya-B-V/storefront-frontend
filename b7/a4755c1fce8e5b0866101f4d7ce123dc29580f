@@ -1,0 +1,105 @@
+src/lib/normalize.ts
+  36ab779692f4dab3 10,68,94,109,132,138-166,168,174-176
+  8742028523990a91 281-283
+src/components/astro/StickyNav.astro
+  b1cc083a59f5c758 78-79,81
+src/components/interactive/AddToCartButton.tsx
+  36ab779692f4dab3 3,7,78,92
+e2e/product-detail.spec.ts
+  b1cc083a59f5c758 87-104
+src/components/interactive/CategoryDrawer.tsx
+  b1cc083a59f5c758 83
+src/lib/bot-detect.ts
+  36ab779692f4dab3 1-13
+src/stores/cart.ts
+  36ab779692f4dab3 214-216
+src/lib/pricing.ts
+  36ab779692f4dab3 58
+e2e/navigation.spec.ts
+  b1cc083a59f5c758 57-70
+src/components/interactive/CartBar.tsx
+  36ab779692f4dab3 3,24
+src/pages/[lang]/product/[slug].astro
+  36ab779692f4dab3 18,61-70
+src/layouts/BaseLayout.astro
+  b1cc083a59f5c758 115,118-119,125
+  36ab779692f4dab3 28-35,66-67
+src/merchants/poke-perfect-demo.json
+  47738ccbc8b63192 6-7
+  36ab779692f4dab3 13-14,16,23,32
+tailwind.config.mjs
+  36ab779692f4dab3 50-51
+src/lib/normalize.test.ts
+  36ab779692f4dab3 220-254
+  8742028523990a91 592-643
+src/components/interactive/ProductDetail.tsx
+  36ab779692f4dab3 224-239,244-246,248-252,255,923
+  b1cc083a59f5c758 254,597-598,600-601,646,703-704,706-707,853,938-943
+src/stores/cart-actions.ts
+  36ab779692f4dab3 9-11,13,18-33,50,56,132,138,149,154,169,174,179-198
+src/components/interactive/CartBadge.tsx
+  b1cc083a59f5c758 2,4,6,14-15,17-34,45-52,61,63-64
+src/lib/pricing.test.ts
+  36ab779692f4dab3 87
+src/components/interactive/SearchBar.tsx
+  b1cc083a59f5c758 4,97-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "b7a4755c1fce8e5b0866101f4d7ce123dc29580f",
+  "prompts": {
+    "36ab779692f4dab3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "900667be-600a-43ff-9b3b-f4d8863f9209",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 251,
+      "total_deletions": 126,
+      "accepted_lines": 219,
+      "overriden_lines": 0
+    },
+    "47738ccbc8b63192": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4861a257-ee37-472e-8143-5629931f4989",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "8742028523990a91": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5ab86a87-bdcc-4243-aa53-27a48d3d0283",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 57,
+      "total_deletions": 1,
+      "accepted_lines": 57,
+      "overriden_lines": 0
+    },
+    "b1cc083a59f5c758": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a0ece1a-dbf2-4146-b040-19fb433b9806",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 163,
+      "total_deletions": 76,
+      "accepted_lines": 118,
+      "overriden_lines": 0
+    }
+  }
+}
