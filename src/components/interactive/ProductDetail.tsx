@@ -10,7 +10,7 @@ import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { t } from '@/i18n';
 import { getClient } from '@/lib/api';
 import type { ModifierGroup as RawModifierGroup } from '@/lib/normalize';
-import { optimizedImageUrl } from '@/lib/image';
+import { optimizedImageUrl, responsiveImage } from '@/lib/image';
 import { showToast } from '@/stores/toast';
 import QuantitySelector from './QuantitySelector';
 
@@ -537,13 +537,24 @@ export default function ProductDetail({ lang }: Props) {
             {/* Product image (hidden during upsell step) */}
             {step === 'detail' && product.image && (
               <div class="aspect-video w-full shrink-0 overflow-hidden bg-card-image">
-                <img
-                  src={optimizedImageUrl(product.image, { width: 900 })}
-                  alt={product.name}
-                  class="h-full w-full object-cover"
-                  width="512"
-                  height="288"
-                />
+                {(() => {
+                  const img = responsiveImage(
+                    product.image,
+                    [300, 450, 600],
+                    '(min-width: 768px) 512px, 100vw',
+                  );
+                  return (
+                    <img
+                      src={img.src}
+                      srcset={img.srcset || undefined}
+                      sizes={img.sizes || undefined}
+                      alt={product.name}
+                      class="h-full w-full object-cover"
+                      width="512"
+                      height="288"
+                    />
+                  );
+                })()}
               </div>
             )}
 
@@ -619,7 +630,7 @@ export default function ProductDetail({ lang }: Props) {
                               {s.image_url && (
                                 <div class="h-10 w-10 shrink-0 overflow-hidden rounded bg-card-image">
                                   <img
-                                    src={s.image_url}
+                                    src={optimizedImageUrl(s.image_url, { width: 80 })}
                                     alt=""
                                     class="h-full w-full object-cover"
                                     width="40"
