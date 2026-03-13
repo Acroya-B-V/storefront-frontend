@@ -112,7 +112,14 @@ const imgAttrs = product.image
     <div>
       <div class="flex items-start justify-between gap-2">
         <h3 class="text-sm font-medium leading-tight text-card-foreground sm:text-base">
-          <a href={`/${lang}/product/${product.slug}`} class="after:absolute after:inset-0">
+          <a
+            href={`/${lang}/product/${product.slug}`}
+            class="after:absolute after:inset-0"
+            data-product-modal
+            data-product-id={product.id}
+            data-product-name={product.name}
+            data-product-slug={product.slug}
+          >
             {product.name}
           </a>
         </h3>
@@ -150,6 +157,7 @@ const imgAttrs = product.image
           client:idle
           productId={String(product.id)}
           productName={product.name}
+          productSlug={product.slug}
           hasModifiers={hasModifiers}
           soldOut={product.sold_out ?? false}
           lang={lang}

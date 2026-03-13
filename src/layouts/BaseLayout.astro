@@ -98,6 +98,23 @@ let commsMessages: CommsMessage[] = [];
     <Toast client:idle lang={langValue} />
     <FulfillmentOverlay client:idle lang={langValue} />
 
+    <script is:inline>
+      document.addEventListener('click', function (e) {
+        const link = e.target.closest('[data-product-modal]');
+        if (!link) return;
+        e.preventDefault();
+        window.dispatchEvent(
+          new CustomEvent('open-product', {
+            detail: {
+              id: link.getAttribute('data-product-id'),
+              name: link.getAttribute('data-product-name'),
+              slug: link.getAttribute('data-product-slug'),
+            },
+          }),
+        );
+      });
+    </script>
+
     <script>
       import { initAnalytics } from '@/analytics';
       initAnalytics().catch((err) => {

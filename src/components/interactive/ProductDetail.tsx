@@ -103,6 +103,7 @@ export default function ProductDetail({ lang }: Props) {
   const selectedProduct = useStore($selectedProduct);
   const merchant = useStore($merchant);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const didPushState = useRef(false);
   const [product, setProduct] = useState<ProductData | null>(null);
   const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [quantities, setQuantities] = useState<Record<string, Record<string, number>>>({});
@@ -119,7 +120,14 @@ export default function ProductDetail({ lang }: Props) {
   const currency = merchant?.currency ?? 'EUR';
   const locale = langToLocale(lang);
 
-  const close = () => $selectedProduct.set(null);
+  const close = () => {
+    const wasPushed = didPushState.current;
+    didPushState.current = false;
+    $selectedProduct.set(null);
+    if (wasPushed) {
+      history.back();
+    }
+  };
 
   useFocusTrap(dialogRef, !!selectedProduct, close);
 
@@ -203,6 +211,43 @@ export default function ProductDetail({ lang }: Props) {
 
     fetchProductById(String(selectedProduct.id));
   }, [selectedProduct]);
+
+  // Listen for product card click events (dispatched from inline script)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { id, name, slug } = (e as CustomEvent).detail;
+      $selectedProduct.set({ id, name, slug });
+    };
+    window.addEventListener('open-product', handler);
+    return () => window.removeEventListener('open-product', handler);
+  }, []);
+
+  // Shallow routing: sync URL with modal state
+  useEffect(() => {
+    if (selectedProduct?.slug && !selectedProduct.skipToUpsell) {
+      if (!window.location.pathname.includes('/product/')) {
+        const langPrefix = (window as { __LANG__?: string }).__LANG__ || 'en';
+        history.pushState(
+          { productModal: true },
+          '',
+          `/${langPrefix}/product/${selectedProduct.slug}`,
+        );
+        didPushState.current = true;
+      }
+    }
+  }, [selectedProduct]);
+
+  // Handle browser back button
+  useEffect(() => {
+    const onPopState = () => {
+      if (didPushState.current) {
+        didPushState.current = false;
+        $selectedProduct.set(null);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   const handleRadioSelect = (groupId: string, optionId: string) => {
     setSelections((prev) => ({ ...prev, [groupId]: [optionId] }));

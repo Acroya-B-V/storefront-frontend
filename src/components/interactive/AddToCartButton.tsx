@@ -12,6 +12,7 @@ import QuantitySelector from './QuantitySelector';
 interface Props {
   productId: string;
   productName: string;
+  productSlug?: string;
   hasModifiers: boolean;
   soldOut: boolean;
   lang: string;
@@ -20,6 +21,7 @@ interface Props {
 export default function AddToCartButton({
   productId,
   productName,
+  productSlug,
   hasModifiers,
   soldOut,
   lang,
@@ -64,7 +66,7 @@ export default function AddToCartButton({
     if (soldOut) return;
 
     if (hasModifiers) {
-      $selectedProduct.set({ id: productId, name: productName });
+      $selectedProduct.set({ id: productId, name: productName, slug: productSlug });
       return;
     }
 
@@ -82,7 +84,7 @@ export default function AddToCartButton({
         $cart.set(prevCart);
         if ('status' in error && error.status === 400) {
           // Product likely requires modifiers — open the detail modal
-          $selectedProduct.set({ id: productId, name: productName });
+          $selectedProduct.set({ id: productId, name: productName, slug: productSlug });
         } else {
           console.error('Failed to add to cart:', error);
           showToast(t('toastAddToCartFailed', lang));
@@ -92,7 +94,12 @@ export default function AddToCartButton({
         $cart.set(cartData);
         if (cartData?.id) setStoredCartId(cartData.id);
         // Open modal in upsell mode so suggestions are shown if available
-        $selectedProduct.set({ id: productId, name: productName, skipToUpsell: true });
+        $selectedProduct.set({
+          id: productId,
+          name: productName,
+          slug: productSlug,
+          skipToUpsell: true,
+        });
       }
     } catch (err) {
       console.error('[AddToCart] error:', err);
