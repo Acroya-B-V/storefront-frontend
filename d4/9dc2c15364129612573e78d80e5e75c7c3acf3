@@ -1,0 +1,43 @@
+src/components/interactive/ProductDetail.tsx
+  8742028523990a91 345,347
+src/lib/resolve-merchant.test.ts
+  8742028523990a91 34,39
+vitest.config.ts
+  8742028523990a91 12
+src/stores/cart.ts
+  8742028523990a91 257
+src/stores/cart.test.ts
+  8742028523990a91 141,161
+src/stores/address-actions.ts
+  8742028523990a91 148
+src/analytics/context.test.ts
+  8742028523990a91 56,68-69
+src/components/interactive/SearchBar.tsx
+  8742028523990a91 10,86-87
+src/components/interactive/FulfillmentOverlay.tsx
+  8742028523990a91 164-167,169
+src/test-setup.ts
+  8742028523990a91 1-4
+src/stores/cart-actions.ts
+  8742028523990a91 17,198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "d49dc2c15364129612573e78d80e5e75c7c3acf3",
+  "prompts": {
+    "8742028523990a91": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5ab86a87-bdcc-4243-aa53-27a48d3d0283",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 29,
+      "total_deletions": 6,
+      "accepted_lines": 28,
+      "overriden_lines": 0
+    }
+  }
+}
