@@ -1,0 +1,113 @@
+src/components/astro/ProductCard.astro
+  8742028523990a91 140,148
+e2e/navigation.spec.ts
+  8742028523990a91 86-115
+src/stores/cart.test.ts
+  8742028523990a91 154
+src/pages/[lang]/collection/[slug].astro
+  8742028523990a91 8,67-71
+src/i18n/messages/de.json
+  8742028523990a91 65
+src/components/interactive/CartDrawer.tsx
+  8742028523990a91 11,21,139-148,290,304,395
+src/i18n/messages/nl.json
+  8742028523990a91 65
+src/components/interactive/CartBar.tsx
+  8742028523990a91 4,11,18-19,24-26,70
+src/lib/image.test.ts
+  8742028523990a91 2,11
+src/components/interactive/AddressBar.tsx
+  8742028523990a91 7-16
+src/lib/logger.ts
+  8742028523990a91 1-21
+src/components/interactive/DiscountCodeInput.tsx
+  8742028523990a91 11,53
+src/pages/[lang]/index.astro
+  8742028523990a91 9,44-48,59-60
+src/components/interactive/FulfillmentOverlay.tsx
+  8742028523990a91 6,155-156,167-169
+src/lib/resolve-merchant.ts
+  8742028523990a91 1-2,29
+src/layouts/BaseLayout.astro
+  8742028523990a91 15-17,29,31,44-46,63-73,119-150,186-187,189-197
+src/lib/resolve-merchant.test.ts
+  8742028523990a91 36
+src/components/interactive/ProductDetail.tsx
+  8742028523990a91 2,12,15,78,82-86,92-169,206,214,218,221,224,231-232,235,240,256-258,267,269,284-285,289,293,296-298,389,391,399,401,406-407,509,524,715,717-722,886,888-893
+src/lib/comms.ts
+  8742028523990a91 2,64,105
+src/lib/normalize.ts
+  8742028523990a91 303-307,343,345,354
+src/i18n/messages/en.json
+  8742028523990a91 65
+src/lib/collections.ts
+  8742028523990a91 4,19,32
+src/lib/theme.ts
+  8742028523990a91 3-4,6
+src/types/merchant.ts
+  8742028523990a91 65-66
+src/analytics/context.test.ts
+  8742028523990a91 61-62
+src/lib/structured-data.test.ts
+  8742028523990a91 4,6-8,42-77,111-169,173-178,180,182,193-241,261-285
+src/analytics/context.ts
+  8742028523990a91 10,27,33,65
+src/components/astro/StructuredData.astro
+  8742028523990a91 3,5,8
+src/pages/[lang]/product/[slug].astro
+  8742028523990a91 7,164,170-176,178
+src/stores/address-actions.test.ts
+  8742028523990a91 220-250,253-341
+src/stores/cart.ts
+  8742028523990a91 6,49,139-140,145-151,153,163,172,207,245,247-249,251
+src/lib/structured-data.ts
+  8742028523990a91 4-48,54-68,75,83-86,90,95-98,103-118,121,124,130,135-136,152-165
+src/stores/cart-actions.test.ts
+  8742028523990a91 2-8,13-19,233-473
+src/components/interactive/AddToCartButton.tsx
+  8742028523990a91 9,60,89,103
+src/components/interactive/SearchBar.tsx
+  8742028523990a91 8,10,19,25,37-44,51-55,62,68,76,80,83-85,97,99,138,161
+src/middleware.ts
+  8742028523990a91 43-48
+src/components/interactive/TopBanner.tsx
+  8742028523990a91 20-24,45
+src/lib/events.ts
+  8742028523990a91 1-6
+src/lib/image.ts
+  8742028523990a91 18-20,22-24,26-28,31-33
+src/types/global.d.ts
+  8742028523990a91 1-11
+src/stores/address-actions.ts
+  8742028523990a91 12,14-27,34-36,42-58,63-66,82-84,86,113,148,152,155,159,167
+src/components/interactive/CartBadge.tsx
+  8742028523990a91 58
+src/components/interactive/BottomBanner.tsx
+  8742028523990a91 40
+src/components/interactive/CategoryTabs.tsx
+  8742028523990a91 110,115,133
+src/components/interactive/icons.tsx
+  8742028523990a91 1-67
+docs/plans/2026-03-13-structured-data-enrichment.md
+  8742028523990a91 1-469
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "082bd1412a9be9109ab88598d9de04397bf7dff5",
+  "prompts": {
+    "8742028523990a91": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5ab86a87-bdcc-4243-aa53-27a48d3d0283",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "William Hurst <william@eatsous.com>",
+      "messages": [],
+      "total_additions": 1012,
+      "total_deletions": 368,
+      "accepted_lines": 1720,
+      "overriden_lines": 0
+    }
+  }
+}
