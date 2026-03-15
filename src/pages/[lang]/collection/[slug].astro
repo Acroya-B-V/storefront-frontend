@@ -65,10 +65,16 @@ const breadcrumbs = [
     canonicalUrl={`${Astro.url.origin}/${lang}/collection/${slug}`}
   />
   <StructuredData slot="head" data={generateBreadcrumbLD(breadcrumbs)} />
-  <StructuredData slot="head" data={generateItemListLD(category.name, products.map((p) => ({
-    name: p.name,
-    url: `${Astro.url.origin}/${lang}/product/${p.slug}`,
-  })))} />
+  <StructuredData
+    slot="head"
+    data={generateItemListLD(
+      category.name,
+      products.map((p) => ({
+        name: p.name,
+        url: `${Astro.url.origin}/${lang}/product/${p.slug}`,
+      })),
+    )}
+  />
 
   <Header merchant={merchant} lang={lang} />
 

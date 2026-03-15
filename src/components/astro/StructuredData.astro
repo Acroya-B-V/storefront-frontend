@@ -5,4 +5,8 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-{data && <script type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />}
+{
+  data && (
+    <script type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+  )
+}

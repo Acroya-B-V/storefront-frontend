@@ -5,7 +5,7 @@ vi.mock('@/lib/api', () => ({
   getClient: (...args: unknown[]) => mockGetClient(...args),
 }));
 
-import { $cart, $cartLoading, setStoredCartId } from './cart';
+import { $cart, $cartLoading } from './cart';
 import type { Cart } from './cart';
 import {
   updateCartItemQuantity,
@@ -376,9 +376,7 @@ describe('removeDiscountCode', () => {
       }),
     });
 
-    await expect(removeDiscountCode('cart-1', client)).rejects.toThrow(
-      'Failed to remove discount',
-    );
+    await expect(removeDiscountCode('cart-1', client)).rejects.toThrow('Failed to remove discount');
   });
 });
 

@@ -114,13 +114,7 @@ describe('generateRestaurantLD', () => {
     const specs = ld.openingHoursSpecification as Array<Record<string, unknown>>;
     expect(specs).toHaveLength(1);
     expect(specs[0]['@type']).toBe('OpeningHoursSpecification');
-    expect(specs[0].dayOfWeek).toEqual([
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-    ]);
+    expect(specs[0].dayOfWeek).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
     expect(specs[0].opens).toBe('11:00');
     expect(specs[0].closes).toBe('22:00');
   });

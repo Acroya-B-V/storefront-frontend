@@ -8,7 +8,10 @@
  */
 
 function isTestEnv(): boolean {
-  return typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).__TESTING__ === true;
+  return (
+    typeof globalThis !== 'undefined' &&
+    (globalThis as Record<string, unknown>).__TESTING__ === true
+  );
 }
 
 export function warn(tag: string, ...args: unknown[]): void {

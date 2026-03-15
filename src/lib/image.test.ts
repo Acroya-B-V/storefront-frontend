@@ -1,5 +1,11 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { optimizedImageUrl, responsiveImage, isSlowConnection, adaptForConnection, _resetConnectionCache } from './image';
+import {
+  optimizedImageUrl,
+  responsiveImage,
+  isSlowConnection,
+  adaptForConnection,
+  _resetConnectionCache,
+} from './image';
 
 /** Helper to set navigator.connection for a test. */
 function setConnection(value: { effectiveType: string; saveData: boolean } | undefined) {

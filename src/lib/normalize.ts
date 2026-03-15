@@ -302,7 +302,8 @@ export function normalizeCart(raw: Record<string, unknown>): Cart {
 
   // Runtime validation for critical fields (same pattern as normalizeShippingEstimate)
   const id = typeof r.id === 'string' ? r.id : String(r.id ?? '');
-  const cartTotal = typeof r.cart_total === 'string' ? r.cart_total : String(r.cart_total ?? '0.00');
+  const cartTotal =
+    typeof r.cart_total === 'string' ? r.cart_total : String(r.cart_total ?? '0.00');
   const itemCount = typeof r.item_count === 'number' ? r.item_count : Number(r.item_count ?? 0);
 
   return {
